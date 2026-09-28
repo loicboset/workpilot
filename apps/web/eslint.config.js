@@ -19,4 +19,21 @@ export default defineConfig([
       globals: globals.browser,
     },
   },
+  {
+    // Building blocks stay reusable: they never reach into app data or features.
+    files: ['src/components/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@/features/*', '@/api/*', '@/db/*', '@/data/*', '@/sync/*'],
+              message: 'components/ must not depend on app data or features.',
+            },
+          ],
+        },
+      ],
+    },
+  },
 ])

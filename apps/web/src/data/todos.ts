@@ -6,7 +6,7 @@ import { deleteLocally, newRowFields, nowIso, saveLocally, updateLocally } from 
 /**
  * Todos repository (ADR 0017, 0025): screens read and change todos only through here.
  * Reads come from Dexie and update live; writes are saved locally, then synced.
- * The other resources get the same kind of repository as their screens are built.
+ * Each synced resource has a repository like this one in src/data.
  */
 
 export type TodoFields = Pick<

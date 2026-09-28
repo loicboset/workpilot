@@ -1,12 +1,280 @@
 {
+  "common": {
+    "loading": "Chargement…",
+    "today": "Aujourd'hui",
+    "tomorrow": "Demain",
+    "yesterday": "Hier",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "optional": "Facultatif"
+  },
+  "nav": {
+    "label": "Principale",
+    "home": "Accueil",
+    "today": "Aujourd'hui",
+    "direction": "Cap",
+    "settings": "Réglages",
+    "capture": "Noter"
+  },
+  "auth": {
+    "signIn": {
+      "title": "Bon retour parmi nous",
+      "subtitle": "Connectez-vous à votre espace.",
+      "username": "Nom d'utilisateur",
+      "password": "Mot de passe",
+      "submit": "Se connecter",
+      "required": "Merci de remplir ce champ.",
+      "forgot": "Mot de passe oublié ? Il est défini sur le serveur, dans WORKPILOT_USER. Modifiez-le puis redémarrez.",
+      "errors": {
+        "wrongCredentials": "Ce nom d'utilisateur et ce mot de passe ne correspondent pas. Prenez votre temps et réessayez.",
+        "tooManyAttempts": "Trop de tentatives pour l'instant. Respirez et réessayez dans 15 minutes.",
+        "unreachable": "Le serveur est injoignable. Vérifiez votre connexion et réessayez.",
+        "unexpected": "Un problème est survenu de notre côté. Merci de réessayer."
+      }
+    },
+    "signOut": "Se déconnecter"
+  },
+  "profile": {
+    "firstName": "Prénom",
+    "language": "Langue",
+    "timezone": "Fuseau horaire",
+    "timezoneHelp": "Vos journées, rappels et horaires le suivent.",
+    "city": "Ville",
+    "cityHelp": "Pour la météo sur votre accueil. Facultatif."
+  },
+  "onboarding": {
+    "step": "Étape {{number}} sur {{total}}",
+    "continue": "Continuer",
+    "back": "Retour",
+    "finish": "Tracer mon chemin",
+    "you": {
+      "title": "Enchanté",
+      "subtitle": "Quelques mots sur vous, pas plus."
+    },
+    "northStar": {
+      "title": "Votre étoile polaire",
+      "subtitle": "La chose vers laquelle vous avancez.",
+      "explain": "Une étoile polaire est un objectif à long terme qui donne une direction à vos journées : finir un livre, bâtir une équipe sereine, changer de métier. Une seule suffit.",
+      "placeholder": "p. ex. Finir mon premier roman"
+    },
+    "milestones": {
+      "title": "Les jalons du chemin",
+      "subtitle": "Les étapes entre ici et là-bas.",
+      "explain": "Trois à cinq étapes suffisent. Vous pourrez y relier des tâches et des plages horaires, et voir quelle part de votre semaine a servi votre étoile polaire.",
+      "label": "Jalon {{number}}",
+      "placeholder": "p. ex. Premier jet terminé",
+      "addAnother": "En ajouter un"
+    }
+  },
   "home": {
-    "greeting": "Salut.",
-    "tagline": "WorkPilot se prépare. Ton étoile polaire, ta journée et tes idées vivront ici.",
-    "apiStatus": {
-      "label": "Serveur",
-      "checking": "vérification…",
-      "ok": "connecté",
-      "offline": "hors ligne"
+    "greeting": {
+      "morning": "Bonjour, {{name}}",
+      "afternoon": "Bon après-midi, {{name}}",
+      "evening": "Bonsoir, {{name}}"
+    },
+    "breathe": "respirez avec le cercle",
+    "capture": {
+      "title": "Noter",
+      "subtitle": "Videz votre esprit",
+      "fileUnder": "Ranger dans",
+      "save": "Garder cette pensée",
+      "saved": "C'est noté. Une chose de moins à porter.",
+      "fieldLabel": "Noter une pensée"
+    },
+    "today": {
+      "summary": "{{blocks}} plages · {{todos}} à faire",
+      "free": "Une journée libre",
+      "freeHint": "Rien de prévu pour l'instant. ⌘K (Ctrl K) pour ajouter une tâche ou une plage horaire.",
+      "open": "Ouvrir"
+    },
+    "direction": {
+      "summary": "{{reached}} jalons atteints sur {{total}}",
+      "open": "Ouvrir"
+    },
+    "ideas": {
+      "title": "Idées",
+      "summary": "{{count}} graines à regarder plus tard",
+      "empty": "Les idées que vous notez arrivent ici, à regarder dans un moment calme.",
+      "add": "Noter une idée",
+      "delete": "Supprimer l'idée « {{text}} »"
+    }
+  },
+  "ticker": {
+    "pause": "Mettre les messages en pause",
+    "play": "Relancer les messages",
+    "kinds": {
+      "insight": "Constat",
+      "tip": "Astuce",
+      "guidance": "Repère",
+      "nudge": "Petit rappel",
+      "quote": "Citation"
+    },
+    "tips": [
+      {
+        "kind": "tip",
+        "text": "Choisissez la chose qui rendrait cette journée agréable."
+      },
+      {
+        "kind": "guidance",
+        "text": "Vous avez le droit de dire « pas ce trimestre »."
+      },
+      {
+        "kind": "tip",
+        "text": "Reliez une tâche à un jalon pour voir votre semaine s'aligner sur votre étoile polaire."
+      },
+      {
+        "kind": "insight",
+        "text": "Connectez une IA dans les Réglages et ces messages parleront de vos propres journées."
+      },
+      {
+        "kind": "quote",
+        "text": "« La nature ne se presse pas, et pourtant tout s'accomplit. » — Lao Tseu"
+      }
+    ]
+  },
+  "weather": {
+    "noCity": "Ajoutez votre ville dans les Réglages pour la météo",
+    "clear": "Ciel dégagé",
+    "partlyCloudy": "Nuages légers",
+    "cloudy": "Nuageux",
+    "fog": "Brouillard",
+    "drizzle": "Bruine",
+    "rain": "Pluie",
+    "snow": "Neige",
+    "storm": "Orage"
+  },
+  "northStar": {
+    "label": "Mon étoile polaire",
+    "timeAligned": "Temps aligné cette semaine",
+    "timeAlignedNone": "Rien de terminé cette semaine pour l'instant",
+    "youAreHere": "Vous êtes ici",
+    "reached": "Atteint",
+    "ahead": "À venir",
+    "noMilestones": "Pas encore de jalons.",
+    "addMilestones": "En ajouter"
+  },
+  "capture": {
+    "title": "Noter",
+    "placeholder": "Tout ce qui occupe votre esprit…",
+    "hint": "Commencez par /todo, /block ou /idea. Le texte simple devient une idée. Tab complète la commande.",
+    "commandsLabel": "Commandes",
+    "commands": {
+      "todo": "une tâche",
+      "block": "une plage horaire",
+      "idea": "une idée"
+    },
+    "kinds": {
+      "todo": "Tâche",
+      "block": "Plage horaire",
+      "idea": "Idée"
+    },
+    "preview": {
+      "due": "pour {{day}}",
+      "noDate": "sans date"
+    },
+    "saved": "C'est noté : {{kind}}. Continuez, ou Échap quand votre esprit est léger.",
+    "problems": {
+      "unknownCommand": "Commande inconnue. Essayez /todo, /block ou /idea.",
+      "noTitle": "Ajoutez quelques mots pour dire de quoi il s'agit.",
+      "noTime": "Ajoutez un horaire, p. ex. 9-11 ou 14h-15h30.",
+      "endBeforeStart": "La fin arrive avant le début."
+    }
+  },
+  "today": {
+    "blocks": "Plages horaires",
+    "blocksSubtitle": "Le temps que vous réservez",
+    "todos": "Tâches",
+    "todosSubtitle": "Ce qu'il y a à faire",
+    "noBlocks": "Aucune plage horaire. Une journée spacieuse.",
+    "noTodos": "Rien de prévu.",
+    "overdue": "D'avant",
+    "dueToday": "Aujourd'hui",
+    "dueThatDay": "Ce jour-là",
+    "someday": "Un jour",
+    "addTodo": "Ajouter une tâche",
+    "addTodoPlaceholder": "Ajoutez une tâche pour ce jour, puis Entrée",
+    "addBlock": "Ajouter une plage horaire",
+    "editBlock": "Modifier la plage horaire",
+    "blockTitle": "Quoi",
+    "blockPlaceholder": "p. ex. Travail profond",
+    "from": "De",
+    "until": "Jusqu'à",
+    "previousDay": "Jour précédent",
+    "nextDay": "Jour suivant",
+    "moreFor": "Plus pour « {{title}} »",
+    "moveTomorrow": "Déplacer à demain",
+    "moveNextWeek": "Déplacer à la semaine prochaine",
+    "pickDay": "Choisir un jour",
+    "pickDayFor": "Quand pour « {{title}} » ?",
+    "noDate": "Retirer la date",
+    "linkMilestone": "Relier à un jalon",
+    "noMilestone": "Aucun jalon"
+  },
+  "direction": {
+    "subtitle": "Là où vous allez, et les étapes du chemin.",
+    "northStarTitle": "Étoile polaire",
+    "northStarWhy": "Pourquoi elle compte pour vous",
+    "targetDate": "Espéré pour le",
+    "by": "Espéré pour le {{day}}",
+    "progress": "Jalons atteints",
+    "reachedOf": "{{reached}} sur {{total}}",
+    "progressHelp": "Le progrès se compte en jalons, pas en heures.",
+    "timeAlignedHelp": "Part des tâches et plages horaires terminées cette semaine qui sont reliées à un jalon.",
+    "milestones": "Jalons",
+    "milestonesSubtitle": "Le chemin, dans l'ordre",
+    "noMilestones": "Pas encore de jalons. Quelle est la première étape ?",
+    "addMilestone": "Ajouter un jalon",
+    "addMilestonePlaceholder": "Ajoutez un jalon, puis Entrée",
+    "editMilestone": "Modifier le jalon",
+    "milestoneTitle": "Jalon",
+    "milestoneMeaning": "Ce que l'atteindre veut dire"
+  },
+  "settings": {
+    "you": "Vous",
+    "session": "Session",
+    "saved": "Enregistré.",
+    "ai": {
+      "title": "IA",
+      "subtitle": "Un modèle local (LM Studio, Ollama) ou une API dans le cloud. Facultatif.",
+      "presets": "Réglage rapide",
+      "provider": "Fournisseur",
+      "openaiCompatible": "Compatible OpenAI (LM Studio, Ollama, OpenAI, OpenRouter…)",
+      "anthropic": "Anthropic (Claude)",
+      "baseUrl": "Adresse",
+      "baseUrlHelp": "LM Studio sur cet ordinateur : http://localhost:1234/v1. Depuis Docker : http://host.docker.internal:1234/v1.",
+      "baseUrlClaude": "Laissez vide pour l'API d'Anthropic.",
+      "apiKey": "Clé d'API",
+      "apiKeyHelp": "Inutile pour LM Studio ou Ollama. Stockée chiffrée.",
+      "apiKeyStored": "Une clé est enregistrée (chiffrée). Tapez-en une nouvelle pour la remplacer.",
+      "model": "Modèle",
+      "modelHelp": "Testez la connexion pour lister les modèles, ou tapez le nom du modèle.",
+      "test": "Enregistrer et tester",
+      "connected": "Connecté. {{count}} modèles disponibles.",
+      "errors": {
+        "ai_not_configured": "Il manque quelque chose : l'adresse pour un serveur compatible OpenAI, ou la clé pour Claude.",
+        "ai_unreachable": "L'IA est injoignable. Le serveur est-il lancé (dans LM Studio : Developer → Start server) ?",
+        "ai_timeout": "L'IA a mis trop de temps à répondre. Un modèle local charge peut-être encore ; réessayez dans un instant.",
+        "ai_key_rejected": "L'IA a refusé la clé d'API.",
+        "ai_not_found": "L'IA ne connaît pas cette adresse ou ce modèle.",
+        "ai_provider_error": "L'IA a répondu par une erreur. Le journal du serveur donne les détails.",
+        "ai_invalid_answer": "La réponse du modèle n'avait pas la forme attendue. Essayez un modèle plus grand (7B ou plus).",
+        "unexpected": "Un problème est survenu. Merci de réessayer."
+      }
+    }
+  },
+  "methods": {
+    "label": "Méthode",
+    "about": "À propos de la méthode : {{name}}",
+    "learnMore": "En savoir plus",
+    "applied": "Comment WorkPilot l'applique",
+    "adapted": "Ce que nous avons adapté",
+    "hoshinKanri": {
+      "name": "Hoshin Kanri",
+      "origin": "Toyota et le lean management, années 1960",
+      "applied": "Votre étoile polaire est le « vrai nord ». Les jalons sont les étapes du chemin. Tâches et plages horaires peuvent être reliées à un jalon, pour voir quelle part de votre semaine a servi votre étoile polaire.",
+      "adapted": "Simplifié pour une personne : une étoile polaire et ses jalons, pas de matrice de stratégie, pas de déclinaison en équipe. Les liens sont facultatifs."
     }
   }
 }

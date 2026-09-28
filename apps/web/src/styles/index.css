@@ -1,22 +1,63 @@
 @import 'tailwindcss';
+/* Short variants for React Aria states: pressed:, hovered:, selected:, invalid:, entering:… */
+@plugin 'tailwindcss-react-aria-components';
 
-/* Grove design tokens (from the chosen homepage concept). */
+/* Grove design tokens (the chosen homepage concept). Calm, never alarming. */
 @theme {
-  --color-grove-bg: #edf0e8;
-  --color-grove-card: #fbfaf6;
-  --color-grove-ink: #26322b;
-  --color-grove-muted: #56665b;
-  --color-grove-moss: #335a40;
-  --color-grove-moss-soft: #dde8dc;
+  --color-grove-bg: #edf0e8; /* page */
+  --color-grove-card: #fbfaf6; /* cards, raised surfaces */
+  --color-grove-field: #f1f4ec; /* text fields */
+  --color-grove-line: #dce2d4; /* borders */
+  --color-grove-ink: #26322b; /* text */
+  --color-grove-muted: #56665b; /* secondary text */
+  --color-grove-moss: #335a40; /* primary actions, links, focus */
+  --color-grove-moss-dark: #22402d; /* primary, hovered or pressed */
+  --color-grove-moss-soft: #dde8dc; /* success, selected */
   --color-grove-sand: #f1e6cf;
-  --color-grove-sky: #d9e8ec;
+  --color-grove-sky: #d9e8ec; /* information */
   --color-grove-clay: #d9894f;
+  --color-grove-berry: #a4462f; /* errors: warm, not alarm red */
+  --color-grove-berry-soft: #f6e4dc;
 
   --font-sans: 'Figtree Variable', system-ui, sans-serif;
   --font-serif: 'Lora Variable', Georgia, serif;
 
   --radius-card: 28px;
+  --radius-control: 14px; /* buttons and fields */
   --shadow-grove: 0 1px 2px rgb(38 50 43 / 0.05), 0 8px 24px rgb(38 50 43 / 0.05);
+
+  /* Slow, calm motion. Use with `motion-safe:` so reduced-motion users get none. */
+  --animate-breathe: breathe 10s ease-in-out infinite;
+  --animate-drift: drift 6s ease-in-out infinite;
+  --animate-fade-in: fade-in 0.6s ease-out;
+
+  @keyframes breathe {
+    0%,
+    100% {
+      transform: scale(0.72);
+      opacity: 0.55;
+    }
+    45%,
+    55% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  @keyframes drift {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    50% {
+      transform: translateX(3px);
+    }
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+  }
 }
 
 body {
@@ -24,4 +65,5 @@ body {
   background: var(--color-grove-bg);
   color: var(--color-grove-ink);
   font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
 }

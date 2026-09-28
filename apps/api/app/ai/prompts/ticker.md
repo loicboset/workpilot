@@ -14,4 +14,4 @@ Rules:
 - The quote is a real, well-known quote, with its author.
 
 Answer with JSON only, in this shape:
-[{"kind": "insight", "text": "..."}, {"kind": "tip", "text": "..."}]
+{"messages": [{"kind": "insight", "text": "..."}, {"kind": "tip", "text": "..."}]}

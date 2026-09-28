@@ -1,12 +1,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { useEffect, useState, type ReactNode } from 'react'
-import { startSync } from '@/sync/scheduler'
+import { useState, type ReactNode } from 'react'
 
 export function Providers({ children }: { children: ReactNode }) {
-  // TanStack Query is for server-only data (AI settings, prompts). Synced data comes from Dexie.
+  // TanStack Query is for server-only data (session, AI settings). Synced data comes from Dexie.
+  // Sync starts with the signed-in layout (AppLayout).
   const [queryClient] = useState(() => new QueryClient())
-
-  useEffect(() => startSync(), []) // returns the stop function, run on unmount
 
   return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 }

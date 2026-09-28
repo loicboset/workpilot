@@ -31,3 +31,4 @@ One short file per decision. New decisions get the next number; a changed decisi
 | 0025 | [Offline sync](0025-offline-sync.md) | Accepted |
 | 0026 | [AI provider interface](0026-ai-provider-interface.md) | Accepted |
 | 0027 | [Background jobs](0027-background-jobs.md) | Accepted |
+| 0028 | [UI building blocks: React Aria Components + Tailwind](0028-ui-building-blocks.md) | Accepted |

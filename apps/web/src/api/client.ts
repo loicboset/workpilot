@@ -2,11 +2,14 @@
 
 export class ApiError extends Error {
   readonly status: number
+  /** The server's `detail` when it is a stable code, e.g. "ai_unreachable" (ADR 0026). */
+  readonly code: string | undefined
 
-  constructor(status: number, message: string) {
+  constructor(status: number, message: string, code?: string) {
     super(message)
     this.name = 'ApiError'
     this.status = status
+    this.code = code
   }
 }
 
@@ -23,7 +26,17 @@ export async function request<T>(method: Method, path: string, body?: unknown): 
     body: body === undefined ? undefined : JSON.stringify(body),
   })
   if (!response.ok) {
-    throw new ApiError(response.status, `${method} ${path} failed with ${response.status}`)
+    const detail = await errorDetail(response)
+    throw new ApiError(response.status, `${method} ${path} failed with ${response.status}`, detail)
   }
   return (response.status === 204 ? undefined : await response.json()) as T
+}
+
+async function errorDetail(response: Response): Promise<string | undefined> {
+  try {
+    const body = (await response.json()) as { detail?: unknown }
+    return typeof body.detail === 'string' ? body.detail : undefined
+  } catch {
+    return undefined
+  }
 }

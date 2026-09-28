@@ -13,9 +13,28 @@ function isLocale(value: string): value is Locale {
   return (SUPPORTED_LOCALES as readonly string[]).includes(value)
 }
 
-/** The browser's language if supported, else English. Later: the language from the profile. */
+/** The browser's language if supported, else English. The profile's language replaces it. */
 function detectLocale(): Locale {
   const language = navigator.language.slice(0, 2)
+  return isLocale(language) ? language : DEFAULT_LOCALE
+}
+
+/**
+ * The language with this device's region when it has one, e.g. "en" → "en-GB", so dates and
+ * times look as the user expects ("28 September", "21:47"). Texts come from "en" either way.
+ */
+function withRegion(locale: Locale): string {
+  return navigator.languages.find((tag) => tag.toLowerCase().startsWith(`${locale}-`)) ?? locale
+}
+
+/** Switch the app's language. */
+export function changeLocale(locale: Locale): Promise<unknown> {
+  return i18n.changeLanguage(withRegion(locale))
+}
+
+/** The app's language without the region: "en", "fr" or "es". */
+export function currentLocale(): Locale {
+  const language = i18n.language.slice(0, 2)
   return isLocale(language) ? language : DEFAULT_LOCALE
 }
 
@@ -25,7 +44,7 @@ void i18n.use(initReactI18next).init({
     fr: { translation: fr },
     es: { translation: es },
   },
-  lng: detectLocale(),
+  lng: withRegion(detectLocale()),
   fallbackLng: DEFAULT_LOCALE,
   interpolation: { escapeValue: false }, // React already escapes rendered text
 })

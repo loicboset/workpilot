@@ -1,12 +1,280 @@
 {
+  "common": {
+    "loading": "Cargando…",
+    "today": "Hoy",
+    "tomorrow": "Mañana",
+    "yesterday": "Ayer",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "optional": "Opcional"
+  },
+  "nav": {
+    "label": "Principal",
+    "home": "Inicio",
+    "today": "Hoy",
+    "direction": "Rumbo",
+    "settings": "Ajustes",
+    "capture": "Anotar"
+  },
+  "auth": {
+    "signIn": {
+      "title": "Hola de nuevo",
+      "subtitle": "Inicia sesión en tu espacio.",
+      "username": "Nombre de usuario",
+      "password": "Contraseña",
+      "submit": "Iniciar sesión",
+      "required": "Rellena este campo, por favor.",
+      "forgot": "¿Olvidaste tu contraseña? Está definida en el servidor, en WORKPILOT_USER. Cámbiala ahí y reinicia.",
+      "errors": {
+        "wrongCredentials": "El nombre de usuario y la contraseña no coinciden. Tómate tu tiempo e inténtalo de nuevo.",
+        "tooManyAttempts": "Demasiados intentos por ahora. Respira e inténtalo de nuevo en 15 minutos.",
+        "unreachable": "No se puede conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.",
+        "unexpected": "Algo ha fallado por nuestra parte. Inténtalo de nuevo."
+      }
+    },
+    "signOut": "Cerrar sesión"
+  },
+  "profile": {
+    "firstName": "Nombre",
+    "language": "Idioma",
+    "timezone": "Zona horaria",
+    "timezoneHelp": "Tus días, recordatorios y horarios la siguen.",
+    "city": "Ciudad",
+    "cityHelp": "Para el tiempo en tu inicio. Opcional."
+  },
+  "onboarding": {
+    "step": "Paso {{number}} de {{total}}",
+    "continue": "Continuar",
+    "back": "Atrás",
+    "finish": "Trazar mi camino",
+    "you": {
+      "title": "Encantado de conocerte",
+      "subtitle": "Unas palabras sobre ti, nada más."
+    },
+    "northStar": {
+      "title": "Tu estrella polar",
+      "subtitle": "Aquello hacia lo que avanzas.",
+      "explain": "Una estrella polar es una meta a largo plazo que da dirección a tus días: terminar un libro, formar un equipo tranquilo, cambiar de profesión. Con una basta.",
+      "placeholder": "p. ej. Terminar mi primera novela"
+    },
+    "milestones": {
+      "title": "Los hitos del camino",
+      "subtitle": "Los pasos entre aquí y allí.",
+      "explain": "De tres a cinco pasos es suficiente. Más adelante podrás vincular tareas y bloques de tiempo, y ver qué parte de tu semana sirvió a tu estrella polar.",
+      "label": "Hito {{number}}",
+      "placeholder": "p. ej. Primer borrador terminado",
+      "addAnother": "Añadir otro"
+    }
+  },
   "home": {
-    "greeting": "Hola.",
-    "tagline": "WorkPilot se está preparando. Tu estrella polar, tu día y tus ideas vivirán aquí.",
-    "apiStatus": {
-      "label": "Servidor",
-      "checking": "comprobando…",
-      "ok": "conectado",
-      "offline": "sin conexión"
+    "greeting": {
+      "morning": "Buenos días, {{name}}",
+      "afternoon": "Buenas tardes, {{name}}",
+      "evening": "Buenas noches, {{name}}"
+    },
+    "breathe": "respira con el círculo",
+    "capture": {
+      "title": "Anotar",
+      "subtitle": "Vacía tu mente",
+      "fileUnder": "Guardar como",
+      "save": "Guardar la idea",
+      "saved": "Anotado. Una cosa menos que cargar.",
+      "fieldLabel": "Anotar una idea"
+    },
+    "today": {
+      "summary": "{{blocks}} bloques · {{todos}} por hacer",
+      "free": "Un día libre",
+      "freeHint": "Nada previsto por ahora. Pulsa ⌘K (Ctrl K) para añadir una tarea o un bloque de tiempo.",
+      "open": "Abrir"
+    },
+    "direction": {
+      "summary": "{{reached}} de {{total}} hitos alcanzados",
+      "open": "Abrir"
+    },
+    "ideas": {
+      "title": "Ideas",
+      "summary": "{{count}} semillas para mirar más tarde",
+      "empty": "Las ideas que anotas llegan aquí, para mirarlas en un momento tranquilo.",
+      "add": "Anotar una idea",
+      "delete": "Eliminar la idea «{{text}}»"
+    }
+  },
+  "ticker": {
+    "pause": "Pausar los mensajes",
+    "play": "Reanudar los mensajes",
+    "kinds": {
+      "insight": "Observación",
+      "tip": "Consejo",
+      "guidance": "Orientación",
+      "nudge": "Recordatorio amable",
+      "quote": "Cita"
+    },
+    "tips": [
+      {
+        "kind": "tip",
+        "text": "Elige la única cosa que haría que hoy se sintiera bien."
+      },
+      {
+        "kind": "guidance",
+        "text": "Está bien decir «este trimestre no»."
+      },
+      {
+        "kind": "tip",
+        "text": "Vincula una tarea a un hito para ver tu semana alinearse con tu estrella polar."
+      },
+      {
+        "kind": "insight",
+        "text": "Conecta una IA en Ajustes y estos mensajes hablarán de tus propios días."
+      },
+      {
+        "kind": "quote",
+        "text": "«La naturaleza no se apresura, y sin embargo todo se cumple.» — Lao Tse"
+      }
+    ]
+  },
+  "weather": {
+    "noCity": "Añade tu ciudad en Ajustes para ver el tiempo",
+    "clear": "Despejado",
+    "partlyCloudy": "Nubes suaves",
+    "cloudy": "Nublado",
+    "fog": "Niebla",
+    "drizzle": "Llovizna",
+    "rain": "Lluvia",
+    "snow": "Nieve",
+    "storm": "Tormenta"
+  },
+  "northStar": {
+    "label": "Mi estrella polar",
+    "timeAligned": "Tiempo alineado esta semana",
+    "timeAlignedNone": "Aún nada terminado esta semana",
+    "youAreHere": "Estás aquí",
+    "reached": "Alcanzado",
+    "ahead": "Por venir",
+    "noMilestones": "Aún no hay hitos.",
+    "addMilestones": "Añadir"
+  },
+  "capture": {
+    "title": "Anotar",
+    "placeholder": "Lo que sea que ocupe tu mente…",
+    "hint": "Empieza con /todo, /block o /idea. El texto simple se guarda como idea. Tab completa el comando.",
+    "commandsLabel": "Comandos",
+    "commands": {
+      "todo": "una tarea",
+      "block": "un bloque de tiempo",
+      "idea": "una idea"
+    },
+    "kinds": {
+      "todo": "Tarea",
+      "block": "Bloque de tiempo",
+      "idea": "Idea"
+    },
+    "preview": {
+      "due": "para {{day}}",
+      "noDate": "sin fecha"
+    },
+    "saved": "Anotado: {{kind}}. Sigue, o pulsa Esc cuando tu mente esté despejada.",
+    "problems": {
+      "unknownCommand": "Comando desconocido. Prueba /todo, /block o /idea.",
+      "noTitle": "Añade unas palabras sobre qué es.",
+      "noTime": "Añade una hora, p. ej. 9-11 o 14:00-15:30.",
+      "endBeforeStart": "El final va antes del inicio."
+    }
+  },
+  "today": {
+    "blocks": "Bloques de tiempo",
+    "blocksSubtitle": "El tiempo que reservas",
+    "todos": "Tareas",
+    "todosSubtitle": "Lo que hay que hacer",
+    "noBlocks": "Sin bloques de tiempo. Un día espacioso.",
+    "noTodos": "Nada pendiente.",
+    "overdue": "De antes",
+    "dueToday": "Hoy",
+    "dueThatDay": "Ese día",
+    "someday": "Algún día",
+    "addTodo": "Añadir una tarea",
+    "addTodoPlaceholder": "Añade una tarea para este día y pulsa Intro",
+    "addBlock": "Añadir un bloque de tiempo",
+    "editBlock": "Cambiar el bloque de tiempo",
+    "blockTitle": "Qué",
+    "blockPlaceholder": "p. ej. Trabajo profundo",
+    "from": "Desde",
+    "until": "Hasta",
+    "previousDay": "Día anterior",
+    "nextDay": "Día siguiente",
+    "moreFor": "Más para «{{title}}»",
+    "moveTomorrow": "Mover a mañana",
+    "moveNextWeek": "Mover a la próxima semana",
+    "pickDay": "Elegir un día",
+    "pickDayFor": "¿Cuándo para «{{title}}»?",
+    "noDate": "Quitar la fecha",
+    "linkMilestone": "Vincular a un hito",
+    "noMilestone": "Sin hito"
+  },
+  "direction": {
+    "subtitle": "Hacia dónde vas, y los pasos del camino.",
+    "northStarTitle": "Estrella polar",
+    "northStarWhy": "Por qué te importa",
+    "targetDate": "Esperado para",
+    "by": "Esperado para el {{day}}",
+    "progress": "Hitos alcanzados",
+    "reachedOf": "{{reached}} de {{total}}",
+    "progressHelp": "El progreso se cuenta en hitos, no en horas.",
+    "timeAlignedHelp": "Parte de las tareas y bloques terminados esta semana que están vinculados a un hito.",
+    "milestones": "Hitos",
+    "milestonesSubtitle": "El camino, en orden",
+    "noMilestones": "Aún no hay hitos. ¿Cuál es el primer paso?",
+    "addMilestone": "Añadir un hito",
+    "addMilestonePlaceholder": "Añade un hito y pulsa Intro",
+    "editMilestone": "Cambiar el hito",
+    "milestoneTitle": "Hito",
+    "milestoneMeaning": "Qué significa alcanzarlo"
+  },
+  "settings": {
+    "you": "Tú",
+    "session": "Sesión",
+    "saved": "Guardado.",
+    "ai": {
+      "title": "IA",
+      "subtitle": "Un modelo local (LM Studio, Ollama) o una API en la nube. Opcional.",
+      "presets": "Configuración rápida",
+      "provider": "Proveedor",
+      "openaiCompatible": "Compatible con OpenAI (LM Studio, Ollama, OpenAI, OpenRouter…)",
+      "anthropic": "Anthropic (Claude)",
+      "baseUrl": "Dirección",
+      "baseUrlHelp": "LM Studio en este ordenador: http://localhost:1234/v1. Desde Docker: http://host.docker.internal:1234/v1.",
+      "baseUrlClaude": "Déjalo vacío para la API de Anthropic.",
+      "apiKey": "Clave de API",
+      "apiKeyHelp": "No hace falta para LM Studio u Ollama. Se guarda cifrada.",
+      "apiKeyStored": "Hay una clave guardada (cifrada). Escribe una nueva para sustituirla.",
+      "model": "Modelo",
+      "modelHelp": "Prueba la conexión para ver los modelos, o escribe el nombre del modelo.",
+      "test": "Guardar y probar",
+      "connected": "Conectado. {{count}} modelos disponibles.",
+      "errors": {
+        "ai_not_configured": "Falta algo: la dirección para servidores compatibles con OpenAI, o la clave para Claude.",
+        "ai_unreachable": "No se puede conectar con la IA. ¿Está el servidor en marcha (en LM Studio: Developer → Start server)?",
+        "ai_timeout": "La IA tardó demasiado en responder. Puede que un modelo local aún esté cargando; inténtalo en un momento.",
+        "ai_key_rejected": "La IA rechazó la clave de API.",
+        "ai_not_found": "La IA no conoce esta dirección o este modelo.",
+        "ai_provider_error": "La IA respondió con un error. El registro del servidor tiene los detalles.",
+        "ai_invalid_answer": "La respuesta del modelo no tenía la forma esperada. Prueba un modelo más grande (7B o más).",
+        "unexpected": "Algo ha fallado. Inténtalo de nuevo."
+      }
+    }
+  },
+  "methods": {
+    "label": "Método",
+    "about": "Sobre el método: {{name}}",
+    "learnMore": "Saber más",
+    "applied": "Cómo lo aplica WorkPilot",
+    "adapted": "Qué hemos adaptado",
+    "hoshinKanri": {
+      "name": "Hoshin Kanri",
+      "origin": "Toyota y la gestión lean, años sesenta",
+      "applied": "Tu estrella polar es el «norte verdadero». Los hitos son los pasos del camino. Tareas y bloques de tiempo pueden vincularse a un hito, para ver qué parte de tu semana sirvió a tu estrella polar.",
+      "adapted": "Simplificado para una persona: una estrella polar y sus hitos, sin matriz estratégica, sin despliegue en equipo. Los vínculos son opcionales."
     }
   }
 }

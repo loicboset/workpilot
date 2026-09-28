@@ -23,7 +23,7 @@ Decisions are recorded in [decisions/](decisions/README.md). This file is the hi
 6. Feature specs (per version)
 7. Data schema: done for v0.1 ([data-model.md](data-model.md))
 8. Self-hosting and distribution: free hosting, backups, updates, license
-9. UI design: onboarding, homepage, detail pages, settings
+9. UI, built in steps with screenshots (building blocks: ADR 0028): all v0.1 screens built: sign-in, onboarding, Grove homepage, capture bar, Today, Direction, settings
 
 ## Open questions
 

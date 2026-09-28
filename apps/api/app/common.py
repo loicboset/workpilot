@@ -135,7 +135,7 @@ def soft_delete(session: Session, row: SyncedMixin) -> None:
 
 def get_singleton_or_404[Row: SyncedMixin](session: Session, model: type[Row]) -> Row:
     """Return the only active row of a one-row table, or answer 404 if there is none yet."""
-    row = _get_singleton(session, model)
+    row = get_singleton(session, model)
     if row is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "not found")
     return row
@@ -143,12 +143,13 @@ def get_singleton_or_404[Row: SyncedMixin](session: Session, model: type[Row]) -
 
 def put_singleton[Row: SyncedMixin](session: Session, model: type[Row], data: BaseModel) -> Row:
     """Create the row of a one-row table, or replace all its fields (PUT semantics)."""
-    row = _get_singleton(session, model)
+    row = get_singleton(session, model)
     if row is None:
         return create_row(session, model, data)
     return update_row(session, row, data.model_dump(exclude={"id"}))
 
 
-def _get_singleton[Row: SyncedMixin](session: Session, model: type[Row]) -> Row | None:
+def get_singleton[Row: SyncedMixin](session: Session, model: type[Row]) -> Row | None:
+    """The only active row of a one-row table (the oldest, if two devices made one offline)."""
     stmt = select_rows(model).order_by(model.created_at).limit(1)
     return session.scalars(stmt).first()

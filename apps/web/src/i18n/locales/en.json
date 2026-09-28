@@ -1,12 +1,280 @@
 {
+  "common": {
+    "loading": "Loading…",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "yesterday": "Yesterday",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "optional": "Optional"
+  },
+  "nav": {
+    "label": "Main",
+    "home": "Home",
+    "today": "Today",
+    "direction": "Direction",
+    "settings": "Settings",
+    "capture": "Capture"
+  },
+  "auth": {
+    "signIn": {
+      "title": "Welcome back",
+      "subtitle": "Sign in to your workspace.",
+      "username": "Username",
+      "password": "Password",
+      "submit": "Sign in",
+      "required": "Please fill this in.",
+      "forgot": "Forgot your password? It is set on the server, in WORKPILOT_USER. Change it there and restart.",
+      "errors": {
+        "wrongCredentials": "That username and password don't match. Take your time and try again.",
+        "tooManyAttempts": "Too many attempts for now. Take a breath and try again in 15 minutes.",
+        "unreachable": "The server can't be reached. Check your connection and try again.",
+        "unexpected": "Something went wrong on our side. Please try again."
+      }
+    },
+    "signOut": "Sign out"
+  },
+  "profile": {
+    "firstName": "First name",
+    "language": "Language",
+    "timezone": "Timezone",
+    "timezoneHelp": "Your days, reminders and times follow it.",
+    "city": "City",
+    "cityHelp": "For the weather on your homepage. Optional."
+  },
+  "onboarding": {
+    "step": "Step {{number}} of {{total}}",
+    "continue": "Continue",
+    "back": "Back",
+    "finish": "Plant my path",
+    "you": {
+      "title": "Nice to meet you",
+      "subtitle": "A few words about you, nothing more."
+    },
+    "northStar": {
+      "title": "Your North Star",
+      "subtitle": "The one thing you are working towards.",
+      "explain": "A North Star is a long-term goal that gives your days a direction: finishing a book, building a calm team, changing careers. One is enough.",
+      "placeholder": "e.g. Finish my first novel"
+    },
+    "milestones": {
+      "title": "Milestones on the way",
+      "subtitle": "The steps between here and there.",
+      "explain": "Three to five steps are plenty. You can link todos and time blocks to them later, and see how much of your week served your North Star.",
+      "label": "Milestone {{number}}",
+      "placeholder": "e.g. First draft done",
+      "addAnother": "Add another"
+    }
+  },
   "home": {
-    "greeting": "Hi there.",
-    "tagline": "WorkPilot is getting ready. Your North Star, your day and your ideas will live here.",
-    "apiStatus": {
-      "label": "Server",
-      "checking": "checking…",
-      "ok": "connected",
-      "offline": "offline"
+    "greeting": {
+      "morning": "Good morning, {{name}}",
+      "afternoon": "Good afternoon, {{name}}",
+      "evening": "Good evening, {{name}}"
+    },
+    "breathe": "breathe with the circle",
+    "capture": {
+      "title": "Capture",
+      "subtitle": "Empty your mind",
+      "fileUnder": "File under",
+      "save": "Save thought",
+      "saved": "Saved. One less thing to carry.",
+      "fieldLabel": "Capture a thought"
+    },
+    "today": {
+      "summary": "{{blocks}} blocks · {{todos}} to do",
+      "free": "A free day",
+      "freeHint": "Nothing planned yet. Press ⌘K (Ctrl K) to add a todo or a time block.",
+      "open": "Open"
+    },
+    "direction": {
+      "summary": "{{reached}} of {{total}} milestones reached",
+      "open": "Open"
+    },
+    "ideas": {
+      "title": "Ideas",
+      "summary": "{{count}} seeds to look at later",
+      "empty": "Ideas you capture land here, to look at when you have a quiet moment.",
+      "add": "Capture an idea",
+      "delete": "Delete the idea “{{text}}”"
+    }
+  },
+  "ticker": {
+    "pause": "Pause the messages",
+    "play": "Play the messages",
+    "kinds": {
+      "insight": "Insight",
+      "tip": "Tip",
+      "guidance": "Guidance",
+      "nudge": "Gentle nudge",
+      "quote": "Quote"
+    },
+    "tips": [
+      {
+        "kind": "tip",
+        "text": "Pick the one thing that would make today feel good."
+      },
+      {
+        "kind": "guidance",
+        "text": "It's okay to say “not this quarter”."
+      },
+      {
+        "kind": "tip",
+        "text": "Link a todo to a milestone to see your week line up with your North Star."
+      },
+      {
+        "kind": "insight",
+        "text": "Connect an AI in Settings and these messages will be about your own days."
+      },
+      {
+        "kind": "quote",
+        "text": "“Nature does not hurry, yet everything is accomplished.” — Lao Tzu"
+      }
+    ]
+  },
+  "weather": {
+    "noCity": "Add your city in Settings for the weather",
+    "clear": "Clear sky",
+    "partlyCloudy": "Soft clouds",
+    "cloudy": "Cloudy",
+    "fog": "Fog",
+    "drizzle": "Drizzle",
+    "rain": "Rain",
+    "snow": "Snow",
+    "storm": "Thunderstorm"
+  },
+  "northStar": {
+    "label": "My North Star",
+    "timeAligned": "Time aligned this week",
+    "timeAlignedNone": "Nothing done yet this week",
+    "youAreHere": "You are here",
+    "reached": "Reached",
+    "ahead": "Ahead",
+    "noMilestones": "No milestones yet.",
+    "addMilestones": "Add some"
+  },
+  "capture": {
+    "title": "Capture",
+    "placeholder": "Whatever is taking up space in your head…",
+    "hint": "Start with /todo, /block or /idea. Plain text becomes an idea. Tab completes a command.",
+    "commandsLabel": "Commands",
+    "commands": {
+      "todo": "a todo",
+      "block": "a time block",
+      "idea": "an idea"
+    },
+    "kinds": {
+      "todo": "Todo",
+      "block": "Time block",
+      "idea": "Idea"
+    },
+    "preview": {
+      "due": "due {{day}}",
+      "noDate": "no date"
+    },
+    "saved": "Saved: {{kind}}. Keep going, or press Esc when your mind feels clear.",
+    "problems": {
+      "unknownCommand": "Unknown command. Try /todo, /block or /idea.",
+      "noTitle": "Add a few words about what it is.",
+      "noTime": "Add a time, e.g. 9-11 or 14:00-15:30.",
+      "endBeforeStart": "The end comes before the start."
+    }
+  },
+  "today": {
+    "blocks": "Time blocks",
+    "blocksSubtitle": "Time you set aside",
+    "todos": "Todos",
+    "todosSubtitle": "Things to get done",
+    "noBlocks": "No time blocks. A spacious day.",
+    "noTodos": "Nothing due.",
+    "overdue": "From before",
+    "dueToday": "Today",
+    "dueThatDay": "That day",
+    "someday": "Someday",
+    "addTodo": "Add a todo",
+    "addTodoPlaceholder": "Add a todo for this day, then Enter",
+    "addBlock": "Add a time block",
+    "editBlock": "Change the time block",
+    "blockTitle": "What",
+    "blockPlaceholder": "e.g. Deep work",
+    "from": "From",
+    "until": "Until",
+    "previousDay": "Previous day",
+    "nextDay": "Next day",
+    "moreFor": "More for “{{title}}”",
+    "moveTomorrow": "Move to tomorrow",
+    "moveNextWeek": "Move to next week",
+    "pickDay": "Pick a day",
+    "pickDayFor": "When for “{{title}}”?",
+    "noDate": "Remove the date",
+    "linkMilestone": "Link to a milestone",
+    "noMilestone": "No milestone"
+  },
+  "direction": {
+    "subtitle": "Where you are heading, and the steps on the way.",
+    "northStarTitle": "North Star",
+    "northStarWhy": "Why it matters to you",
+    "targetDate": "Hoped for by",
+    "by": "Hoped for by {{day}}",
+    "progress": "Milestones reached",
+    "reachedOf": "{{reached}} of {{total}}",
+    "progressHelp": "Progress is counted in milestones, not in hours.",
+    "timeAlignedHelp": "Share of this week's done todos and time blocks linked to a milestone.",
+    "milestones": "Milestones",
+    "milestonesSubtitle": "The path, in order",
+    "noMilestones": "No milestones yet. What is the first step?",
+    "addMilestone": "Add a milestone",
+    "addMilestonePlaceholder": "Add a milestone, then Enter",
+    "editMilestone": "Change the milestone",
+    "milestoneTitle": "Milestone",
+    "milestoneMeaning": "What reaching it means"
+  },
+  "settings": {
+    "you": "You",
+    "session": "Session",
+    "saved": "Saved.",
+    "ai": {
+      "title": "AI",
+      "subtitle": "A local model (LM Studio, Ollama) or a cloud API. Optional.",
+      "presets": "Quick setup",
+      "provider": "Provider",
+      "openaiCompatible": "OpenAI-compatible (LM Studio, Ollama, OpenAI, OpenRouter…)",
+      "anthropic": "Anthropic (Claude)",
+      "baseUrl": "Address",
+      "baseUrlHelp": "LM Studio on this computer: http://localhost:1234/v1. From Docker: http://host.docker.internal:1234/v1.",
+      "baseUrlClaude": "Leave empty for Anthropic's API.",
+      "apiKey": "API key",
+      "apiKeyHelp": "Not needed for LM Studio or Ollama. Stored encrypted.",
+      "apiKeyStored": "A key is stored (encrypted). Type a new one to replace it.",
+      "model": "Model",
+      "modelHelp": "Test the connection to list the models, or type the model's name.",
+      "test": "Save and test",
+      "connected": "Connected. {{count}} models available.",
+      "errors": {
+        "ai_not_configured": "Something is missing: the address for OpenAI-compatible servers, or the key for Claude.",
+        "ai_unreachable": "The AI can't be reached. Is the server running (in LM Studio: Developer → Start server)?",
+        "ai_timeout": "The AI took too long to answer. A local model may still be loading; try again in a moment.",
+        "ai_key_rejected": "The AI refused the API key.",
+        "ai_not_found": "The AI doesn't know this address or model.",
+        "ai_provider_error": "The AI answered with an error. The server log has the details.",
+        "ai_invalid_answer": "The model's answer wasn't in the expected shape. Try a larger model (7B or more).",
+        "unexpected": "Something went wrong. Please try again."
+      }
+    }
+  },
+  "methods": {
+    "label": "Method",
+    "about": "About the method: {{name}}",
+    "learnMore": "Learn more",
+    "applied": "How WorkPilot applies it",
+    "adapted": "What we adapted",
+    "hoshinKanri": {
+      "name": "Hoshin Kanri",
+      "origin": "Toyota and lean management, 1960s",
+      "applied": "Your North Star is the “True North”. Milestones are the steps on the path. Todos and time blocks can link to a milestone, so you can see how much of your week served your North Star.",
+      "adapted": "Simplified for one person: one North Star and its milestones, no strategy matrix, no team cascade. Links are optional."
     }
   }
 }

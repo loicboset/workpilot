@@ -41,6 +41,16 @@ make dev-api              # API on http://localhost:8000
 make dev-web              # web app on http://localhost:5173 (proxies /api)
 ```
 
+Then open http://localhost:5173, sign in with the name and password from `WORKPILOT_USER`,
+and answer the three onboarding questions. From there:
+
+- **⌘K** (Ctrl K) captures from anywhere: `/todo Call the editor tomorrow`,
+  `/block Deep work 9-11 friday`, `/idea …` (plain text is an idea).
+- **Today** shows the day's time blocks and todos: tick, move, link to a milestone, delete.
+- **Direction** holds your North Star and milestones.
+- **Settings → AI → LM Studio**: start LM Studio's server, pick a model, then "Save and test".
+  The homepage ticker then gets its messages from your model.
+
 Data model: [docs/data-model.md](docs/data-model.md). API: [docs/api.md](docs/api.md), interactive docs at http://localhost:8000/api/docs when running. AI with LM Studio or a cloud API: [docs/ai-providers.md](docs/ai-providers.md).
 
 Other commands: `make test` (needs `make db` running; the test database is created automatically), `make lint`, `make typecheck`, `make build`.

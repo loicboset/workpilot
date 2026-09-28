@@ -29,7 +29,7 @@ Interactive docs: `/api/docs` when the server runs. Conventions: [ADR 0023](deci
 | Notes | `/api/notes` (last edited first) | `milestone_id` |
 | Journal entries | `/api/journal-entries` (newest first) | `entry_from`, `entry_to`, `kind` |
 | Review templates | `/api/review-templates` | `kind` |
-| Ticker messages | `GET /api/ticker-messages` (read only, newest first) | `limit` (1–50, default 10) |
+| Ticker messages | `GET /api/ticker-messages` (newest first) · `POST /api/ticker-messages/refresh` (asks the AI for new ones when they are over 6 hours old; `409 ai_not_configured` without AI) | `limit` (1–50, default 10) |
 | Sync | `GET /api/sync/pull?since=&limit=` · `POST /api/sync/push` (see below) | |
 | AI settings (server only) | `GET /api/ai/settings` · `PATCH /api/ai/settings` (`provider`: `openai_compatible` or `anthropic`; `api_key` write-only, `null` removes it) | |
 | AI models (server only) | `GET /api/ai/models`: model ids from the configured provider (also a connection test) | |
@@ -71,6 +71,5 @@ Reminders are sent only when `WORKPILOT_PUSH_CONTACT` is set.
 
 ## Not built yet
 
-- Ticker generation (the AI provider interface is built: [ADR 0026](decisions/0026-ai-provider-interface.md)).
 - Showing reminders in the web app's service worker, and subscribing from the app.
 - Seeding the built-in review templates.

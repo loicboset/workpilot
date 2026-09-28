@@ -3,7 +3,9 @@
 from typing import Annotated
 
 from fastapi import Depends
+from sqlalchemy.orm import Session
 
+from app.ai.default_prompts import default_prompts
 from app.ai.providers import (
     AIError,
     AIErrorCode,
@@ -13,7 +15,7 @@ from app.ai.providers import (
 )
 from app.crypto import decrypt
 from app.db.enums import AIProviderKind
-from app.db.models import AISettings
+from app.db.models import AISettings, Prompt
 from app.db.session import SessionDep
 
 AI_SETTINGS_ID = 1  # the table holds a single row
@@ -44,3 +46,9 @@ def configured_provider(session: SessionDep) -> AIProvider:
 
 # For routes: `provider: ProviderDep`. Tests replace it with a fake provider.
 ProviderDep = Annotated[AIProvider, Depends(configured_provider)]
+
+
+def prompt_text(session: Session, key: str) -> str:
+    """The prompt as the user edited it, or its default."""
+    edited = session.get(Prompt, key)
+    return edited.body if edited is not None else default_prompts()[key]
