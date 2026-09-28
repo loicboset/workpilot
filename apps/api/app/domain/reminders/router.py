@@ -14,6 +14,7 @@ from app.common import (
 )
 from app.db.models import Reminder
 from app.db.session import SessionDep
+from app.domain.reminders.delivery import not_sent_yet
 from app.domain.reminders.schemas import ReminderCreate, ReminderRead, ReminderUpdate
 
 router = APIRouter(prefix="/api/reminders", tags=["reminders"])
@@ -32,10 +33,8 @@ def list_reminders(
         stmt = stmt.where(Reminder.remind_at >= remind_from)
     if remind_to is not None:
         stmt = stmt.where(Reminder.remind_at <= remind_to)
-    if sent is True:
-        stmt = stmt.where(Reminder.sent_at.is_not(None))
-    elif sent is False:
-        stmt = stmt.where(Reminder.sent_at.is_(None))
+    if sent is not None:
+        stmt = stmt.where(~not_sent_yet() if sent else not_sent_yet())
     stmt = stmt.order_by(Reminder.remind_at)
     return list(session.scalars(stmt))
 
@@ -52,11 +51,8 @@ def get_reminder(reminder_id: uuid.UUID, session: SessionDep) -> Reminder:
 
 @router.patch("/{reminder_id}", response_model=ReminderRead)
 def update_reminder(reminder_id: uuid.UUID, data: ReminderUpdate, session: SessionDep) -> Reminder:
-    reminder = get_active_or_404(session, Reminder, reminder_id)
-    changes = data.changes()
-    if "remind_at" in changes:
-        changes["sent_at"] = None  # rescheduled: it must be sent again
-    return update_row(session, reminder, changes)
+    # Moving `remind_at` later is enough to have it sent again (see `not_sent_yet`).
+    return update_row(session, get_active_or_404(session, Reminder, reminder_id), data.changes())
 
 
 @router.delete("/{reminder_id}", status_code=status.HTTP_204_NO_CONTENT)

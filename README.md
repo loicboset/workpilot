@@ -41,7 +41,7 @@ make dev-api              # API on http://localhost:8000
 make dev-web              # web app on http://localhost:5173 (proxies /api)
 ```
 
-Data model: [docs/data-model.md](docs/data-model.md). API: [docs/api.md](docs/api.md), interactive docs at http://localhost:8000/api/docs when running.
+Data model: [docs/data-model.md](docs/data-model.md). API: [docs/api.md](docs/api.md), interactive docs at http://localhost:8000/api/docs when running. AI with LM Studio or a cloud API: [docs/ai-providers.md](docs/ai-providers.md).
 
 Other commands: `make test` (needs `make db` running; the test database is created automatically), `make lint`, `make typecheck`, `make build`.
 

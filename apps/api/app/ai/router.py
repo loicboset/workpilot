@@ -1,17 +1,16 @@
-"""REST routes for AI settings and prompts. Server only: never synced to the browser."""
+"""REST routes for AI settings, models and prompts. Server only: never synced to the browser."""
 
 from fastapi import APIRouter, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.ai.default_prompts import default_prompts
 from app.ai.schemas import AISettingsRead, AISettingsUpdate, PromptRead, PromptWrite
+from app.ai.service import AI_SETTINGS_ID, ProviderDep
 from app.crypto import encrypt
 from app.db.models import AISettings, Prompt
 from app.db.session import SessionDep
 
 router = APIRouter(prefix="/api/ai", tags=["ai"])
-
-AI_SETTINGS_ID = 1  # the table holds a single row
 
 
 # --- Settings ------------------------------------------------------------------------------
@@ -45,6 +44,15 @@ def _settings_read(ai_settings: AISettings | None) -> AISettingsRead:
         model=ai_settings.model,
         has_api_key=ai_settings.api_key_encrypted is not None,
     )
+
+
+# --- Models --------------------------------------------------------------------------------
+
+
+@router.get("/models", response_model=list[str])
+def list_models(provider: ProviderDep) -> list[str]:
+    """The models the configured provider offers. Also tests its URL and key."""
+    return provider.list_models()
 
 
 # --- Prompts -------------------------------------------------------------------------------

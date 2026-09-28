@@ -6,7 +6,7 @@ from sqlalchemy import Integer, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base, SyncedMixin, utcnow
-from app.db.enums import TickerKind, one_of, text_enum
+from app.db.enums import AIProviderKind, TickerKind, one_of, text_enum
 
 
 class TickerMessage(SyncedMixin, Base):
@@ -23,9 +23,10 @@ class AISettings(Base):
     """Server only, single row. The API key is encrypted and never returned by the API."""
 
     __tablename__ = "ai_settings"
+    __table_args__ = (one_of("provider", AIProviderKind),)
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, default=1)
-    provider: Mapped[str | None] = mapped_column(Text)
+    provider: Mapped[AIProviderKind | None] = mapped_column(text_enum(AIProviderKind))
     base_url: Mapped[str | None] = mapped_column(Text)
     model: Mapped[str | None] = mapped_column(Text)
     api_key_encrypted: Mapped[str | None] = mapped_column(Text)

@@ -1,9 +1,12 @@
 """FastAPI entry point.
 
 Serves the JSON API under /api and, in production, the built web app (apps/web/dist copied
-to app/static by the Docker build) so WorkPilot runs as a single container.
+to app/static by the Docker build) so WorkPilot runs as a single container. Background jobs
+(reminders) run in the same process while the app runs.
 """
 
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import Depends, FastAPI, HTTPException
@@ -12,6 +15,7 @@ from sqlalchemy.exc import IntegrityError
 from starlette.middleware.sessions import SessionMiddleware
 
 from app import __version__
+from app.ai.providers import AIError
 from app.ai.router import router as ai_router
 from app.auth.router import router as auth_router
 from app.auth.security import SESSION_COOKIE, SESSION_MAX_AGE_SECONDS, require_login
@@ -27,9 +31,18 @@ from app.domain.review_templates.router import router as review_templates_router
 from app.domain.ticker_messages.router import router as ticker_messages_router
 from app.domain.time_blocks.router import router as time_blocks_router
 from app.domain.todos.router import router as todos_router
-from app.errors import integrity_error_handler
+from app.errors import ai_error_handler, integrity_error_handler
+from app.jobs import scheduled_jobs
+from app.jobs.runner import running_jobs
 from app.push.router import router as push_router
 from app.sync.router import router as sync_router
+
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
+    async with running_jobs(scheduled_jobs()):
+        yield
+
 
 app = FastAPI(
     title="WorkPilot API",
@@ -39,8 +52,10 @@ app = FastAPI(
     swagger_ui_oauth2_redirect_url="/api/docs/oauth2-redirect",
     redoc_url=None,
     openapi_url="/api/openapi.json",
+    lifespan=lifespan,
 )
 app.add_exception_handler(IntegrityError, integrity_error_handler)
+app.add_exception_handler(AIError, ai_error_handler)
 # Signed session cookie (ADR 0003). SameSite=Lax keeps it off cross-site POST/PATCH/DELETE.
 app.add_middleware(
     SessionMiddleware,

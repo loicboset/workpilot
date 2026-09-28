@@ -24,6 +24,13 @@ class ReviewKind(StrEnum):
     MONTHLY = "monthly"
 
 
+class AIProviderKind(StrEnum):
+    """How WorkPilot talks to the AI (ADR 0026)."""
+
+    OPENAI_COMPATIBLE = "openai_compatible"  # LM Studio, Ollama, OpenAI, OpenRouter, Gemini…
+    ANTHROPIC = "anthropic"  # Claude, through Anthropic's own API
+
+
 class TickerKind(StrEnum):
     INSIGHT = "insight"
     TIP = "tip"
@@ -38,7 +45,7 @@ def text_enum(enum: type[StrEnum]) -> Enum:
         enum,
         native_enum=False,
         create_constraint=False,
-        length=20,  # longest value today is 8 characters
+        length=20,  # longest value today: "openai_compatible", 17 characters
         # Store the values ("en"), not the member names ("EN").
         values_callable=lambda members: [member.value for member in members],
     )

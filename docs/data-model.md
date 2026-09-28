@@ -46,12 +46,13 @@ Rules:
 
 | Table | Columns |
 |---|---|
-| `ai_settings` | `id` int · `provider` text? · `base_url` text? · `model` text? · `api_key_encrypted` text? · `updated_at` |
+| `ai_settings` | `id` int · `provider` enum? (`openai_compatible`, `anthropic`) · `base_url` text? · `model` text? · `api_key_encrypted` text? · `updated_at` |
 | `prompts` | `key` text (primary key, e.g. `ticker`) · `body` text · `updated_at` |
 | `push_subscriptions` | `id` uuid · `endpoint` text (unique) · `p256dh_key` text · `auth_key` text · `device_name` text? · `created_at` |
 | `sync_state` | `id` int (always 1) · `revision` bigint: the last revision handed out |
 
-- `ai_settings` has a single row. The API key is encrypted with a key derived from `WORKPILOT_SECRET_KEY` and is never returned by the API.
+- `reminders`: due when `remind_at <= now` and `sent_at` is empty or older than `remind_at`; `sent_at` is written by the server only ([ADR 0027](decisions/0027-background-jobs.md)).
+- `ai_settings` has a single row ([ai-providers.md](ai-providers.md)). The API key is encrypted with a key derived from `WORKPILOT_SECRET_KEY` and is never returned by the API.
 - `prompts` only stores prompts the user edited; defaults ship in `apps/api/app/ai/prompts/`.
 
 ## Device-only tables (Dexie, in the browser)

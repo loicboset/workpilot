@@ -12,6 +12,10 @@ from app.common import Title
 PushEndpoint = Annotated[str, StringConstraints(pattern=r"^https://", max_length=2000)]
 
 
+class PushPublicKey(BaseModel):
+    public_key: str  # base64url, uncompressed P-256 point
+
+
 class PushKeys(BaseModel):
     p256dh: str
     auth: str

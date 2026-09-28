@@ -22,6 +22,10 @@ class Settings(BaseSettings):
 
     database_url: str = "postgresql+psycopg://workpilot:workpilot@localhost:5432/workpilot"
 
+    # Who push services can contact about this server's notifications: "mailto:you@example.org"
+    # or your site's https URL. Apple refuses made-up addresses. Unset: no reminders are sent.
+    push_contact: str | None = None
+
     # The AI provider is configured in the app and stored in the ai_settings table (ADR 0021),
     # not here.
 
@@ -31,6 +35,15 @@ class Settings(BaseSettings):
         name, _, password = value.partition(":")
         if not name or not password:
             raise ValueError('WORKPILOT_USER must look like "name:password"')
+        return value
+
+    @field_validator("push_contact")
+    @classmethod
+    def push_contact_is_mailto_or_https(cls, value: str | None) -> str | None:
+        if not value:
+            return None  # left empty in .env: reminders are off
+        if not value.startswith(("mailto:", "https://")):
+            raise ValueError('WORKPILOT_PUSH_CONTACT must start with "mailto:" or "https://"')
         return value
 
     @property

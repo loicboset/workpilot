@@ -19,7 +19,7 @@ Decisions are recorded in [decisions/](decisions/README.md). This file is the hi
 2. User journeys (high level): done
 3. Domain model: done for v0.1
 4. Quality requirements: offline, performance, security, privacy, resource budget
-5. Architecture decisions: AI provider interface, background jobs, connector model, deployment (done: PostgreSQL only, ADR 0024; offline sync, ADR 0025)
+5. Architecture decisions: connector model, deployment (done: PostgreSQL only, ADR 0024; offline sync, ADR 0025; AI provider interface, ADR 0026; background jobs, ADR 0027)
 6. Feature specs (per version)
 7. Data schema: done for v0.1 ([data-model.md](data-model.md))
 8. Self-hosting and distribution: free hosting, backups, updates, license

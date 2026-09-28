@@ -5,6 +5,7 @@ from typing import Annotated
 from pydantic import BaseModel, StringConstraints
 
 from app.common import LongText, PartialUpdate, RequestBody
+from app.db.enums import AIProviderKind
 
 Setting = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=500)]
 
@@ -12,7 +13,7 @@ Setting = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, 
 class AISettingsRead(BaseModel):
     """The API key itself is never returned, only whether one is stored."""
 
-    provider: str | None
+    provider: AIProviderKind | None
     base_url: str | None
     model: str | None
     has_api_key: bool
@@ -21,7 +22,7 @@ class AISettingsRead(BaseModel):
 class AISettingsUpdate(PartialUpdate):
     """Send only what changes. `api_key` is write-only; send null to remove it."""
 
-    provider: Setting | None = None
+    provider: AIProviderKind | None = None
     base_url: Setting | None = None
     model: Setting | None = None
     api_key: Setting | None = None

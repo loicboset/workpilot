@@ -6,6 +6,10 @@ services:
       WORKPILOT_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-workpilot}:${POSTGRES_PASSWORD:-workpilot}@db:5432/${POSTGRES_DB:-workpilot}
     ports:
       - "8000:8000"
+    # Lets the app reach an AI server on this computer (e.g. LM Studio) at host.docker.internal.
+    # Built into Docker Desktop; needed on Linux (docs/ai-providers.md).
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       db:
         condition: service_healthy

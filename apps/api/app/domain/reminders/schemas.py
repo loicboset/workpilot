@@ -4,12 +4,17 @@ import uuid
 from datetime import datetime
 from typing import Annotated
 
-from pydantic import BaseModel, StringConstraints
+from pydantic import AfterValidator, BaseModel, StringConstraints
 
 from app.common import AwareTimestamp, PartialUpdate, RequestBody, SyncedRead, SyncRow, Title
+from app.domain.reminders.recurrence import check_rule
 
 # An iCal recurrence rule, e.g. "FREQ=WEEKLY;BYDAY=FR" for every Friday.
-Recurrence = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=500)]
+Recurrence = Annotated[
+    str,
+    StringConstraints(strip_whitespace=True, min_length=1, max_length=500),
+    AfterValidator(check_rule),
+]
 
 
 class ReminderFields(BaseModel):

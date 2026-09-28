@@ -29,3 +29,5 @@ One short file per decision. New decisions get the next number; a changed decisi
 | 0023 | [REST API conventions](0023-api-conventions.md) | Accepted |
 | 0024 | [PostgreSQL only](0024-postgresql-only.md) | Accepted |
 | 0025 | [Offline sync](0025-offline-sync.md) | Accepted |
+| 0026 | [AI provider interface](0026-ai-provider-interface.md) | Accepted |
+| 0027 | [Background jobs](0027-background-jobs.md) | Accepted |

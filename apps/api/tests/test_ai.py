@@ -1,11 +1,17 @@
-"""AI settings and prompts."""
+"""AI settings, models and prompts."""
 
+from collections.abc import Iterator
+
+import pytest
 from fastapi.testclient import TestClient
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.ai.default_prompts import default_prompts
+from app.ai.service import configured_provider
 from app.crypto import decrypt
 from app.db.models import AISettings
+from app.main import app
 
 
 def test_settings_are_empty_at_first(client: TestClient) -> None:
@@ -60,3 +66,62 @@ def test_prompts_list_and_unknown_key(client: TestClient) -> None:
     assert keys == ["ticker"]
     assert client.get("/api/ai/prompts/unknown").status_code == 404
     assert client.put("/api/ai/prompts/unknown", json={"body": "x"}).status_code == 404
+
+
+def test_provider_must_be_a_supported_kind(client: TestClient) -> None:
+    response = client.patch("/api/ai/settings", json={"provider": "skynet"})
+
+    assert response.status_code == 422
+
+
+# --- Models ---------------------------------------------------------------------------------
+
+
+class FakeProvider:
+    def generate[Answer: BaseModel](self, prompt: str, answer: type[Answer]) -> Answer:
+        raise NotImplementedError
+
+    def list_models(self) -> list[str]:
+        return ["gemma-3-12b", "qwen3-8b"]
+
+
+@pytest.fixture
+def fake_provider() -> Iterator[None]:
+    app.dependency_overrides[configured_provider] = FakeProvider
+    yield
+    app.dependency_overrides.clear()
+
+
+@pytest.mark.usefixtures("fake_provider")
+def test_models_come_from_the_configured_provider(client: TestClient) -> None:
+    assert client.get("/api/ai/models").json() == ["gemma-3-12b", "qwen3-8b"]
+
+
+@pytest.mark.parametrize(
+    "ai_settings",
+    [
+        {},
+        {"provider": "openai_compatible"},  # no base URL
+        {"provider": "anthropic", "model": "claude"},  # no API key
+    ],
+    ids=["nothing", "openai-compatible-without-url", "anthropic-without-key"],
+)
+def test_models_need_a_configured_provider(client: TestClient, ai_settings: dict) -> None:
+    if ai_settings:
+        client.patch("/api/ai/settings", json=ai_settings)
+
+    response = client.get("/api/ai/models")
+
+    assert response.status_code == 409
+    assert response.json() == {"detail": "ai_not_configured"}
+
+
+def test_an_unreachable_provider_is_a_502(client: TestClient) -> None:
+    # Nothing listens on port 9, like LM Studio when its server isn't started.
+    settings = {"provider": "openai_compatible", "base_url": "http://127.0.0.1:9/v1"}
+    client.patch("/api/ai/settings", json=settings)
+
+    response = client.get("/api/ai/models")
+
+    assert response.status_code == 502
+    assert response.json() == {"detail": "ai_unreachable"}
