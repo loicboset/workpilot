@@ -1,0 +1,27 @@
+@import 'tailwindcss';
+
+/* Grove design tokens (from the chosen homepage concept). */
+@theme {
+  --color-grove-bg: #edf0e8;
+  --color-grove-card: #fbfaf6;
+  --color-grove-ink: #26322b;
+  --color-grove-muted: #56665b;
+  --color-grove-moss: #335a40;
+  --color-grove-moss-soft: #dde8dc;
+  --color-grove-sand: #f1e6cf;
+  --color-grove-sky: #d9e8ec;
+  --color-grove-clay: #d9894f;
+
+  --font-sans: 'Figtree Variable', system-ui, sans-serif;
+  --font-serif: 'Lora Variable', Georgia, serif;
+
+  --radius-card: 28px;
+  --shadow-grove: 0 1px 2px rgb(38 50 43 / 0.05), 0 8px 24px rgb(38 50 43 / 0.05);
+}
+
+body {
+  margin: 0;
+  background: var(--color-grove-bg);
+  color: var(--color-grove-ink);
+  font-family: var(--font-sans);
+}

@@ -1,0 +1,30 @@
+services:
+  app:
+    build: .
+    env_file: .env
+    environment:
+      WORKPILOT_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-workpilot}:${POSTGRES_PASSWORD:-workpilot}@db:5432/${POSTGRES_DB:-workpilot}
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: postgres:18-alpine
+    env_file: .env
+    volumes:
+      - db-data:/var/lib/postgresql
+    # Bound to localhost only: reachable by `make dev-api`, never from the internet.
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  db-data:

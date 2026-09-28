@@ -1,0 +1,1 @@
+"""Ideas captured with /idea."""

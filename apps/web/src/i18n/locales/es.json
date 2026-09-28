@@ -1,0 +1,12 @@
+{
+  "home": {
+    "greeting": "Hola.",
+    "tagline": "WorkPilot se está preparando. Tu estrella polar, tu día y tus ideas vivirán aquí.",
+    "apiStatus": {
+      "label": "Servidor",
+      "checking": "comprobando…",
+      "ok": "conectado",
+      "offline": "sin conexión"
+    }
+  }
+}
