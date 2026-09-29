@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/Button'
 import { ListBoxItem } from '@/components/ui/ListBoxItem'
 import { Select } from '@/components/ui/Select'
 import { skyLight } from '@/features/home/weather/daylight'
+import { SKIES } from '@/features/home/weather/weather'
 import type { Sky } from '@/features/home/weather/weather'
 import { WeatherCard } from '@/features/home/weather/WeatherCard'
 
@@ -30,8 +31,6 @@ const SUN_TIMES = [-1, 0, 1].map((day) => ({
   rise: MIDNIGHT + day * DAY + minutesOf('07:36') * 60_000,
   set: MIDNIGHT + day * DAY + minutesOf('19:24') * 60_000,
 }))
-
-const SKIES: Sky[] = ['clear', 'partlyCloudy', 'cloudy', 'fog', 'drizzle', 'rain', 'snow', 'storm']
 
 type Moment = { time: string; note?: string; sky?: Sky; phase?: number }
 

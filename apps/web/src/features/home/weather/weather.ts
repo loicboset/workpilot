@@ -5,8 +5,17 @@
 import { useQuery } from '@tanstack/react-query'
 import type { SunTimes } from './daylight'
 
-export type Sky =
-  'clear' | 'partlyCloudy' | 'cloudy' | 'fog' | 'drizzle' | 'rain' | 'snow' | 'storm'
+export const SKIES = [
+  'clear',
+  'partlyCloudy',
+  'cloudy',
+  'fog',
+  'drizzle',
+  'rain',
+  'snow',
+  'storm',
+] as const
+export type Sky = (typeof SKIES)[number]
 
 export type Weather = {
   place: string
@@ -19,14 +28,87 @@ export type Weather = {
 const GEOCODING_URL = 'https://geocoding-api.open-meteo.com/v1/search'
 const FORECAST_URL = 'https://api.open-meteo.com/v1/forecast'
 
+/** The last weather this device got, for the next load. */
+const STORAGE_KEY = 'workpilot:weather'
+/** Older, its sky may be too far from the real one, and its sunrise and sunset from today's. */
+const REMEMBERED_FOR = 3 * 3_600_000
+
+type Remembered = { city: string; language: string; at: number; weather: Weather | null }
+
 export const useWeather = (city: string | null | undefined, language: string) =>
   useQuery({
     queryKey: ['weather', city, language],
-    queryFn: () => (city ? fetchWeather(city, language) : null),
+    queryFn: async () => {
+      if (!city) return null
+      const weather = await fetchWeather(city, language)
+      remember({ city, language, at: Date.now(), weather })
+      return weather
+    },
+    // After a refresh, the last weather at once (asked again once it is stale), rather than a
+    // made-up sky until the answer comes: its moon, say, gone the moment the clouds arrive.
+    initialData: () => recall(city, language)?.weather,
+    initialDataUpdatedAt: () => recall(city, language)?.at,
     enabled: Boolean(city),
     staleTime: 30 * 60_000, // the sky doesn't change that fast
     retry: false,
   })
+
+const remember = (remembered: Remembered) => {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(remembered))
+  } catch {
+    // Storage blocked (e.g. private browsing): the next load waits for the weather.
+  }
+}
+
+/** The weather remembered for this city and language, unless it is too old. */
+const recall = (city: string | null | undefined, language: string): Remembered | undefined => {
+  try {
+    const remembered: unknown = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null')
+    return isRemembered(remembered) &&
+      remembered.city === city &&
+      remembered.language === language &&
+      Date.now() - remembered.at < REMEMBERED_FOR
+      ? remembered
+      : undefined
+  } catch {
+    return undefined // storage blocked, or not JSON
+  }
+}
+
+/** Written by `remember`, maybe by an older version of it: the fields the card reads are checked. */
+const isRemembered = (value: unknown): value is Remembered =>
+  typeof value === 'object' &&
+  value !== null &&
+  'city' in value &&
+  typeof value.city === 'string' &&
+  'language' in value &&
+  typeof value.language === 'string' &&
+  'at' in value &&
+  typeof value.at === 'number' &&
+  'weather' in value &&
+  (value.weather === null || isWeather(value.weather))
+
+const isWeather = (value: unknown): value is Weather =>
+  typeof value === 'object' &&
+  value !== null &&
+  'place' in value &&
+  typeof value.place === 'string' &&
+  'temperature' in value &&
+  typeof value.temperature === 'number' &&
+  'sky' in value &&
+  SKIES.some((sky) => sky === value.sky) &&
+  'sunTimes' in value &&
+  Array.isArray(value.sunTimes) &&
+  value.sunTimes.every(
+    (day: unknown) =>
+      typeof day === 'object' &&
+      day !== null &&
+      'rise' in day &&
+      typeof day.rise === 'number' &&
+      'set' in day &&
+      typeof day.set === 'number',
+  )
 
 const fetchWeather = async (city: string, language: string): Promise<Weather | null> => {
   const places = await getJson<{

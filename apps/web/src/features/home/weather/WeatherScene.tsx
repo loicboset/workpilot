@@ -87,7 +87,7 @@ export const WeatherScene = ({ sky = 'partlyCloudy', light }: WeatherSceneProps)
       )}
       {light.moon.height > -1 && moonOpacity > 0 && (
         <Aloft course={light.moon}>
-          <Light className="from-grove-moon" opacity={moonOpacity * (scene.sun ? 0.35 : 0.2)} />
+          <Light className="from-grove-moon" opacity={moonOpacity * (scene.sun ? 0.35 : 0.3)} />
           {scene.sun && (
             <svg viewBox="-30 -30 60 60" className="absolute -top-7.5 -left-7.5 size-15">
               <Moon phase={light.moonPhase} southern={light.southern} opacity={moonOpacity} />
