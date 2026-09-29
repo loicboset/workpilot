@@ -67,6 +67,10 @@ not built yet (Review, Opportunities, Learning, the season's focus) show placeho
 
 Data model: [docs/data-model.md](docs/data-model.md). API: [docs/api.md](docs/api.md), interactive docs at http://localhost:8100/api/docs when running. AI with LM Studio or a cloud API: [docs/ai-providers.md](docs/ai-providers.md).
 
+`make import FILE=imports/notion.json` adds todos, ideas and notes from a JSON file (the format
+is at the top of `apps/api/scripts/import_data.py`); `UNDO=1` removes them again. `imports/` is
+ignored by git, for your own data.
+
 Other commands: `make test` (needs `make db` running; the test database is created automatically), `make lint`, `make typecheck`, `make build`.
 
 ## Run with Docker

@@ -18,6 +18,9 @@ __pycache__/
 .ruff_cache/
 .mypy_cache/
 
+# Your own data to import (make import): personal, never committed
+imports/
+
 # API static build output (copied from apps/web/dist)
 apps/api/app/static/
 
