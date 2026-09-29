@@ -55,6 +55,9 @@
   /* Slow, calm motion. Use with `motion-safe:` so reduced-motion users get none. */
   --animate-breathe: breathe 10s ease-in-out infinite;
   --animate-fade-in: fade-in 0.6s ease-out;
+  /* The ticker's clock: a ring filling until the next tip (duration set where it's used).
+     Not `motion-safe:`, as it tells the time and its end brings the next tip. */
+  --animate-countdown: countdown linear forwards;
 
   @keyframes breathe {
     0%,
@@ -72,6 +75,15 @@
     from {
       opacity: 0;
       transform: translateY(4px);
+    }
+  }
+  /* For a stroke with pathLength="1" and stroke-dasharray="1". */
+  @keyframes countdown {
+    from {
+      stroke-dashoffset: 1;
+    }
+    to {
+      stroke-dashoffset: 0;
     }
   }
 }

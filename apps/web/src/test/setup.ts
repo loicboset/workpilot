@@ -1,3 +1,4 @@
+import './animationEvent'
 // An in-memory IndexedDB, so Dexie works in tests.
 import 'fake-indexeddb/auto'
 import { cleanup } from '@testing-library/react'

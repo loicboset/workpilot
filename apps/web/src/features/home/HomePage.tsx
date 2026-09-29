@@ -27,9 +27,7 @@ export const HomePage = () => {
       {/* Phone: one column. Tablet: the tip under greeting and weather. Wide: all three in a row. */}
       <header className="grid items-center gap-5 md:grid-cols-[minmax(0,1fr)_300px] xl:grid-cols-[320px_minmax(0,1fr)_300px] xl:gap-7">
         <Greeting firstName={profile?.first_name ?? ''} timeZone={timeZone} />
-        <div className="flex min-h-15 items-center rounded-[30px] bg-grove-card py-2.5 pr-6 pl-6.5 shadow-grove md:col-span-2 md:row-start-2 xl:col-span-1 xl:row-start-auto">
-          <Ticker />
-        </div>
+        <Ticker className="md:col-span-2 md:row-start-2 xl:col-span-1 xl:row-start-auto" />
         <WeatherClock city={profile?.city ?? null} timeZone={timeZone} />
       </header>
 
