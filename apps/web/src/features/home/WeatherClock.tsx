@@ -1,65 +1,47 @@
-import {
-  Cloud,
-  CloudDrizzle,
-  CloudFog,
-  CloudLightning,
-  CloudRain,
-  CloudSnow,
-  CloudSun,
-  Moon,
-  Sun,
-  type LucideIcon,
-} from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { formatClock } from '@/lib/format'
-import { useWeather, type Sky } from './weather'
+import { useWeather } from './weather'
+import { WeatherScene } from './WeatherScene'
 
-const SKY_ICONS: Record<Sky, LucideIcon> = {
-  clear: Sun,
-  partlyCloudy: CloudSun,
-  cloudy: Cloud,
-  fog: CloudFog,
-  drizzle: CloudDrizzle,
-  rain: CloudRain,
-  snow: CloudSnow,
-  storm: CloudLightning,
-}
+type WeatherClockProps = { city: string | null; timeZone: string }
 
-/** The time in the user's timezone and the sky over their city, drifting gently. */
-export function WeatherClock({ city, timeZone }: { city: string | null; timeZone: string }) {
+/** The time in the user's timezone and the sky over their city, as a little landscape. */
+export const WeatherClock = ({ city, timeZone }: WeatherClockProps) => {
+  // HOOKS
   const { t, i18n } = useTranslation()
   const now = useMinuteClock()
   const weather = useWeather(city, i18n.language).data
 
-  const Icon = weather
-    ? weather.sky === 'clear' && !weather.isDay
-      ? Moon
-      : SKY_ICONS[weather.sky]
-    : null
   return (
-    <div className="flex items-center gap-4 rounded-card bg-grove-sky/60 px-5 py-3">
-      {Icon && (
-        <Icon className="size-9 shrink-0 motion-safe:animate-drift text-grove-moss" aria-hidden />
-      )}
-      <div className="leading-tight">
-        <p className="font-serif text-2xl text-grove-ink tabular-nums">
+    <div className="group relative h-24 overflow-hidden rounded-4xl bg-linear-to-b from-grove-sky-top to-grove-sky-bottom">
+      <WeatherScene sky={weather?.sky} isDay={weather?.isDay ?? true} />
+      <div className="absolute top-5.5 left-5.5 max-w-44">
+        <p className="font-serif text-[34px] leading-none font-medium text-grove-ink tabular-nums">
           {formatClock(now, i18n.language, timeZone)}
         </p>
-        {weather ? (
-          <p className="text-sm text-grove-muted">
-            {weather.place} · {weather.temperature}° · {t(`weather.${weather.sky}`)}
-          </p>
-        ) : (
-          <p className="text-sm text-grove-muted">{city ?? t('weather.noCity')}</p>
-        )}
+        <p className="mt-0.5 text-[13px] leading-4 text-grove-ink-soft">
+          {weather ? weather.place : (city ?? t('weather.noCity'))}
+        </p>
       </div>
       {weather && (
+        <div className="absolute top-6.75 right-5.5 w-16.5">
+          <p className="text-right text-2xl leading-6 font-bold text-grove-ink">
+            {weather.temperature}°
+          </p>
+          <p className="mt-0.5 text-[13px] leading-4 text-grove-ink-soft">
+            {t(`weather.${weather.sky}`)}
+          </p>
+        </div>
+      )}
+      {weather && (
+        // Open-Meteo's data licence (CC BY 4.0) asks for credit: shown when the card is
+        // hovered or the link focused, and always on touch screens.
         <a
           href="https://open-meteo.com/"
           target="_blank"
           rel="noreferrer"
-          className="ml-auto self-end text-[10px] text-grove-muted/80 hover:underline"
+          className="absolute right-4 bottom-1 text-[10px] text-grove-ink-soft opacity-0 transition-opacity group-hover:opacity-100 hover:underline focus-visible:opacity-100 pointer-coarse:opacity-100"
         >
           Open-Meteo
         </a>
@@ -69,17 +51,19 @@ export function WeatherClock({ city, timeZone }: { city: string | null; timeZone
 }
 
 /** The current time, updated at the start of every minute. */
-function useMinuteClock(): Date {
+const useMinuteClock = (): Date => {
+  // STATES
   const [now, setNow] = useState(() => new Date())
+
+  // EFFECTS
   useEffect(() => {
-    let timer = setTimeout(
-      function tick() {
-        setNow(new Date())
-        timer = setTimeout(tick, 60_000 - (Date.now() % 60_000))
-      },
-      60_000 - (Date.now() % 60_000),
-    )
+    const tick = () => {
+      setNow(new Date())
+      timer = setTimeout(tick, 60_000 - (Date.now() % 60_000))
+    }
+    let timer = setTimeout(tick, 60_000 - (Date.now() % 60_000))
     return () => clearTimeout(timer)
   }, [])
+
   return now
 }

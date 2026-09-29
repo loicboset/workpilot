@@ -1,24 +1,26 @@
-import { now, today } from '@internationalized/date'
+import { today } from '@internationalized/date'
 import { useTranslation } from 'react-i18next'
 import { formatDay } from '@/lib/format'
 
-/** "Good morning, Loïc", today's date, and a circle to breathe with. */
-export function Greeting({ firstName, timeZone }: { firstName: string; timeZone: string }) {
+type GreetingProps = { firstName: string; timeZone: string }
+
+/** "Hi Loïc,", today's date, and a circle to breathe with. */
+export const Greeting = ({ firstName, timeZone }: GreetingProps) => {
+  // HOOKS
   const { t, i18n } = useTranslation()
-  const hour = now(timeZone).hour
-  const partOfDay = hour < 12 ? 'morning' : hour < 18 ? 'afternoon' : 'evening'
 
   return (
-    <div className="flex items-center gap-4">
-      <span className="relative size-12 shrink-0" aria-hidden>
-        <span className="absolute inset-0 rounded-full bg-grove-moss-soft motion-safe:animate-breathe" />
-        <span className="absolute inset-3.5 rounded-full bg-grove-moss/60" />
-      </span>
-      <div>
-        <h1 className="font-serif text-3xl text-grove-ink">
-          {t(`home.greeting.${partOfDay}`, { name: firstName })}
+    <div className="flex items-center gap-4.5">
+      {/* At rest (and without motion) it keeps the breath's first frame: small and light. */}
+      <span
+        aria-hidden
+        className="size-14 shrink-0 rounded-full bg-radial-[at_40%_20%] from-grove-breath to-grove-breath-deep opacity-55 motion-safe:animate-breathe motion-reduce:scale-72"
+      />
+      <div className="min-w-0">
+        <h1 className="pb-0.75 font-serif text-[34px] leading-9.5 font-medium text-grove-ink">
+          {t('home.greeting', { name: firstName })}
         </h1>
-        <p className="text-sm text-grove-muted first-letter:uppercase">
+        <p className="text-[15px] leading-4.5 text-grove-muted first-letter:uppercase">
           {formatDay(today(timeZone), i18n.language, timeZone)} · {t('home.breathe')}
         </p>
       </div>

@@ -33,7 +33,7 @@ export function AppLayout() {
   useProfileLanguage()
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-6xl flex-col px-4 sm:px-8">
+    <div className="mx-auto flex min-h-dvh max-w-360 flex-col px-4 sm:px-8 lg:px-12">
       <header className="flex items-center justify-between gap-4 py-5">
         <Logo showName="from-sm" />
         <div className="flex items-center gap-2">

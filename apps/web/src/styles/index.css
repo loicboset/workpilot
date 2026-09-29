@@ -13,11 +13,36 @@
   --color-grove-moss: #335a40; /* primary actions, links, focus */
   --color-grove-moss-dark: #22402d; /* primary, hovered or pressed */
   --color-grove-moss-soft: #dde8dc; /* success, selected */
+  --color-grove-ink-soft: #3e4f44; /* text on tinted surfaces */
+  --color-grove-fern: #3f6b4e; /* labels, and work linked to a milestone */
+  --color-grove-leaf: #5e8c6b; /* progress: rings, bars, the path walked */
+  --color-grove-leaf-soft: #dce5d6; /* progress still to come */
+  --color-grove-sage: #b5c4ae; /* milestones ahead */
+  --color-grove-sage-soft: #cbd6c4; /* the path ahead, later today */
   --color-grove-sand: #f1e6cf;
+  --color-grove-sand-ink: #6e4e1e;
   --color-grove-sky: #d9e8ec; /* information */
-  --color-grove-clay: #d9894f;
+  --color-grove-sky-ink: #2d5663;
+  --color-grove-rose: #f3dfd6;
+  --color-grove-rose-ink: #7a4630;
+  --color-grove-clay: #d9894f; /* now: you are here, the current block */
+  --color-grove-clay-soft: #f6ebdf;
+  --color-grove-clay-ink: #8a4f22;
+  --color-grove-sun: #f4d58d;
+  --color-grove-sun-ink: #c9a24a;
+  --color-grove-stone: #767676; /* checkbox borders: 3:1 contrast on cards */
   --color-grove-berry: #a4462f; /* errors: warm, not alarm red */
   --color-grove-berry-soft: #f6e4dc;
+
+  /* The circle to breathe with (it rests at 55% opacity, see `breathe`). */
+  --color-grove-breath: #b5d1b9;
+  --color-grove-breath-deep: #8fb498;
+
+  /* The weather widget's little landscape. */
+  --color-grove-sky-top: #cfe3e9;
+  --color-grove-sky-bottom: #e5eee6;
+  --color-grove-hill: #c6d9c6;
+  --color-grove-cloud: #fbfcfd;
 
   --font-sans: 'Figtree Variable', system-ui, sans-serif;
   --font-serif: 'Lora Variable', Georgia, serif;

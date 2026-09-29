@@ -1,4 +1,4 @@
-.PHONY: env install dev-web dev-api db migrate test lint typecheck build docker
+.PHONY: env install dev-web dev-api db migrate seed test lint typecheck build docker
 
 # The API's port: WORKPILOT_PORT from the environment or .env, else the .env.example default.
 env_value = $(shell sed -n 's/^$(1)=//p' .env 2>/dev/null)
@@ -26,6 +26,11 @@ db:
 
 migrate:
 	cd apps/api && uv run alembic upgrade head
+
+# Demo data from the Grove concept (development). REPLACE=1 puts your North Star aside,
+# UNDO=1 removes the demo data and brings it back.
+seed:
+	cd apps/api && uv run python -m scripts.seed_demo $(if $(REPLACE),--replace) $(if $(UNDO),--undo)
 
 test:
 	cd apps/web && pnpm test

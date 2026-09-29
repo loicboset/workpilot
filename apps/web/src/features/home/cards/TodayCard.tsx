@@ -1,69 +1,69 @@
 import { today } from '@internationalized/date'
-import { Sun } from 'lucide-react'
+import { Clock } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { Card } from '@/components/ui/Card'
 import { Link } from '@/components/ui/Link'
 import { useMilestones } from '@/data/direction'
 import { useTimeZone } from '@/data/profile'
-import { TimeBlockRow } from '@/features/today/TimeBlockRow'
-import { TodoRow } from '@/features/today/TodoRow'
 import { useDayPlan } from '@/features/today/useDayPlan'
+import { HomeCard } from '../HomeCard'
+import { DayRow } from './DayRow'
+import { dayItems, dayLoad, focusItem } from './dayTimeline'
 
-/** Today at a glance: the time blocks, then the todos due (and the ones left from before). */
-export function TodayCard() {
+/** Enough lines for a calm day; the Today page has the rest. */
+const SHOWN = 6
+
+/** Today at a glance: the time blocks in order, then the todos due; the next one stands out. */
+export const TodayCard = () => {
+  // HOOKS
   const { t } = useTranslation()
   const timeZone = useTimeZone()
-  const day = today(timeZone)
-  const plan = useDayPlan(day, timeZone)
+  const plan = useDayPlan(today(timeZone), timeZone)
   const milestones = useMilestones() ?? []
-  if (!plan)
-    return (
-      <Card title={t('nav.today')} icon={<Sun />}>
-        {null}
-      </Card>
-    )
 
-  const todos = [...plan.overdue, ...plan.due]
-  const openCount = todos.filter((todo) => todo.completed_at === null).length
-  const subtitle =
-    plan.blocks.length === 0 && todos.length === 0
-      ? t('home.today.free')
-      : t('home.today.summary', {
-          blocks: t('home.today.blocks', { count: plan.blocks.length }),
-          todos: t('home.today.todos', { count: openCount }),
-        })
+  // VARS
+  const blocks = plan?.blocks ?? []
+  const todos = plan ? [...plan.overdue, ...plan.due] : []
+  const items = dayItems(blocks, todos)
+  const focus = focusItem(items)
+  const load = dayLoad(blocks, todos)
+  const openBlocks = blocks.filter((block) => block.completed_at === null).length
+  const openTodos = todos.filter((todo) => todo.completed_at === null).length
+  const aside = [
+    t(`home.today.${load}`),
+    openBlocks > 0 && t('home.today.blocks', { count: openBlocks }),
+    openTodos > 0 && t('home.today.todos', { count: openTodos }),
+  ]
+    .filter(Boolean)
+    .join(' · ')
 
   return (
-    <Card
+    <HomeCard
       title={t('nav.today')}
-      subtitle={subtitle}
-      icon={<Sun />}
-      actions={<Link href="/today">{t('home.today.open')}</Link>}
+      aside={plan ? aside : undefined}
+      icon={<Clock />}
+      tone="moss"
+      footer={
+        items.length > SHOWN && (
+          <Link href="/today" className="text-sm">
+            {t('home.today.more', { count: items.length - SHOWN })}
+          </Link>
+        )
+      }
     >
-      {plan.blocks.length === 0 && todos.length === 0 ? (
+      {plan && items.length === 0 && (
         <p className="text-sm text-grove-muted">{t('home.today.freeHint')}</p>
-      ) : (
-        <ul className="divide-y divide-grove-line">
-          {plan.blocks.map((block) => (
-            <TimeBlockRow
-              key={block.id}
-              block={block}
-              day={day}
-              milestones={milestones}
-              timeZone={timeZone}
-            />
-          ))}
-          {todos.map((todo) => (
-            <TodoRow
-              key={todo.id}
-              todo={todo}
-              milestones={milestones}
-              timeZone={timeZone}
-              showDue
-            />
-          ))}
-        </ul>
       )}
-    </Card>
+      <ul className="-mt-0.75 space-y-1.75">
+        {items.slice(0, SHOWN).map((item) => (
+          <DayRow
+            key={item.id}
+            item={item}
+            isFocus={item.id === focus?.id}
+            milestone={milestones.find((milestone) => milestone.id === item.milestoneId)}
+            timeZone={timeZone}
+          />
+        ))}
+      </ul>
+    </HomeCard>
   )
 }

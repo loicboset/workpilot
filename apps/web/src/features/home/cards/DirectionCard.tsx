@@ -1,58 +1,44 @@
+import { today } from '@internationalized/date'
 import { Compass } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { Card } from '@/components/ui/Card'
-import { Checkbox } from '@/components/ui/Checkbox'
-import { Link } from '@/components/ui/Link'
-import { completeMilestone, reopenMilestone, useMilestones } from '@/data/direction'
+import { useTimeZone } from '@/data/profile'
+import { SEASON_FOCUS } from '../demoData'
+import { HomeCard } from '../HomeCard'
+import { seasonOf } from '../season'
 
-const ROMAN = ['i', 'ii', 'iii', 'iv', 'v', 'vi', 'vii', 'viii', 'ix', 'x']
+const ROMAN = ['i', 'ii', 'iii', 'iv', 'v']
 
-/** The milestones as a short checklist: tick one when you reach it. */
-export function DirectionCard() {
+/** This season's focus: the few directions the days should lean towards (placeholder data). */
+export const DirectionCard = () => {
+  // HOOKS
   const { t } = useTranslation()
-  const milestones = useMilestones() ?? []
-  const reached = milestones.filter((milestone) => milestone.completed_at !== null).length
+  const timeZone = useTimeZone()
 
   return (
-    <Card
+    <HomeCard
       title={t('nav.direction')}
-      subtitle={t('home.direction.summary', { reached, count: milestones.length })}
+      aside={t(`home.direction.seasons.${seasonOf(today(timeZone), timeZone)}`)}
       icon={<Compass />}
-      actions={<Link href="/direction">{t('home.direction.open')}</Link>}
+      tone="sky"
     >
-      {milestones.length === 0 ? (
-        <p className="text-sm text-grove-muted">{t('direction.noMilestones')}</p>
-      ) : (
-        <ol className="space-y-3">
-          {milestones.slice(0, ROMAN.length).map((milestone, index) => (
-            <li key={milestone.id} className="flex items-start gap-3">
-              <span className="w-6 shrink-0 pt-0.5 font-serif text-grove-muted italic">
-                {ROMAN[index]}.
+      <ol className="space-y-2.5">
+        {SEASON_FOCUS.slice(0, ROMAN.length).map((focus, index) => (
+          <li
+            key={focus.title}
+            className="flex min-h-14.5 items-center gap-3.5 rounded-control bg-grove-field px-4 py-2.5"
+          >
+            <span aria-hidden className="font-serif text-xl leading-none text-grove-fern">
+              {ROMAN[index]}.
+            </span>
+            <span className="min-w-0">
+              <span className="block text-[15px] leading-5 font-semibold text-grove-ink">
+                {focus.title}
               </span>
-              <Checkbox
-                className="items-start pt-0.5"
-                isSelected={milestone.completed_at !== null}
-                onChange={(isReached) =>
-                  void (isReached ? completeMilestone(milestone.id) : reopenMilestone(milestone.id))
-                }
-              >
-                <span className="flex flex-col">
-                  <span
-                    className={
-                      milestone.completed_at ? 'text-grove-muted line-through' : 'font-medium'
-                    }
-                  >
-                    {milestone.title}
-                  </span>
-                  {milestone.description && (
-                    <span className="text-sm text-grove-muted">{milestone.description}</span>
-                  )}
-                </span>
-              </Checkbox>
-            </li>
-          ))}
-        </ol>
-      )}
-    </Card>
+              <span className="block text-[13px] leading-4 text-grove-muted">{focus.detail}</span>
+            </span>
+          </li>
+        ))}
+      </ol>
+    </HomeCard>
   )
 }

@@ -29,7 +29,7 @@ it('a new user goes through three short steps, then lands on the homepage', asyn
   await userEvent.click(screen.getByRole('button', { name: 'Plant my path' }))
 
   await waitFor(() => expect(router.state.location.pathname).toBe('/'))
-  expect(await screen.findByRole('heading', { name: /, Ada$/ })).toBeTruthy()
+  expect(await screen.findByRole('heading', { name: 'Hi Ada,' })).toBeTruthy()
   expect((await db.profiles.toArray()).map((profile) => profile.first_name)).toEqual(['Ada'])
   expect((await db.north_stars.toArray()).map((star) => star.title)).toEqual([
     'Finish my first novel',

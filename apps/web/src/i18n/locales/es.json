@@ -69,11 +69,7 @@
     }
   },
   "home": {
-    "greeting": {
-      "morning": "Buenos días, {{name}}",
-      "afternoon": "Buenas tardes, {{name}}",
-      "evening": "Buenas noches, {{name}}"
-    },
+    "greeting": "Hola, {{name}}",
     "breathe": "respira con el círculo",
     "capture": {
       "title": "Anotar",
@@ -82,30 +78,57 @@
       "fieldLabel": "Anotar una idea"
     },
     "today": {
-      "summary": "{{blocks}} · {{todos}}",
+      "light": "Un día ligero",
+      "full": "Un día lleno",
+      "free": "Un día libre",
       "blocks_one": "{{count}} bloque",
       "blocks_many": "{{count}} de bloques",
       "blocks_other": "{{count}} bloques",
       "todos": "{{count}} por hacer",
-      "free": "Un día libre",
+      "focus": "Hasta las {{time}} · notificaciones apagadas",
+      "more_one": "{{count}} más en Hoy",
+      "more_many": "{{count}} más en Hoy",
+      "more_other": "{{count}} más en Hoy",
       "freeHint": "Nada previsto por ahora. Pulsa ⌘K (Ctrl K) para añadir una tarea o un bloque de tiempo.",
-      "open": "Abrir"
+      "linked": "Vinculado a {{milestone}}"
     },
     "direction": {
-      "summary_one": "{{reached}} de {{count}} hito alcanzado",
-      "summary_many": "{{reached}} de {{count}} de hitos alcanzados",
-      "summary_other": "{{reached}} de {{count}} hitos alcanzados",
-      "open": "Abrir"
+      "seasons": {
+        "spring": "Temporada de primavera",
+        "summer": "Temporada de verano",
+        "autumn": "Temporada de otoño",
+        "winter": "Temporada de invierno"
+      }
     },
-    "ideas": {
-      "title": "Ideas",
-      "summary_one": "{{count}} semilla para mirar más tarde",
-      "summary_many": "{{count}} de semillas para mirar más tarde",
-      "summary_other": "{{count}} semillas para mirar más tarde",
-      "empty": "Las ideas que anotas llegan aquí, para mirarlas en un momento tranquilo.",
-      "add": "Anotar una idea",
-      "delete": "Eliminar la idea «{{text}}»"
-    }
+    "review": {
+      "title": "Revisión",
+      "when": "{{day}} · {{time}} · {{minutes}} min",
+      "question": "¿Cómo llegas al final de la semana?",
+      "moods": {
+        "drained": "Agotado/a",
+        "okay": "Bien",
+        "steady": "Estable",
+        "energised": "Con energía"
+      },
+      "open": "Abrir la revisión semanal"
+    },
+    "opportunities": {
+      "title": "Oportunidades",
+      "subtitle": "Semillas que tu IA notó",
+      "plant": "Plantar una",
+      "rest": "Dejarlas reposar"
+    },
+    "learning": {
+      "title": "Aprender",
+      "subtitle": "Crecer un poco cada día",
+      "lessons_one": "{{done}} de {{count}} lección · la siguiente dura {{minutes}} minutos",
+      "lessons_many": "{{done}} de {{count}} de lecciones · la siguiente dura {{minutes}} minutos",
+      "lessons_other": "{{done}} de {{count}} lecciones · la siguiente dura {{minutes}} minutos",
+      "gentleRead": "La lectura tranquila de hoy",
+      "readTime": "{{minutes}} min",
+      "nightstand": "En la mesita de noche:"
+    },
+    "comingSoon": "Llega en una próxima versión"
   },
   "ticker": {
     "pause": "Pausar los mensajes",
@@ -159,7 +182,13 @@
     "reached": "Alcanzado",
     "ahead": "Por venir",
     "noMilestones": "Aún no hay hitos.",
-    "addMilestones": "Añadir"
+    "addMilestones": "Añadir",
+    "up": "Sube desde {{percent}} % · genial",
+    "down": "Baja desde {{percent}} % · no pasa nada",
+    "same": "Igual que la semana pasada · estable",
+    "firstWeek": "Vinculado a un hito",
+    "done": "Hecho · {{when}}",
+    "quarter": "T{{number}}"
   },
   "capture": {
     "title": "Anotar",

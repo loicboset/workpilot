@@ -69,11 +69,7 @@
     }
   },
   "home": {
-    "greeting": {
-      "morning": "Good morning, {{name}}",
-      "afternoon": "Good afternoon, {{name}}",
-      "evening": "Good evening, {{name}}"
-    },
+    "greeting": "Hi {{name}},",
     "breathe": "breathe with the circle",
     "capture": {
       "title": "Capture",
@@ -82,27 +78,54 @@
       "fieldLabel": "Capture a thought"
     },
     "today": {
-      "summary": "{{blocks}} · {{todos}}",
+      "light": "A light day",
+      "full": "A full day",
+      "free": "A free day",
       "blocks_one": "{{count}} block",
       "blocks_other": "{{count}} blocks",
       "todos": "{{count}} to do",
-      "free": "A free day",
+      "focus": "Until {{time}} · notifications off",
+      "more_one": "{{count}} more in Today",
+      "more_other": "{{count}} more in Today",
       "freeHint": "Nothing planned yet. Press ⌘K (Ctrl K) to add a todo or a time block.",
-      "open": "Open"
+      "linked": "Linked to {{milestone}}"
     },
     "direction": {
-      "summary_one": "{{reached}} of {{count}} milestone reached",
-      "summary_other": "{{reached}} of {{count}} milestones reached",
-      "open": "Open"
+      "seasons": {
+        "spring": "Spring season",
+        "summer": "Summer season",
+        "autumn": "Autumn season",
+        "winter": "Winter season"
+      }
     },
-    "ideas": {
-      "title": "Ideas",
-      "summary_one": "{{count}} seed to look at later",
-      "summary_other": "{{count}} seeds to look at later",
-      "empty": "Ideas you capture land here, to look at when you have a quiet moment.",
-      "add": "Capture an idea",
-      "delete": "Delete the idea “{{text}}”"
-    }
+    "review": {
+      "title": "Review",
+      "when": "{{day}} · {{time}} · {{minutes}} min",
+      "question": "How are you arriving at the end of the week?",
+      "moods": {
+        "drained": "Drained",
+        "okay": "Okay",
+        "steady": "Steady",
+        "energised": "Energised"
+      },
+      "open": "Open weekly review"
+    },
+    "opportunities": {
+      "title": "Opportunities",
+      "subtitle": "Seeds your AI noticed",
+      "plant": "Plant one",
+      "rest": "Let them rest"
+    },
+    "learning": {
+      "title": "Learning",
+      "subtitle": "Grow a little every day",
+      "lessons_one": "{{done}} of {{count}} lesson · next one takes {{minutes}} minutes",
+      "lessons_other": "{{done}} of {{count}} lessons · next one takes {{minutes}} minutes",
+      "gentleRead": "Today's gentle read",
+      "readTime": "{{minutes}} min",
+      "nightstand": "On the nightstand:"
+    },
+    "comingSoon": "Coming in a later version"
   },
   "ticker": {
     "pause": "Pause the messages",
@@ -156,7 +179,13 @@
     "reached": "Reached",
     "ahead": "Ahead",
     "noMilestones": "No milestones yet.",
-    "addMilestones": "Add some"
+    "addMilestones": "Add some",
+    "up": "Up from {{percent}}% · lovely",
+    "down": "Down from {{percent}}% · that's okay",
+    "same": "Same as last week · steady",
+    "firstWeek": "Linked to a milestone",
+    "done": "Done · {{when}}",
+    "quarter": "Q{{number}}"
   },
   "capture": {
     "title": "Capture",

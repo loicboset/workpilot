@@ -106,7 +106,11 @@ export const CaptureComposer = ({
           autoFocus={autoFocus}
         >
           {isMultiline ? (
-            <TextArea {...comboboxProps} placeholder={t('capture.placeholder')} />
+            <TextArea
+              {...comboboxProps}
+              placeholder={t('capture.placeholder')}
+              className="h-32 rounded-[18px] pt-3.75 pr-4.5 pl-4.25 text-base"
+            />
           ) : (
             <Input
               {...comboboxProps}

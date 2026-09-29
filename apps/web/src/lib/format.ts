@@ -38,10 +38,19 @@ const RELATIVE_DAYS: Record<number, string> = {
   1: 'common.tomorrow',
 }
 
-/** "09:30" or "9:30 AM", as the locale writes it. */
-export function formatClock(isoOrDate: string | Date, locale: string, timeZone: string) {
+/**
+ * "9:30" or "9:30 AM", as the locale writes it. `twoDigitHour` lines times up in a column:
+ * "08:30", "14:00".
+ */
+export function formatClock(
+  isoOrDate: string | Date,
+  locale: string,
+  timeZone: string,
+  { twoDigitHour = false } = {},
+) {
   const date = typeof isoOrDate === 'string' ? new Date(isoOrDate) : isoOrDate
-  return new DateFormatter(locale, { hour: 'numeric', minute: '2-digit', timeZone }).format(date)
+  const hour = twoDigitHour ? '2-digit' : 'numeric'
+  return new DateFormatter(locale, { hour, minute: '2-digit', timeZone }).format(date)
 }
 
 /** A time of day on its own (no timezone involved). */

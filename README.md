@@ -39,6 +39,7 @@ make db                   # start Postgres in Docker, on port 5440 (POSTGRES_POR
 make migrate              # create / update the database tables
 make dev-api              # API on http://localhost:8100 (WORKPILOT_PORT)
 make dev-web              # web app on http://localhost:5180 (WORKPILOT_WEB_PORT), proxies /api
+make seed                 # optional: the demo data of the Grove homepage concept, see below
 ```
 
 The ports avoid the usual 8000, 5173 and 5433, so WorkPilot runs next to other projects.
@@ -53,6 +54,13 @@ and answer the three onboarding questions. From there:
 - **Direction** holds your North Star and milestones.
 - **Settings → AI → LM Studio**: start LM Studio's server, pick a model, then "Save and test".
   The homepage ticker then gets its messages from your model.
+
+`make seed` fills a signed-up workspace with the concept's demo data: a North Star with five
+milestones, today's time blocks, and done work that makes "time aligned" read 62%. If you already
+have a North Star, `make seed REPLACE=1` puts it aside (soft-deleted, untouched) and
+`make seed UNDO=1` removes the demo data and brings yours back. The homepage cards for features
+not built yet (Review, Opportunities, Learning, the season's focus) show placeholder content from
+`apps/web/src/features/home/demoData.ts`.
 
 Data model: [docs/data-model.md](docs/data-model.md). API: [docs/api.md](docs/api.md), interactive docs at http://localhost:8100/api/docs when running. AI with LM Studio or a cloud API: [docs/ai-providers.md](docs/ai-providers.md).
 
