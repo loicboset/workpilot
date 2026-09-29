@@ -1,3 +1,4 @@
+import { Aloft, Light } from './Aloft'
 import { ease } from './daylight'
 import type { SkyLight } from './daylight'
 import { Moon } from './Moon'
@@ -49,42 +50,50 @@ const SCENES: Record<Sky, Scene> = {
 
 /**
  * The little landscape behind the clock: a sun (or moon and stars), clouds, rain or snow, hills.
- * Its colours follow the light of the sky, set on the card: see `.weather-sky` in weather.css.
+ * The sun crosses it from sunrise to sunset, and the moon through the night, so that it shows the
+ * time going by (see `Course` in daylight.ts). Its colours follow the light of the sky, set on
+ * the card: see `.weather-sky` in weather.css.
  */
 export const WeatherScene = ({ sky = 'partlyCloudy', light }: WeatherSceneProps) => {
   // VARS
   const scene = SCENES[sky]
-  // From behind the hills (the bottom of the card) at sunrise and sunset, to high up at noon.
-  const sunY = 96 - 68 * Math.max(light.sunHeight, -0.5)
   // As the sky darkens the moon comes out, then the stars.
   const moonOpacity = ease(0.3, 0.9, light.night)
   const starsOpacity = ease(0.6, 1, light.night)
 
   return (
-    // A container, so that clouds cross its whole width (see `cross` in weather.css). With
-    // reduced motion, every animation is paused: a still picture of the same sky.
+    // A container, so that clouds cross its whole width (see `cross` in weather.css), and the sun
+    // and the moon too. With reduced motion, every animation is paused: a still picture of the
+    // same sky.
     <div
       aria-hidden
       className="pointer-events-none absolute inset-0 @container motion-reduce:**:[animation-play-state:paused]"
     >
       {scene.sun && starsOpacity > 0 && <Stars opacity={starsOpacity} />}
-      {scene.sun && (
-        // Drawn for a 300 × 96 card, kept at the right when the card is wider.
-        <svg viewBox="0 0 300 96" className="absolute top-0 right-0 h-24 w-75">
-          <g className="fill-grove-sun">
-            <circle
-              cx="240"
-              cy={sunY}
-              r="26"
-              opacity="0.25"
-              className="origin-center animate-glow transform-fill"
-            />
-            <circle cx="240" cy={sunY} r="16.5" />
-          </g>
-          {moonOpacity > 0 && (
-            <Moon phase={light.moonPhase} southern={light.southern} opacity={moonOpacity} />
+      {/* Behind the clouds, the sun's light still shows its way, faintly: a grey day goes by too. */}
+      {light.sun.height > -1 && (
+        <Aloft course={light.sun}>
+          <Light className="from-grove-sun" opacity={scene.sun ? 1 : 0.6} />
+          {scene.sun && (
+            <svg
+              viewBox="-30 -30 60 60"
+              className="absolute -top-7.5 -left-7.5 size-15 fill-grove-sun"
+            >
+              <circle r="26" opacity="0.25" className="origin-center animate-glow transform-fill" />
+              <circle r="16.5" />
+            </svg>
           )}
-        </svg>
+        </Aloft>
+      )}
+      {light.moon.height > -1 && moonOpacity > 0 && (
+        <Aloft course={light.moon}>
+          <Light className="from-grove-moon" opacity={moonOpacity * (scene.sun ? 0.35 : 0.2)} />
+          {scene.sun && (
+            <svg viewBox="-30 -30 60 60" className="absolute -top-7.5 -left-7.5 size-15">
+              <Moon phase={light.moonPhase} southern={light.southern} opacity={moonOpacity} />
+            </svg>
+          )}
+        </Aloft>
       )}
       <svg
         viewBox="0 0 300 96"

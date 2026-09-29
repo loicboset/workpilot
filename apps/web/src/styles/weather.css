@@ -9,6 +9,7 @@
   --color-grove-flash: #fbfcfd; /* lightning */
   --color-grove-snow: #fbfcfd;
   --color-grove-moon: #f3eed9; /* and the stars */
+  --color-grove-sky-halo: transparent; /* around the text, by night only */
 
   /* Their durations and delays are set per element, and reduced-motion users get the scene
      paused instead (a still picture): see `WeatherScene`. */
@@ -97,7 +98,8 @@
    dawn and dusk) and --sky-night, from 0 to 1, every minute: each colour of the landscape goes
    from its day shade (as in @theme above), warmed by the glow, to its night one. The sky itself
    passes through the dusky blue and rose of the blue hour, halfway, rather than through grey.
-   The text and the rain turn light once the sky is dark enough (--sky-dark, 0 or 1). */
+   The text and the rain turn light once the sky is dark enough (--sky-dark, 0 or 1), and the
+   text gets a halo of the night sky: it stays legible when the moon passes behind it. */
 .weather-sky {
   --color-grove-sky-top: color-mix(
     in oklab,
@@ -137,6 +139,10 @@
   --color-grove-ink-soft: color-mix(in oklab, #3e4f44, #c3cec6 calc(var(--sky-dark) * 100%));
   --color-grove-sky-ink: color-mix(in oklab, #2d5663, #cfdae6 calc(var(--sky-dark) * 100%));
   --color-grove-flash: color-mix(in oklab, #fbfcfd, #aab5c6 calc(var(--sky-dark) * 100%));
+  --color-grove-sky-halo: color-mix(in oklab, transparent, #1f2d45 calc(var(--sky-dark) * 100%));
+  text-shadow:
+    0 0 2px var(--color-grove-sky-halo),
+    0 0 8px var(--color-grove-sky-halo);
   /* Each minute's step, and the switch of the text, glide instead of jumping. */
   transition:
     --sky-night 3s,

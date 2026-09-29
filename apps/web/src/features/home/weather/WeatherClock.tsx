@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { formatClock } from '@/lib/format'
 import { skyLight } from './daylight'
 import { useWeather } from './weather'
-import { WeatherScene } from './WeatherScene'
+import { WeatherCard } from './WeatherCard'
 
 type WeatherClockProps = { city: string | null; timeZone: string }
 
@@ -25,47 +25,12 @@ export const WeatherClock = ({ city, timeZone }: WeatherClockProps) => {
   const light = skyLight(now, weather?.sunTimes ?? [], timeZone)
 
   return (
-    <div
-      // The landscape's colours, and the text's, follow these: see `.weather-sky` in weather.css.
-      style={{
-        '--sky-night': light.night,
-        '--sky-glow': light.glow,
-        '--sky-dark': light.night >= 0.6 ? 1 : 0,
-      }}
-      className="weather-sky group relative h-24 overflow-hidden rounded-4xl bg-linear-to-b from-grove-sky-top to-grove-sky-bottom"
-    >
-      <WeatherScene sky={weather?.sky} light={light} />
-      <div className="absolute top-5.5 left-5.5 max-w-44">
-        <p className="font-serif text-[34px] leading-none font-medium text-grove-ink tabular-nums">
-          {formatClock(now, i18n.language, timeZone)}
-        </p>
-        <p className="mt-0.5 text-[13px] leading-4 text-grove-ink-soft">
-          {weather ? weather.place : (city ?? t('weather.noCity'))}
-        </p>
-      </div>
-      {weather && (
-        <div className="absolute top-6.75 right-5.5 w-16.5">
-          <p className="text-right text-2xl leading-6 font-bold text-grove-ink">
-            {weather.temperature}°
-          </p>
-          <p className="mt-0.5 text-[13px] leading-4 text-grove-ink-soft">
-            {t(`weather.${weather.sky}`)}
-          </p>
-        </div>
-      )}
-      {weather && (
-        // Open-Meteo's data licence (CC BY 4.0) asks for credit: shown when the card is
-        // hovered or the link focused, and always on touch screens.
-        <a
-          href="https://open-meteo.com/"
-          target="_blank"
-          rel="noreferrer"
-          className="absolute right-4 bottom-1 text-[10px] text-grove-ink-soft opacity-0 transition-opacity group-hover:opacity-100 hover:underline focus-visible:opacity-100 pointer-coarse:opacity-100"
-        >
-          Open-Meteo
-        </a>
-      )}
-    </div>
+    <WeatherCard
+      time={formatClock(now, i18n.language, timeZone)}
+      place={weather ? weather.place : (city ?? t('weather.noCity'))}
+      light={light}
+      weather={weather ?? undefined}
+    />
   )
 }
 

@@ -34,12 +34,52 @@ describe('skyLight', () => {
     expect(light('13:00').glow).toBe(0)
   })
 
-  it('raises the sun from the horizon to its highest halfway, and sinks it below after', () => {
-    expect(light('07:36').sunHeight).toBeCloseTo(0)
-    expect(light('13:30').sunHeight).toBeCloseTo(1)
-    expect(light('19:24').sunHeight).toBeCloseTo(0)
-    expect(light('20:24').sunHeight).toBeCloseTo(-0.5)
-    expect(light('23:00').sunHeight).toBe(-1)
+  it('crosses the sun from sunrise on the left to sunset on the right', () => {
+    expect(light('07:36').sun).toEqual({ across: 0, height: 0 })
+    expect(light('13:30').sun).toEqual({ across: 0.5, height: 1 })
+    expect(light('19:24').sun).toEqual({ across: 1, height: 0 })
+  })
+
+  it('takes the sun out of the card an hour and a quarter after sunrise, until as long before sunset', () => {
+    const climb = ['07:36', '07:51', '08:06', '08:21', '08:36', '08:51'].map((t) => light(t).sun)
+    climb.slice(1).forEach((sun, index) => expect(sun.height).toBeGreaterThan(climb[index].height))
+    expect(light('08:51').sun.height).toBe(1)
+    expect(light('18:09').sun.height).toBe(1)
+    expect(light('18:30').sun.height).toBeLessThan(1)
+  })
+
+  it('keeps the sun below the horizon at night, where it set and where it will rise', () => {
+    expect(light('20:00').sun.across).toBe(1)
+    expect(light('20:00').sun.height).toBeLessThan(0)
+    expect(light('23:00').sun).toEqual({ across: 1, height: -1 })
+    expect(light('03:00').sun).toEqual({ across: 0, height: -1 })
+    expect(light('07:00').sun.height).toBeLessThan(0)
+  })
+
+  it('crosses the moon from an hour after sunset to an hour before sunrise', () => {
+    expect(light('20:24').moon).toEqual({ across: 0, height: 0 })
+    expect(light('22:00').moon.height).toBe(1)
+    // Halfway between the night's moonrise (20:24 the day before) and moonset (06:36).
+    expect(light('01:30').moon).toEqual({ across: 0.5, height: 1 })
+    expect(light('06:36').moon).toEqual({ across: 1, height: 0 })
+  })
+
+  it('keeps the moon below the horizon by day and at dusk', () => {
+    expect(light('09:00').moon).toEqual({ across: 1, height: -1 })
+    expect(light('13:00').moon.height).toBe(-1)
+    expect(light('19:24').moon).toEqual({ across: 0, height: -0.8 })
+  })
+
+  it('keeps the moon up for the middle half of a short summer night, far north', () => {
+    // Sunset at 23:30, sunrise at 02:30: moonrise at 00:15, moonset at 01:45.
+    const day = [{ rise: at('02:30').getTime(), set: at('23:30').getTime() }]
+    const moon = (hoursAfterSunset: number) =>
+      skyLight(new Date(day[0].set + hoursAfterSunset * 3_600_000), day, 'Europe/Oslo').moon
+    expect(moon(0.5).height).toBeLessThan(0)
+    expect(moon(0.75)).toEqual({ across: 0, height: 0 })
+    expect(moon(1.5).across).toBeCloseTo(0.5)
+    expect(moon(1.5).height).toBeGreaterThan(0.5)
+    expect(moon(2.25)).toEqual({ across: 1, height: 0 })
   })
 
   it('takes tomorrow’s sunrise after midnight, for a page left open overnight', () => {

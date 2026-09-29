@@ -12,12 +12,19 @@ import { AppLayout } from './layouts/AppLayout'
 import { RequireSession } from './RequireSession'
 import { Root } from './Root'
 
-// Only in development (`pnpm dev`): every building block on one page. Not in the built app.
+// Only in development (`pnpm dev`), not in the built app: every building block on one page, and
+// the weather card at any time of the day.
 const devRoutes: RouteObject[] = import.meta.env.DEV
   ? [
       {
         path: '/dev/ui',
         lazy: async () => ({ Component: (await import('@/dev/UiGalleryPage')).UiGalleryPage }),
+      },
+      {
+        path: '/dev/weather',
+        lazy: async () => ({
+          Component: (await import('@/dev/WeatherPreviewPage')).WeatherPreviewPage,
+        }),
       },
     ]
   : []

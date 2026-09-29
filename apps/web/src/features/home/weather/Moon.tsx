@@ -5,12 +5,13 @@ type MoonProps = {
   opacity: number
 }
 
-// Where the moon hangs in the 300 × 96 sky of `WeatherScene`, and its size.
-const X = 240
-const Y = 30
+/** The moon's radius, in px of the card. */
 const R = 13
 
-/** The moon in its phase, with its dark side faintly showing and a halo as bright as it is. */
+/**
+ * The moon in its phase, with its dark side faintly showing and a halo as bright as it is. Drawn
+ * around (0, 0): `WeatherScene` moves it along its course.
+ */
 export const Moon = ({ phase, southern, opacity }: MoonProps) => {
   // VARS
   const lit = (1 - Math.cos(2 * Math.PI * phase)) / 2 // the lit share of the disc
@@ -18,10 +19,10 @@ export const Moon = ({ phase, southern, opacity }: MoonProps) => {
   return (
     <g className="fill-grove-moon" opacity={opacity}>
       <g opacity={0.4 * lit}>
-        <circle cx={X} cy={Y} r="22" className="origin-center animate-glow transform-fill" />
+        <circle r="22" className="origin-center animate-glow transform-fill" />
       </g>
-      <circle cx={X} cy={Y} r={R} opacity="0.12" />
-      <path d={litPart(phase, southern)} transform={`rotate(-20 ${X} ${Y})`} />
+      <circle r={R} opacity="0.12" />
+      <path d={litPart(phase, southern)} transform="rotate(-20)" />
     </g>
   )
 }
@@ -36,8 +37,8 @@ const litPart = (phase: number, southern: boolean) => {
   const crescent = phase < 0.25 || phase > 0.75
   const terminator = R * Math.abs(Math.cos(2 * Math.PI * phase))
   return [
-    `M${X} ${Y - R}`,
-    `A${R} ${R} 0 0 ${litOnRight ? 1 : 0} ${X} ${Y + R}`,
-    `A${terminator} ${R} 0 0 ${crescent === litOnRight ? 0 : 1} ${X} ${Y - R}Z`,
+    `M0 ${-R}`,
+    `A${R} ${R} 0 0 ${litOnRight ? 1 : 0} 0 ${R}`,
+    `A${terminator} ${R} 0 0 ${crescent === litOnRight ? 0 : 1} 0 ${-R}Z`,
   ].join('')
 }
