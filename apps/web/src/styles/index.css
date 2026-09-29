@@ -2,8 +2,11 @@
 @import './weather.css';
 /* Short variants for React Aria states: pressed:, hovered:, selected:, invalid:, entering:… */
 @plugin 'tailwindcss-react-aria-components';
+/* `dark:` follows the theme picked in the settings, not only the device's (see below). */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
-/* Grove design tokens (the chosen homepage concept). Calm, never alarming. */
+/* Grove design tokens (the chosen homepage concept). Calm, never alarming. The light theme's
+   values: the dark theme's are below. */
 @theme {
   --color-grove-bg: #edf0e8; /* page */
   --color-grove-card: #fbfaf6; /* cards, raised surfaces */
@@ -34,6 +37,9 @@
   --color-grove-stone: #767676; /* checkbox borders: 3:1 contrast on cards */
   --color-grove-berry: #a4462f; /* errors: warm, not alarm red */
   --color-grove-berry-soft: #f6e4dc;
+  --color-grove-on-fill: #ffffff; /* text and icons on moss, berry and leaf fills */
+  --color-grove-scrim: rgb(38 50 43 / 0.25); /* behind dialogs */
+  --color-grove-shadow: rgb(38 50 43 / 0.05);
 
   /* The circle to breathe with (it rests at 55% opacity, see `breathe`). */
   --color-grove-breath: #b5d1b9;
@@ -44,7 +50,7 @@
 
   --radius-card: 28px;
   --radius-control: 14px; /* buttons and fields */
-  --shadow-grove: 0 1px 2px rgb(38 50 43 / 0.05), 0 8px 24px rgb(38 50 43 / 0.05);
+  --shadow-grove: 0 1px 2px var(--color-grove-shadow), 0 8px 24px var(--color-grove-shadow);
 
   /* Slow, calm motion. Use with `motion-safe:` so reduced-motion users get none. */
   --animate-breathe: breathe 10s ease-in-out infinite;
@@ -68,6 +74,49 @@
       transform: translateY(4px);
     }
   }
+}
+
+/* The dark theme: the same tokens, by night. `data-theme` on <html> is set before the app
+   loads (index.html), then from the profile (lib/theme.ts). Each text keeps at least 4.5:1
+   contrast on its surfaces, and borders and progress 3:1, as in the light theme. The sun,
+   and the weather card (weather.css), keep their colours: the card follows the real sky. */
+:root {
+  color-scheme: light;
+}
+:root[data-theme='dark'] {
+  color-scheme: dark; /* the browser's own scrollbars, pickers and autofill */
+  --color-grove-bg: #151b17;
+  --color-grove-card: #1d2520;
+  --color-grove-field: #19201c;
+  --color-grove-line: #313d35;
+  --color-grove-ink: #e4e9e1;
+  --color-grove-muted: #a2afa5;
+  --color-grove-moss: #8fc49c;
+  --color-grove-moss-dark: #aad6b4; /* by night, hovering lights up */
+  --color-grove-moss-soft: #263b2d;
+  --color-grove-ink-soft: #cad5cc;
+  --color-grove-fern: #9cc5a6;
+  --color-grove-leaf: #74a881;
+  --color-grove-leaf-soft: #2b3a30;
+  --color-grove-sage: #56705c;
+  --color-grove-sage-soft: #3b4a40;
+  --color-grove-sand: #3b3222;
+  --color-grove-sand-ink: #e6c78f;
+  --color-grove-sky: #1f343b;
+  --color-grove-sky-ink: #a8d0dc;
+  --color-grove-rose: #3e2b24;
+  --color-grove-rose-ink: #ecb59e;
+  --color-grove-clay: #df9058;
+  --color-grove-clay-soft: #3a2c20;
+  --color-grove-clay-ink: #f0b688;
+  --color-grove-stone: #83908a;
+  --color-grove-berry: #ec8f77;
+  --color-grove-berry-soft: #3f2621;
+  --color-grove-on-fill: #0f1c14; /* the fills are light by night */
+  --color-grove-scrim: rgb(0 0 0 / 0.5);
+  --color-grove-shadow: rgb(0 0 0 / 0.3);
+  --color-grove-breath: #3d5c46;
+  --color-grove-breath-deep: #5f8d6b;
 }
 
 body {

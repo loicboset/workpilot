@@ -303,6 +303,14 @@
     "you": "You",
     "session": "Session",
     "saved": "Saved.",
+    "appearance": {
+      "title": "Appearance",
+      "theme": "Theme",
+      "themeHelp": "Changes at once, on all your devices.",
+      "system": "Same as the device",
+      "light": "Light",
+      "dark": "Dark"
+    },
     "ai": {
       "title": "AI",
       "subtitle": "A local model (LM Studio, Ollama) or a cloud API. Optional.",

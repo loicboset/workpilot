@@ -20,8 +20,12 @@ def test_profile_put_creates_then_replaces(client: TestClient) -> None:
     assert replaced["last_name"] == "B."
     assert replaced["city"] is None  # PUT replaces every field
     assert replaced["locale"] == "en"
+    assert replaced["theme"] == "system"  # the device's setting
 
-    assert client.get("/api/profile").json() == replaced
+    dark = client.put("/api/profile", json={"first_name": "Loïc", "theme": "dark"}).json()
+    assert dark["theme"] == "dark"
+
+    assert client.get("/api/profile").json() == dark
 
 
 def test_profile_rejects_invalid_values(client: TestClient) -> None:
@@ -30,6 +34,7 @@ def test_profile_rejects_invalid_values(client: TestClient) -> None:
         == 422
     )
     assert client.put("/api/profile", json={"first_name": "A", "locale": "de"}).status_code == 422
+    assert client.put("/api/profile", json={"first_name": "A", "theme": "sepia"}).status_code == 422
     assert client.put("/api/profile", json={"first_name": " "}).status_code == 422
 
 

@@ -7,7 +7,7 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from pydantic import AfterValidator, BaseModel, StringConstraints
 
 from app.common import RequestBody, SyncedRead, SyncRow
-from app.db.enums import Locale
+from app.db.enums import Locale, Theme
 
 Name = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=100)]
 
@@ -32,6 +32,7 @@ class ProfileFields(BaseModel):
     locale: Locale = Locale.EN
     timezone: Timezone = "UTC"
     city: Name | None = None
+    theme: Theme = Theme.SYSTEM
 
 
 class ProfileWrite(ProfileFields, RequestBody):
@@ -46,6 +47,7 @@ class ProfileRead(SyncedRead):
     locale: Locale
     timezone: str
     city: str | None
+    theme: Theme
 
 
 class ProfileSyncRow(ProfileFields, SyncRow):

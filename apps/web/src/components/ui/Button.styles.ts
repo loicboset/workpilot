@@ -10,11 +10,12 @@ export const buttonStyles = tv({
   ],
   variants: {
     variant: {
-      primary: 'bg-grove-moss text-white hovered:bg-grove-moss-dark pressed:bg-grove-moss-dark',
+      primary:
+        'bg-grove-moss text-grove-on-fill hovered:bg-grove-moss-dark pressed:bg-grove-moss-dark',
       secondary:
         'border border-grove-line bg-grove-card text-grove-ink hovered:bg-grove-field pressed:bg-grove-moss-soft',
       quiet: 'bg-transparent text-grove-ink hovered:bg-grove-field pressed:bg-grove-moss-soft',
-      danger: 'bg-grove-berry text-white hovered:brightness-95 pressed:brightness-90',
+      danger: 'bg-grove-berry text-grove-on-fill hovered:brightness-95 pressed:brightness-90',
     },
     size: {
       md: 'h-11 px-5 text-[15px]',

@@ -23,7 +23,7 @@ export function Modal({ children, placement = 'center', className, ...props }: M
       isDismissable
       {...props}
       className={twMerge(
-        'fixed inset-0 z-50 flex justify-center bg-grove-ink/25 px-4 backdrop-blur-[2px]',
+        'fixed inset-0 z-50 flex justify-center bg-grove-scrim px-4 backdrop-blur-[2px]',
         placement === 'top' ? 'items-start pt-[12vh]' : 'items-center',
       )}
     >

@@ -42,7 +42,7 @@ export function AppLayout() {
           <Button size="sm" onPress={openCaptureBar} aria-keyshortcuts="Meta+K Control+K">
             <Feather className="size-4" aria-hidden />
             <span className="hidden sm:inline">{t('nav.capture')}</span>
-            <kbd className="hidden rounded bg-white/15 px-1.5 text-xs font-normal lg:inline">
+            <kbd className="hidden rounded bg-grove-on-fill/15 px-1.5 text-xs font-normal lg:inline">
               {IS_MAC ? '⌘K' : 'Ctrl K'}
             </kbd>
           </Button>

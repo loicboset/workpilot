@@ -32,6 +32,6 @@ export const dateSegmentStyles = tv({
   base: 'rounded-sm px-0.5 tabular-nums outline-none type-literal:px-0',
   variants: {
     isPlaceholder: { true: 'text-grove-muted/70' },
-    isFocused: { true: 'bg-grove-moss text-white' },
+    isFocused: { true: 'bg-grove-moss text-grove-on-fill' },
   },
 })

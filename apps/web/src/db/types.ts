@@ -4,6 +4,7 @@
  */
 
 import type { Locale } from '@/i18n'
+import type { Theme } from '@/lib/theme'
 
 /** Fields every synced row has. */
 export interface SyncedRow {
@@ -19,6 +20,8 @@ export interface Profile extends SyncedRow {
   locale: Locale
   timezone: string
   city: string | null
+  /** Absent on rows saved before the setting existed: `system`, as on the server. */
+  theme?: Theme
 }
 
 export interface NorthStar extends SyncedRow {

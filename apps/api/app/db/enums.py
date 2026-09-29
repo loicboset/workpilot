@@ -11,6 +11,14 @@ class Locale(StrEnum):
     ES = "es"
 
 
+class Theme(StrEnum):
+    """Light or dark colours. `system` follows the device's setting."""
+
+    SYSTEM = "system"
+    LIGHT = "light"
+    DARK = "dark"
+
+
 class JournalKind(StrEnum):
     FREE = "free"
     DAILY = "daily"

@@ -11,8 +11,8 @@ const boxStyles = tv({
   base: 'flex size-4.25 shrink-0 items-center justify-center rounded-[3px] border transition-colors',
   variants: {
     isSelected: {
-      false: 'border-grove-stone bg-white group-hovered:border-grove-moss',
-      true: 'border-grove-moss bg-grove-moss text-white',
+      false: 'border-grove-stone bg-grove-card group-hovered:border-grove-moss',
+      true: 'border-grove-moss bg-grove-moss text-grove-on-fill',
     },
     isDisabled: { true: 'opacity-50' },
   },

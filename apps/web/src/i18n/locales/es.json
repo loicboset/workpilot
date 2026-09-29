@@ -307,6 +307,14 @@
     "you": "Tú",
     "session": "Sesión",
     "saved": "Guardado.",
+    "appearance": {
+      "title": "Apariencia",
+      "theme": "Tema",
+      "themeHelp": "Cambia al instante, en todos tus dispositivos.",
+      "system": "Como el dispositivo",
+      "light": "Claro",
+      "dark": "Oscuro"
+    },
     "ai": {
       "title": "IA",
       "subtitle": "Un modelo local (LM Studio, Ollama) o una API en la nube. Opcional.",

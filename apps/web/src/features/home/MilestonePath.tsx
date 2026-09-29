@@ -157,7 +157,7 @@ const MilestoneNode = ({ x, y, state, isDestination }: MilestoneNodeProps) => {
         <circle r={10} className="fill-grove-leaf" />
         <path
           d="M-5.75 -0.25L-1.7 3.55L5.2 -3.65"
-          className="fill-none stroke-white"
+          className="fill-none stroke-grove-on-fill"
           strokeWidth={2.25}
           strokeLinecap="round"
           strokeLinejoin="round"

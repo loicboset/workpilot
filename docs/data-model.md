@@ -22,7 +22,7 @@ Every synced table also has:
 
 | Table | Columns |
 |---|---|
-| `profiles` | `first_name` text · `last_name` text? · `locale` text (en/fr/es) · `timezone` text · `city` text? |
+| `profiles` | `first_name` text · `last_name` text? · `locale` text (en/fr/es) · `timezone` text · `city` text? · `theme` text (system/light/dark) |
 | `north_stars` | `title` text · `description` text? · `target_date` date? |
 | `milestones` | `north_star_id` → north_stars · `title` text · `description` text? · `target_date` date? · `position` int · `completed_at` timestamptz? |
 | `todos` | `title` text · `notes` text? · `due_date` date? · `completed_at` timestamptz? · `milestone_id` → milestones? |

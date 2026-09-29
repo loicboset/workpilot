@@ -1,4 +1,4 @@
-import { LogOut, Sparkles, UserRound } from 'lucide-react'
+import { LogOut, Sparkles, SunMoon, UserRound } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
@@ -15,6 +15,7 @@ import { useSignOut } from '@/features/auth/session'
 import { LanguageSelect, TimezoneComboBox } from '@/features/profile/ProfileFields'
 import { changeLocale } from '@/i18n'
 import { AISettingsForm } from './AISettingsForm'
+import { ThemeSelect } from './ThemeSelect'
 
 export function SettingsPage() {
   const { t } = useTranslation()
@@ -28,6 +29,10 @@ export function SettingsPage() {
 
       <Card title={t('settings.you')} icon={<UserRound />}>
         {profile ? <ProfileForm profile={profile} /> : <Spinner label={t('common.loading')} />}
+      </Card>
+
+      <Card title={t('settings.appearance.title')} icon={<SunMoon />}>
+        <ThemeSelect />
       </Card>
 
       <Card title={t('settings.ai.title')} subtitle={t('settings.ai.subtitle')} icon={<Sparkles />}>

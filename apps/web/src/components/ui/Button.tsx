@@ -19,7 +19,7 @@ export interface ButtonProps extends AriaButtonProps {
 /** A button. Set `isPending` while its action runs: it shows a spinner and ignores presses. */
 export function Button({ variant = 'primary', size = 'md', ...props }: ButtonProps) {
   const spinnerColor =
-    variant === 'primary' || variant === 'danger' ? 'text-white' : 'text-grove-moss'
+    variant === 'primary' || variant === 'danger' ? 'text-grove-on-fill' : 'text-grove-moss'
   return (
     <AriaButton
       {...props}

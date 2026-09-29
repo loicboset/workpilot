@@ -17,7 +17,7 @@ const cellStyles = tv({
   variants: {
     isSelected: {
       false: 'text-grove-ink hovered:bg-grove-field',
-      true: 'bg-grove-moss font-semibold text-white',
+      true: 'bg-grove-moss font-semibold text-grove-on-fill',
     },
     isOutsideMonth: { true: 'hidden' },
     isDisabled: { true: 'cursor-default opacity-40' },

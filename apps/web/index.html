@@ -9,6 +9,20 @@
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-title" content="WorkPilot" />
     <title>WorkPilot</title>
+    <script>
+      // Start in the theme picked on this device, before the app loads: no flash of light
+      // colours on a dark screen. The app then applies the profile's (src/lib/theme.ts).
+      ;(function () {
+        var theme
+        try {
+          theme = localStorage.getItem('workpilot:theme')
+        } catch (error) {}
+        var isDark =
+          theme === 'dark' ||
+          (theme !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches)
+        document.documentElement.dataset.theme = isDark ? 'dark' : 'light'
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>
