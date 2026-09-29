@@ -6,7 +6,7 @@ import pytest
 from sqlalchemy.orm import Session
 
 from app.db.base import utcnow
-from app.db.models import Profile, PushSubscription, Reminder
+from app.db.models import Profile, PushSubscription, Reminder, Space
 from app.domain.reminders.delivery import send_due_reminders
 from app.domain.reminders.recurrence import next_occurrence
 from app.push.sender import Delivery
@@ -34,9 +34,20 @@ def add_device(db: Session, name: str) -> PushSubscription:
     return device
 
 
-def add_reminder(db: Session, minutes_from_now: int, **fields) -> Reminder:
+def add_space(db: Session, name: str = "Personal", **fields) -> Space:
+    space = Space(name=name, slug=name.lower(), **fields)
+    db.add(space)
+    db.commit()
+    return space
+
+
+def add_reminder(
+    db: Session, minutes_from_now: int, space: Space | None = None, **fields
+) -> Reminder:
+    """A reminder in `space`, or in a "Personal" space made for it."""
     remind_at = (utcnow() + timedelta(minutes=minutes_from_now)).replace(microsecond=0)
-    reminder = Reminder(text="Call the editor", remind_at=remind_at, **fields)
+    space_id = (space or add_space(db)).id
+    reminder = Reminder(space_id=space_id, text="Call the editor", remind_at=remind_at, **fields)
     db.add(reminder)
     db.commit()
     return reminder
@@ -51,7 +62,13 @@ def test_a_due_reminder_goes_to_every_device_once(db: Session) -> None:
     send_due_reminders(db, send=sender)
     send_due_reminders(db, send=sender)  # the next minute
 
-    message = {"type": "reminder", "id": str(reminder.id), "text": "Call the editor"}
+    message = {
+        "type": "reminder",
+        "id": str(reminder.id),
+        "text": "Call the editor",
+        "space": "Personal",  # shown first in the notification
+        "url": "/personal/today",  # opened by a tap
+    }
     assert sorted(sender.sent, key=lambda sent: sent[0]) == [
         ("laptop", message),
         ("phone", message),
@@ -62,13 +79,28 @@ def test_a_due_reminder_goes_to_every_device_once(db: Session) -> None:
 
 def test_future_and_deleted_reminders_wait(db: Session) -> None:
     add_device(db, "phone")
-    add_reminder(db, minutes_from_now=5)
-    add_reminder(db, minutes_from_now=-1, deleted_at=utcnow())
+    space = add_space(db)
+    add_reminder(db, minutes_from_now=5, space=space)
+    add_reminder(db, minutes_from_now=-1, space=space, deleted_at=utcnow())
     sender = FakeSender()
 
     send_due_reminders(db, send=sender)
 
     assert sender.sent == []
+
+
+def test_an_archived_spaces_reminders_are_passed_over(db: Session) -> None:
+    add_device(db, "phone")
+    archived = add_space(db, "Work", archived_at=utcnow())
+    reminder = add_reminder(db, minutes_from_now=-1, space=archived, recurrence="FREQ=DAILY")
+    first_time = reminder.remind_at
+    sender = FakeSender()
+
+    send_due_reminders(db, send=sender)
+
+    assert sender.sent == []
+    db.refresh(reminder)  # nothing piles up for when the space is restored
+    assert reminder.remind_at == first_time + timedelta(days=1)
 
 
 def test_a_sent_reminder_moved_later_is_sent_again(db: Session) -> None:

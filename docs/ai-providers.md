@@ -1,14 +1,17 @@
 # AI providers
 
 WorkPilot's AI is optional. It runs on the server and works with a local model or a cloud
-API ([ADR 0026](decisions/0026-ai-provider-interface.md)). Set it up in the app's AI settings
-(or with `PATCH /api/ai/settings`), then check it with `GET /api/ai/models`.
+API ([ADR 0026](decisions/0026-ai-provider-interface.md)). Each space has its own AI settings
+([ADR 0031](decisions/0031-spaces.md)), e.g. a company key for Work and LM Studio for
+Personal; a new space starts with a copy of the space it was created from. Set them up in the
+space's Settings (or with `PATCH /api/spaces/{space_id}/ai/settings`), then check them with
+`GET /api/spaces/{space_id}/ai/models`.
 
 | Setting | Meaning |
 |---|---|
 | `provider` | `openai_compatible` or `anthropic` |
 | `base_url` | Where the AI server is. Required for `openai_compatible`; leave empty for Claude. |
-| `model` | The model id, as listed by `GET /api/ai/models` |
+| `model` | The model id, as listed by `GET /api/spaces/{space_id}/ai/models` |
 | `api_key` | Required for cloud providers and for `anthropic`; stored encrypted |
 
 ## LM Studio (local)
@@ -24,7 +27,7 @@ API ([ADR 0026](decisions/0026-ai-provider-interface.md)). Set it up in the app'
    | in Docker on Linux, same computer | `http://host.docker.internal:1234/v1` | turn on **Serve on Local Network** and **Require Authentication** |
    | on another machine | an address that machine can reach (e.g. over Tailscale) | same as above |
 
-3. Pick the model from `GET /api/ai/models`. If LM Studio loads models on demand, the first
+3. Pick the model from `GET /api/spaces/{space_id}/ai/models`. If LM Studio loads models on demand, the first
    answer can take a while.
 
 With **Require Authentication** on, create a token in LM Studio (Server Settings → Manage

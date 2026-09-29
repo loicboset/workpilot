@@ -5,7 +5,14 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
-from app.common import AwareTimestamp, PartialUpdate, RequestBody, SyncedRead, SyncRow, Title
+from app.common import (
+    AwareTimestamp,
+    InSpaceRead,
+    InSpaceSyncRow,
+    PartialUpdate,
+    RequestBody,
+    Title,
+)
 
 
 class TimeBlockFields(BaseModel):
@@ -32,7 +39,7 @@ class TimeBlockUpdate(PartialUpdate):
     milestone_id: uuid.UUID | None = None
 
 
-class TimeBlockRead(SyncedRead):
+class TimeBlockRead(InSpaceRead):
     title: str
     start_at: datetime
     end_at: datetime
@@ -40,5 +47,5 @@ class TimeBlockRead(SyncedRead):
     milestone_id: uuid.UUID | None
 
 
-class TimeBlockSyncRow(TimeBlockFields, SyncRow):
+class TimeBlockSyncRow(TimeBlockFields, InSpaceSyncRow):
     """A time block as sent by a device through sync."""

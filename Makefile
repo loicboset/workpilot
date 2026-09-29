@@ -1,8 +1,4 @@
-.PHONY: env install dev dev-web dev-api db migrate seed import test lint typecheck build docker
-
-# The API's port: WORKPILOT_PORT from the environment or .env, else the .env.example default.
-env_value = $(shell sed -n 's/^$(1)=//p' .env 2>/dev/null)
-WORKPILOT_PORT ?= $(or $(call env_value,WORKPILOT_PORT),8100)
+.PHONY: env install dev db migrate seed import test lint typecheck build docker
 
 # Create .env from .env.example with a fresh random secret (never overwrites an existing .env).
 env:
@@ -15,33 +11,31 @@ install:
 	cd apps/web && pnpm install
 	cd apps/api && uv sync
 
-# Postgres, the API and the web app, reloading on each change. Ctrl+C stops the API and the web
-# app; Postgres keeps running (`docker compose stop db` stops it).
-dev: db
-	@$(MAKE) -j2 dev-api dev-web
+DEV_COMPOSE = docker compose -f docker-compose.yml -f docker-compose.dev.yml
 
-dev-web:
-	cd apps/web && pnpm dev
-
-dev-api:
-	cd apps/api && uv run uvicorn app.main:app --reload --port $(WORKPILOT_PORT)
+# Postgres, the API and the web app, all in Docker and reloading on each change
+# (docker-compose.dev.yml). Ctrl+C stops the API and the web app; Postgres keeps running
+# (`docker compose stop db` stops it).
+dev:
+	$(DEV_COMPOSE) up --build api web
 
 db:
-	docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d db
+	$(DEV_COMPOSE) up -d db
 
 migrate:
 	cd apps/api && uv run alembic upgrade head
 
 # Demo data from the Grove concept (development). REPLACE=1 puts your North Star aside,
-# UNDO=1 removes the demo data and brings it back.
+# UNDO=1 removes the demo data and brings it back. SPACE=work: the space at /work, not the first.
 seed:
-	cd apps/api && uv run python -m scripts.seed_demo $(if $(REPLACE),--replace) $(if $(UNDO),--undo)
+	cd apps/api && uv run python -m scripts.seed_demo $(if $(REPLACE),--replace) $(if $(UNDO),--undo) $(if $(SPACE),--space "$(SPACE)")
 
 # Todos, ideas and notes from a JSON file (format: apps/api/scripts/import_data.py), e.g.
-# `make import FILE=imports/notion.json`. UNDO=1 removes what the file added.
+# `make import FILE=imports/notion.json`. UNDO=1 removes what the file added. SPACE=work: into
+# the space at /work, not the first.
 import:
 	@test -n "$(FILE)" || (echo "Give the file: make import FILE=imports/notion.json" && exit 1)
-	cd apps/api && uv run python -m scripts.import_data "$(abspath $(FILE))" $(if $(UNDO),--undo)
+	cd apps/api && uv run python -m scripts.import_data "$(abspath $(FILE))" $(if $(UNDO),--undo) $(if $(SPACE),--space "$(SPACE)")
 
 test:
 	cd apps/web && pnpm test

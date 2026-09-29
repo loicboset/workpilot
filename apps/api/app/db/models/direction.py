@@ -1,28 +1,31 @@
-"""Direction: the North Star and its milestones (ADR 0013)."""
+"""Direction: the North Star and its milestones (ADR 0013), one of each set per space."""
 
 import uuid
 from datetime import date, datetime
 
-from sqlalchemy import Date, ForeignKey, Integer, Text
+from sqlalchemy import Date, Integer, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.db.base import Base, SyncedMixin
+from app.db.base import Base, InSpaceMixin, link_in_space, linkable_in_space
 
 
-class NorthStar(SyncedMixin, Base):
+class NorthStar(InSpaceMixin, Base):
     __tablename__ = "north_stars"
+    __table_args__ = (linkable_in_space(),)
 
     title: Mapped[str] = mapped_column(Text)
     description: Mapped[str | None] = mapped_column(Text)
     target_date: Mapped[date | None] = mapped_column(Date)
 
 
-class Milestone(SyncedMixin, Base):
+class Milestone(InSpaceMixin, Base):
     __tablename__ = "milestones"
-
-    north_star_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("north_stars.id", ondelete="CASCADE"), index=True
+    __table_args__ = (
+        link_in_space("north_star_id", "north_stars", cascade=True),
+        linkable_in_space(),
     )
+
+    north_star_id: Mapped[uuid.UUID] = mapped_column(index=True)
     title: Mapped[str] = mapped_column(Text)
     description: Mapped[str | None] = mapped_column(Text)
     target_date: Mapped[date | None] = mapped_column(Date)

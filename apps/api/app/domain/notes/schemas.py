@@ -4,7 +4,7 @@ import uuid
 
 from pydantic import BaseModel
 
-from app.common import LongText, PartialUpdate, RequestBody, SyncedRead, SyncRow, Title
+from app.common import InSpaceRead, InSpaceSyncRow, LongText, PartialUpdate, RequestBody, Title
 
 
 class NoteFields(BaseModel):
@@ -27,11 +27,11 @@ class NoteUpdate(PartialUpdate):
     milestone_id: uuid.UUID | None = None
 
 
-class NoteRead(SyncedRead):
+class NoteRead(InSpaceRead):
     title: str | None
     content: str
     milestone_id: uuid.UUID | None
 
 
-class NoteSyncRow(NoteFields, SyncRow):
+class NoteSyncRow(NoteFields, InSpaceSyncRow):
     """A note as sent by a device through sync."""

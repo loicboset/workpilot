@@ -16,7 +16,7 @@ from pydantic import (
 from sqlalchemy import Select, select
 from sqlalchemy.orm import Session
 
-from app.db.base import SyncedMixin, utcnow
+from app.db.base import InSpaceMixin, SyncedMixin, utcnow
 
 # --- Field types ---------------------------------------------------------------------------
 
@@ -50,6 +50,12 @@ class SyncedRead(BaseModel):
     deleted_at: datetime | None
 
 
+class InSpaceRead(SyncedRead):
+    """Fields every resource of a space returns (ADR 0031)."""
+
+    space_id: uuid.UUID
+
+
 class SyncRow(BaseModel):
     """A full row sent by a device through sync (ADR 0025).
 
@@ -63,6 +69,13 @@ class SyncRow(BaseModel):
     created_at: AwareTimestamp
     updated_at: AwareTimestamp
     deleted_at: AwareTimestamp | None = None
+
+
+class InSpaceSyncRow(SyncRow):
+    """A row of a space sent by a device. Without `space_id` (a device from before spaces), an
+    existing row keeps its space and a new one goes to the first space."""
+
+    space_id: uuid.UUID | None = None
 
 
 class PartialUpdate(RequestBody):
@@ -98,6 +111,13 @@ def select_rows[Row: SyncedMixin](
     return stmt
 
 
+def select_in_space[Row: InSpaceMixin](
+    model: type[Row], space_id: uuid.UUID, include_deleted: bool = False
+) -> Select[tuple[Row]]:
+    """SELECT the rows of one space, leaving out soft-deleted ones unless asked."""
+    return select_rows(model, include_deleted).where(model.space_id == space_id)
+
+
 def get_active_or_404[Row: SyncedMixin](
     session: Session, model: type[Row], row_id: uuid.UUID
 ) -> Row:
@@ -108,9 +128,22 @@ def get_active_or_404[Row: SyncedMixin](
     return row
 
 
-def create_row[Row: SyncedMixin](session: Session, model: type[Row], data: BaseModel) -> Row:
-    """Insert a row from a create body. Fields left empty keep their column defaults."""
-    row = model(**data.model_dump(exclude_none=True))
+def get_in_space_or_404[Row: InSpaceMixin](
+    session: Session, model: type[Row], space_id: uuid.UUID, row_id: uuid.UUID
+) -> Row:
+    """The row if it is active and in this space; otherwise answer 404."""
+    row = get_active_or_404(session, model, row_id)
+    if row.space_id != space_id:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "not found")
+    return row
+
+
+def create_row[Row: SyncedMixin](
+    session: Session, model: type[Row], data: BaseModel, **fields: object
+) -> Row:
+    """Insert a row from a create body, plus `fields` (e.g. its space). Fields left empty keep
+    their column defaults."""
+    row = model(**data.model_dump(exclude_none=True), **fields)
     session.add(row)
     session.commit()
     return row
@@ -130,26 +163,38 @@ def soft_delete(session: Session, row: SyncedMixin) -> None:
     session.commit()
 
 
-# --- One-row tables (profile, North Star) ---------------------------------------------------
+# --- One-row tables: the profile (one per install), the North Star (one per space) ---------
 
 
-def get_singleton_or_404[Row: SyncedMixin](session: Session, model: type[Row]) -> Row:
+def get_singleton_or_404[Row: SyncedMixin](
+    session: Session, model: type[Row], space_id: uuid.UUID | None = None
+) -> Row:
     """Return the only active row of a one-row table, or answer 404 if there is none yet."""
-    row = get_singleton(session, model)
+    row = get_singleton(session, model, space_id)
     if row is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "not found")
     return row
 
 
-def put_singleton[Row: SyncedMixin](session: Session, model: type[Row], data: BaseModel) -> Row:
+def put_singleton[Row: SyncedMixin](
+    session: Session, model: type[Row], data: BaseModel, space_id: uuid.UUID | None = None
+) -> Row:
     """Create the row of a one-row table, or replace all its fields (PUT semantics)."""
-    row = get_singleton(session, model)
+    row = get_singleton(session, model, space_id)
     if row is None:
-        return create_row(session, model, data)
+        in_space = {} if space_id is None else {"space_id": space_id}
+        return create_row(session, model, data, **in_space)
     return update_row(session, row, data.model_dump(exclude={"id"}))
 
 
-def get_singleton[Row: SyncedMixin](session: Session, model: type[Row]) -> Row | None:
-    """The only active row of a one-row table (the oldest, if two devices made one offline)."""
-    stmt = select_rows(model).order_by(model.created_at).limit(1)
-    return session.scalars(stmt).first()
+def get_singleton[Row: SyncedMixin](
+    session: Session, model: type[Row], space_id: uuid.UUID | None = None
+) -> Row | None:
+    """The only active row of a one-row table, of the space when one is given (the oldest, if
+    two devices made one offline)."""
+    stmt = select_rows(model)
+    if space_id is not None:
+        if not issubclass(model, InSpaceMixin):
+            raise TypeError(f"{model.__name__} rows don't belong to a space")
+        stmt = stmt.where(model.space_id == space_id)
+    return session.scalars(stmt.order_by(model.created_at).limit(1)).first()

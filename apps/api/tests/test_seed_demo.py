@@ -4,24 +4,28 @@ import pytest
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.db.models import Milestone, NorthStar, Profile, TimeBlock, Todo
+from app.db.models import Milestone, NorthStar, Profile, Space, TimeBlock, Todo
 from scripts.seed_demo import LAST_WEEK, NORTH_STAR, THIS_WEEK, seed, undo
 
 
-def add_profile(db: Session) -> None:
+def add_profile(db: Session) -> Space:
+    """A user after onboarding: the profile and a first space."""
     db.add(Profile(first_name="Ada", timezone="Europe/Zurich"))
+    space = Space(name="Personal", slug="personal")
+    db.add(space)
     db.commit()
+    return space
 
 
 def active[Row](db: Session, model: type[Row]) -> list[Row]:
     return list(db.scalars(select(model).where(model.deleted_at.is_(None))))
 
 
-def add_my_north_star(db: Session) -> None:
-    mine = NorthStar(title="Finish my first novel")
+def add_my_north_star(db: Session, space: Space) -> None:
+    mine = NorthStar(space_id=space.id, title="Finish my first novel")
     db.add(mine)
     db.flush()
-    db.add(Milestone(north_star_id=mine.id, title="First draft done", position=0))
+    db.add(Milestone(space_id=space.id, north_star_id=mine.id, title="First draft done"))
     db.commit()
 
 
@@ -75,8 +79,7 @@ def test_seeding_again_updates_the_same_rows(db: Session) -> None:
 
 
 def test_seed_leaves_your_north_star_alone_unless_asked(db: Session) -> None:
-    add_profile(db)
-    add_my_north_star(db)
+    add_my_north_star(db, add_profile(db))
 
     with pytest.raises(SystemExit):
         seed(db, replace=False)
@@ -87,8 +90,7 @@ def test_seed_leaves_your_north_star_alone_unless_asked(db: Session) -> None:
 
 
 def test_replace_puts_yours_aside_and_undo_brings_it_back(db: Session) -> None:
-    add_profile(db)
-    add_my_north_star(db)
+    add_my_north_star(db, add_profile(db))
 
     seed(db, replace=True)
     assert [star.title for star in active(db, NorthStar)] == [NORTH_STAR]
@@ -101,3 +103,28 @@ def test_replace_puts_yours_aside_and_undo_brings_it_back(db: Session) -> None:
     assert [milestone.title for milestone in active(db, Milestone)] == ["First draft done"]
     assert active(db, TimeBlock) == []
     assert active(db, Todo) == []
+
+
+def test_seed_goes_in_the_space_asked_for_and_leaves_the_others(db: Session) -> None:
+    personal = add_profile(db)
+    add_my_north_star(db, personal)
+    work = Space(name="Work", slug="work")
+    db.add(work)
+    db.commit()
+
+    seed(db, replace=False, space_slug="work")
+
+    assert {(star.space_id, star.title) for star in active(db, NorthStar)} == {
+        (personal.id, "Finish my first novel"),
+        (work.id, NORTH_STAR),
+    }
+    assert {todo.space_id for todo in active(db, Todo)} == {work.id}
+
+    undo(db, space_slug="work")
+    assert [star.title for star in active(db, NorthStar)] == ["Finish my first novel"]
+
+
+def test_seed_needs_the_space_to_exist(db: Session) -> None:
+    add_profile(db)
+    with pytest.raises(SystemExit):
+        seed(db, replace=False, space_slug="nope")

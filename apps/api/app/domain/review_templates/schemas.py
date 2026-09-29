@@ -5,7 +5,7 @@ from typing import Annotated
 
 from pydantic import BaseModel, Field
 
-from app.common import PartialUpdate, RequestBody, SyncedRead, SyncRow, Title
+from app.common import InSpaceRead, InSpaceSyncRow, PartialUpdate, RequestBody, Title
 from app.db.enums import ReviewKind
 
 Questions = Annotated[list[Title], Field(min_length=1, max_length=30)]
@@ -31,11 +31,11 @@ class ReviewTemplateUpdate(PartialUpdate):
     questions: Questions | None = None
 
 
-class ReviewTemplateRead(SyncedRead):
+class ReviewTemplateRead(InSpaceRead):
     name: str
     kind: ReviewKind
     questions: list[str]
 
 
-class ReviewTemplateSyncRow(ReviewTemplateFields, SyncRow):
+class ReviewTemplateSyncRow(ReviewTemplateFields, InSpaceSyncRow):
     """A review template as sent by a device through sync."""

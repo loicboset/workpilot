@@ -5,7 +5,7 @@ from datetime import date
 
 from pydantic import BaseModel
 
-from app.common import RequestBody, SyncedRead, SyncRow, Title
+from app.common import InSpaceRead, InSpaceSyncRow, RequestBody, Title
 
 
 class NorthStarFields(BaseModel):
@@ -22,11 +22,11 @@ class NorthStarWrite(NorthStarFields, RequestBody):
     id: uuid.UUID | None = None
 
 
-class NorthStarRead(SyncedRead):
+class NorthStarRead(InSpaceRead):
     title: str
     description: str | None
     target_date: date | None
 
 
-class NorthStarSyncRow(NorthStarFields, SyncRow):
+class NorthStarSyncRow(NorthStarFields, InSpaceSyncRow):
     """The North Star as sent by a device through sync."""

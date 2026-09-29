@@ -6,7 +6,14 @@ from typing import Annotated
 
 from pydantic import BaseModel, Field
 
-from app.common import AwareTimestamp, PartialUpdate, RequestBody, SyncedRead, SyncRow, Title
+from app.common import (
+    AwareTimestamp,
+    InSpaceRead,
+    InSpaceSyncRow,
+    PartialUpdate,
+    RequestBody,
+    Title,
+)
 
 # 1 = most important, 3 = least (ADR 0030).
 Priority = Annotated[int, Field(ge=1, le=3)]
@@ -40,7 +47,7 @@ class TodoUpdate(PartialUpdate):
     milestone_id: uuid.UUID | None = None
 
 
-class TodoRead(SyncedRead):
+class TodoRead(InSpaceRead):
     title: str
     notes: str | None
     due_date: date | None
@@ -49,5 +56,5 @@ class TodoRead(SyncedRead):
     milestone_id: uuid.UUID | None
 
 
-class TodoSyncRow(TodoFields, SyncRow):
+class TodoSyncRow(TodoFields, InSpaceSyncRow):
     """A todo as sent by a device through sync."""

@@ -4,7 +4,7 @@ import uuid
 
 from pydantic import BaseModel
 
-from app.common import LongText, PartialUpdate, RequestBody, SyncedRead, SyncRow
+from app.common import InSpaceRead, InSpaceSyncRow, LongText, PartialUpdate, RequestBody
 
 
 class IdeaFields(BaseModel):
@@ -23,9 +23,9 @@ class IdeaUpdate(PartialUpdate):
     text: LongText | None = None
 
 
-class IdeaRead(SyncedRead):
+class IdeaRead(InSpaceRead):
     text: str
 
 
-class IdeaSyncRow(IdeaFields, SyncRow):
+class IdeaSyncRow(IdeaFields, InSpaceSyncRow):
     """An idea as sent by a device through sync."""

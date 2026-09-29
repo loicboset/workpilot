@@ -6,7 +6,7 @@ from typing import Annotated
 
 from pydantic import BaseModel, StringConstraints
 
-from app.common import PartialUpdate, RequestBody, SyncedRead, SyncRow
+from app.common import InSpaceRead, InSpaceSyncRow, PartialUpdate, RequestBody
 from app.db.enums import JournalKind
 
 # The entry's text. May be empty while writing. For a guided review, the app copies the
@@ -36,12 +36,12 @@ class JournalEntryUpdate(PartialUpdate):
     review_template_id: uuid.UUID | None = None
 
 
-class JournalEntryRead(SyncedRead):
+class JournalEntryRead(InSpaceRead):
     entry_date: date
     kind: JournalKind
     content: str
     review_template_id: uuid.UUID | None
 
 
-class JournalEntrySyncRow(JournalEntryFields, SyncRow):
+class JournalEntrySyncRow(JournalEntryFields, InSpaceSyncRow):
     """A journal entry as sent by a device through sync."""

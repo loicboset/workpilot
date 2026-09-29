@@ -9,7 +9,7 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import APIRouter, Depends, FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from sqlalchemy.exc import IntegrityError
 from starlette.middleware.sessions import SessionMiddleware
@@ -28,6 +28,7 @@ from app.domain.notes.router import router as notes_router
 from app.domain.profile.router import router as profile_router
 from app.domain.reminders.router import router as reminders_router
 from app.domain.review_templates.router import router as review_templates_router
+from app.domain.spaces.router import router as spaces_router
 from app.domain.ticker_messages.router import router as ticker_messages_router
 from app.domain.time_blocks.router import router as time_blocks_router
 from app.domain.todos.router import router as todos_router
@@ -75,8 +76,9 @@ def health() -> dict[str, str]:
 # Public: logging in. Everything else requires a signed-in session.
 app.include_router(auth_router)
 
-PROTECTED_ROUTERS = [
-    profile_router,
+# Everything of a space lives under its id: /api/spaces/{space_id}/todos… (ADR 0031).
+in_space = APIRouter(prefix="/api/spaces/{space_id}")
+for router in [
     north_star_router,
     milestones_router,
     todos_router,
@@ -88,6 +90,13 @@ PROTECTED_ROUTERS = [
     review_templates_router,
     ticker_messages_router,
     ai_router,
+]:
+    in_space.include_router(router)
+
+PROTECTED_ROUTERS = [
+    spaces_router,
+    in_space,
+    profile_router,
     push_router,
     sync_router,
 ]

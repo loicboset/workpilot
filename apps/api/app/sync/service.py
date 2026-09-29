@@ -3,6 +3,8 @@
 - Pull: every row whose revision is above the device's cursor, deletions included.
 - Push: most recent edit wins, judged by `updated_at`. A device clock set in the future is
   brought back to the server's time, so it can't win forever.
+- A row never changes space. A row without a space, from a device older than spaces, keeps
+  the space it has, or goes to the first space when it is new (ADR 0031).
 """
 
 from pydantic import ValidationError
@@ -11,7 +13,8 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.common import SyncRow
-from app.db.base import SyncedMixin, utcnow
+from app.db.base import InSpaceMixin, SyncedMixin, utcnow
+from app.db.models import Space
 from app.sync.schemas import Change, PullResponse, PushResponse, RejectedChange
 from app.sync.tables import SYNCED_TABLES, TABLES_BY_NAME, SyncedTable
 
@@ -61,22 +64,34 @@ def push_changes(session: Session, changes: list[Change]) -> PushResponse:
             continue
         try:
             with session.begin_nested():  # a failure only undoes this one change
-                written = _write_if_newer(session, table.model, row)
+                written = _write_if_newer(session, table, row)
         except IntegrityError:
             response.rejected.append(_rejected(change, "invalid reference or value"))
+            continue
+        except RejectedRow as rejection:
+            response.rejected.append(_rejected(change, str(rejection)))
             continue
         (response.applied if written else response.skipped).append(str(row.id))
     session.commit()
     return response
 
 
-def _write_if_newer(session: Session, model: type[SyncedMixin], row: SyncRow) -> bool:
+class RejectedRow(Exception):
+    """A pushed row the server won't write; the message is the reason sent back."""
+
+
+def _write_if_newer(session: Session, table: SyncedTable, row: SyncRow) -> bool:
     """Insert or update the row, unless the server's version is as recent. True if written."""
     values = row.model_dump()
     values["updated_at"] = min(values["updated_at"], utcnow())
-    existing = session.get(model, row.id)
+    existing = session.get(table.model, row.id)
+    if "space_id" in values:
+        _place_in_space(session, values, existing)
     if existing is None:
-        session.add(model(**values))
+        session.add(table.model(**values))
+        session.flush()
+        if table.on_insert is not None:
+            table.on_insert(session, row)
     elif values["updated_at"] > existing.updated_at:
         for field, value in values.items():
             setattr(existing, field, value)
@@ -84,6 +99,25 @@ def _write_if_newer(session: Session, model: type[SyncedMixin], row: SyncRow) ->
         return False
     session.flush()
     return True
+
+
+def _place_in_space(
+    session: Session, values: dict[str, object], existing: SyncedMixin | None
+) -> None:
+    """Keep a row in its space; put a new row without one in the first space."""
+    if isinstance(existing, InSpaceMixin):
+        if values["space_id"] is None:
+            values["space_id"] = existing.space_id
+        elif values["space_id"] != existing.space_id:
+            raise RejectedRow("a row never changes space")
+        return
+    if values["space_id"] is None:
+        first = session.scalars(
+            select(Space.id).where(Space.deleted_at.is_(None)).order_by(Space.created_at)
+        ).first()
+        if first is None:
+            raise RejectedRow("no space yet")
+        values["space_id"] = first
 
 
 def _dependency_order(change: Change) -> int:

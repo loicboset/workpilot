@@ -60,18 +60,18 @@ and answer the three onboarding questions. From there:
 - **Settings → AI → LM Studio**: start LM Studio's server, "Test" to list its models, pick one, then "Save".
   The homepage ticker then gets its messages from your model.
 
-`make seed` fills a signed-up workspace with the concept's demo data: a North Star with five
-milestones, today's time blocks, and done work that makes "time aligned" read 62%. If you already
-have a North Star, `make seed REPLACE=1` puts it aside (soft-deleted, untouched) and
-`make seed UNDO=1` removes the demo data and brings yours back. The homepage cards for features
-not built yet (Opportunities, Learning, the season's focus, the review's time) show placeholder content from
-`apps/web/src/features/home/demoData.ts`.
+`make seed` fills a space (the first one, or `SPACE=work` for the one at `/work`) with the
+concept's demo data: a North Star with five milestones, today's time blocks, and done work that
+makes "time aligned" read 62%. If the space already has a North Star, `make seed REPLACE=1` puts
+it aside (soft-deleted, untouched) and `make seed UNDO=1` removes the demo data and brings yours
+back. The homepage cards for features not built yet (Opportunities, Learning, the season's focus,
+the review's time) show placeholder content from `apps/web/src/features/home/demoData.ts`.
 
 Data model: [docs/data-model.md](docs/data-model.md). API: [docs/api.md](docs/api.md), interactive docs at http://localhost:8100/api/docs when running. AI with LM Studio or a cloud API: [docs/ai-providers.md](docs/ai-providers.md).
 
 `make import FILE=imports/notion.json` adds todos, ideas and notes from a JSON file (the format
-is at the top of `apps/api/scripts/import_data.py`); `UNDO=1` removes them again. `imports/` is
-ignored by git, for your own data.
+is at the top of `apps/api/scripts/import_data.py`) to the first space, or `SPACE=work`;
+`UNDO=1` removes them again. `imports/` is ignored by git, for your own data.
 
 Other commands: `make test` (needs `make db` running; the test database is created automatically), `make lint`, `make typecheck`, `make build`.
 

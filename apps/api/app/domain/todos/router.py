@@ -5,24 +5,26 @@ from datetime import date
 
 from fastapi import APIRouter, status
 
-from app.common import create_row, get_active_or_404, select_rows, soft_delete, update_row
+from app.common import create_row, get_in_space_or_404, select_in_space, soft_delete, update_row
 from app.db.models import Todo
 from app.db.session import SessionDep
+from app.domain.spaces.current import CurrentSpace
 from app.domain.todos.schemas import TodoCreate, TodoRead, TodoUpdate
 
-router = APIRouter(prefix="/api/todos", tags=["todos"])
+router = APIRouter(prefix="/todos", tags=["todos"])
 
 
 @router.get("", response_model=list[TodoRead])
 def list_todos(
     session: SessionDep,
+    space: CurrentSpace,
     due_from: date | None = None,
     due_to: date | None = None,
     completed: bool | None = None,
     milestone_id: uuid.UUID | None = None,
     include_deleted: bool = False,
 ) -> list[Todo]:
-    stmt = select_rows(Todo, include_deleted)
+    stmt = select_in_space(Todo, space.id, include_deleted)
     if due_from is not None:
         stmt = stmt.where(Todo.due_date >= due_from)
     if due_to is not None:
@@ -46,21 +48,23 @@ def list_todos(
 
 
 @router.post("", response_model=TodoRead, status_code=status.HTTP_201_CREATED)
-def create_todo(data: TodoCreate, session: SessionDep) -> Todo:
-    return create_row(session, Todo, data)
+def create_todo(data: TodoCreate, session: SessionDep, space: CurrentSpace) -> Todo:
+    return create_row(session, Todo, data, space_id=space.id)
 
 
 @router.get("/{todo_id}", response_model=TodoRead)
-def get_todo(todo_id: uuid.UUID, session: SessionDep) -> Todo:
-    return get_active_or_404(session, Todo, todo_id)
+def get_todo(todo_id: uuid.UUID, session: SessionDep, space: CurrentSpace) -> Todo:
+    return get_in_space_or_404(session, Todo, space.id, todo_id)
 
 
 @router.patch("/{todo_id}", response_model=TodoRead)
-def update_todo(todo_id: uuid.UUID, data: TodoUpdate, session: SessionDep) -> Todo:
-    todo = get_active_or_404(session, Todo, todo_id)
+def update_todo(
+    todo_id: uuid.UUID, data: TodoUpdate, session: SessionDep, space: CurrentSpace
+) -> Todo:
+    todo = get_in_space_or_404(session, Todo, space.id, todo_id)
     return update_row(session, todo, data.changes())
 
 
 @router.delete("/{todo_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_todo(todo_id: uuid.UUID, session: SessionDep) -> None:
-    soft_delete(session, get_active_or_404(session, Todo, todo_id))
+def delete_todo(todo_id: uuid.UUID, session: SessionDep, space: CurrentSpace) -> None:
+    soft_delete(session, get_in_space_or_404(session, Todo, space.id, todo_id))

@@ -1,7 +1,8 @@
 """Import todos, ideas and notes from a JSON file, e.g. one written from Notion pages.
 
-    make import FILE=imports/notion.json          # adds what the file has and the app hasn't
-    make import FILE=imports/notion.json UNDO=1   # removes what the file added
+    make import FILE=imports/notion.json            # adds what the file has and the app hasn't
+    make import FILE=imports/notion.json UNDO=1     # removes what the file added
+    make import FILE=imports/notion.json SPACE=work # into the space at /work (default: the first)
 
 The file:
 
@@ -18,10 +19,11 @@ The file:
 - `day`: the day it was written for. A todo is due that day, written that morning and, with
   `"done": true`, done that evening. A todo without a day goes in the icebox (ADR 0029).
 - `done`: `true` (done on its day) or the day it was done.
-- `milestone` (todos, optional): the title of one of your milestones, to link it.
+- `milestone` (todos, optional): the title of one of the space's milestones, to link it.
 
 Rows get ids made from what they are, so importing again adds only what is missing: rows
-already in are left as they are, with the changes you made in the app. UNDO=1 soft-deletes
+already in are left as they are, with the changes you made in the app, in whichever space
+they are. UNDO=1 soft-deletes
 (so it syncs) every row of the file; importing again after that brings them back as written.
 """
 
@@ -38,9 +40,11 @@ from zoneinfo import ZoneInfo
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.db.base import SyncedMixin
+from app.common import select_in_space
+from app.db.base import InSpaceMixin
 from app.db.models import Idea, Milestone, Note, Profile, Todo
 from app.db.session import SessionLocal
+from scripts.spaces import find_space
 
 NAMESPACE = uuid.UUID("3f6c2a55-8a41-4f0e-9b7d-1c5e0d2f7a93")
 
@@ -72,17 +76,22 @@ def read_file(path: Path) -> dict[str, list[dict[str, Any]]]:
     return data
 
 
-def import_file(session: Session, data: dict[str, list[dict[str, Any]]]) -> None:
+def import_file(
+    session: Session, data: dict[str, list[dict[str, Any]]], space_slug: str | None = None
+) -> None:
     profile = session.scalars(
         select(Profile).where(Profile.deleted_at.is_(None)).order_by(Profile.created_at)
     ).first()
     if profile is None:
         raise CannotImport("No profile yet: sign in and finish onboarding first.")
+    space = find_space(session, space_slug)
+    if space is None:
+        raise CannotImport(f"No space at /{space_slug}." if space_slug else "No space yet.")
     zone = ZoneInfo(profile.timezone)
     now = datetime.now(UTC)
     milestones = {
         milestone.title: milestone.id
-        for milestone in session.scalars(select(Milestone).where(Milestone.deleted_at.is_(None)))
+        for milestone in session.scalars(select_in_space(Milestone, space.id))
     }
 
     def moment(day: str, at: time) -> datetime:
@@ -135,12 +144,12 @@ def import_file(session: Session, data: dict[str, list[dict[str, Any]]]) -> None
             zip(row_ids(items, kind, text_field), items, strict=True)
         ):
             fields = fields_of(item, position)
-            row: SyncedMixin | None = session.get(model, row_id)
-            if row is not None and row.deleted_at is None:
+            row: InSpaceMixin | None = session.get(model, row_id)
+            if row is not None and (row.deleted_at is None or row.space_id != space.id):
                 counts["already in"] += 1
                 continue
             if row is None:
-                session.add(model(id=row_id, updated_at=now, **fields))
+                session.add(model(id=row_id, space_id=space.id, updated_at=now, **fields))
             else:  # removed by UNDO=1: back as written
                 for name, value in fields.items():
                     setattr(row, name, value)
@@ -151,7 +160,8 @@ def import_file(session: Session, data: dict[str, list[dict[str, Any]]]) -> None
 
     session.commit()
     print(
-        f"Added {counts['todos added']} todos ({counts['in the icebox']} in the icebox), "
+        f'Into "{space.name}": added {counts["todos added"]} todos '
+        f"({counts['in the icebox']} in the icebox), "
         f"{counts['ideas added']} ideas and {counts['notes added']} notes; "
         f"{counts['already in']} were already in. The app syncs them soon."
     )
@@ -180,6 +190,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Import todos, ideas and notes from JSON.")
     parser.add_argument("file", type=Path, help="the JSON file")
     parser.add_argument("--undo", action="store_true", help="remove what the file added")
+    parser.add_argument("--space", help="the space's URL name (default: the first space)")
     args = parser.parse_args()
     try:
         data = read_file(args.file)
@@ -187,7 +198,7 @@ def main() -> None:
             if args.undo:
                 undo(session, data)
             else:
-                import_file(session, data)
+                import_file(session, data, args.space)
     except CannotImport as error:
         sys.exit(str(error))
 

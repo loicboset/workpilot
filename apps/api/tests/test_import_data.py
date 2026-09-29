@@ -7,15 +7,19 @@ import pytest
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.db.models import Idea, Milestone, NorthStar, Note, Profile, Todo
+from app.db.models import Idea, Milestone, NorthStar, Note, Profile, Space, Todo
 from scripts.import_data import CannotImport, import_file, undo
 
 ZURICH = ZoneInfo("Europe/Zurich")
 
 
-def add_profile(db: Session) -> None:
+def add_profile(db: Session) -> Space:
+    """A user after onboarding: the profile and a first space."""
     db.add(Profile(first_name="Ada", timezone="Europe/Zurich"))
+    space = Space(name="Personal", slug="personal")
+    db.add(space)
     db.commit()
+    return space
 
 
 def active[Row](db: Session, model: type[Row]) -> list[Row]:
@@ -90,8 +94,8 @@ def test_the_same_todo_twice_on_a_day_is_two_rows(db: Session) -> None:
 
 
 def test_undo_removes_only_the_imported_rows_and_import_brings_them_back(db: Session) -> None:
-    add_profile(db)
-    db.add(Todo(title="finish vibe coding guide", due_date=date(2026, 9, 29)))
+    space = add_profile(db)
+    db.add(Todo(space_id=space.id, title="finish vibe coding guide", due_date=date(2026, 9, 29)))
     db.commit()
     import_file(db, sample())
 
@@ -106,11 +110,13 @@ def test_undo_removes_only_the_imported_rows_and_import_brings_them_back(db: Ses
 
 
 def test_links_a_todo_to_a_milestone_by_its_title(db: Session) -> None:
-    add_profile(db)
-    north_star = NorthStar(title="Successful first POC")
+    space = add_profile(db)
+    north_star = NorthStar(space_id=space.id, title="Successful first POC")
     db.add(north_star)
     db.flush()
-    milestone = Milestone(north_star_id=north_star.id, title="Ticketing system in place")
+    milestone = Milestone(
+        space_id=space.id, north_star_id=north_star.id, title="Ticketing system in place"
+    )
     db.add(milestone)
     db.commit()
 
@@ -126,3 +132,16 @@ def test_a_done_todo_needs_a_day(db: Session) -> None:
     add_profile(db)
     with pytest.raises(CannotImport, match="no day"):
         import_file(db, {"todos": [{"title": "Done", "done": True}], "ideas": [], "notes": []})
+
+
+def test_import_goes_in_the_space_asked_for(db: Session) -> None:
+    add_profile(db)
+    work = Space(name="Work", slug="work")
+    db.add(work)
+    db.commit()
+
+    import_file(db, sample(), space_slug="work")
+
+    assert {row.space_id for row in [*active(db, Todo), *active(db, Idea)]} == {work.id}
+    with pytest.raises(CannotImport, match="No space"):
+        import_file(db, sample(), space_slug="nope")

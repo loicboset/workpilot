@@ -1,4 +1,5 @@
-"""REST routes for the profile: one per install. A 404 means onboarding isn't done yet."""
+"""REST routes for the profile: one per install, shared by every space. A 404 means
+onboarding isn't done yet."""
 
 from fastapi import APIRouter
 

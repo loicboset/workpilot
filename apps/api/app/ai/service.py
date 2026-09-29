@@ -1,8 +1,10 @@
-"""The AI provider configured in the app's AI settings (ADR 0026)."""
+"""The AI provider configured in a space's AI settings (ADR 0026, 0031)."""
 
+import uuid
 from typing import Annotated
 
 from fastapi import Depends
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.ai.default_prompts import default_prompts
@@ -17,23 +19,23 @@ from app.crypto import decrypt
 from app.db.enums import AIProviderKind
 from app.db.models import AISettings, Prompt
 from app.db.session import SessionDep
+from app.domain.spaces.current import CurrentSpace
 
-AI_SETTINGS_ID = 1  # the table holds a single row
 
-
-def configured_provider(session: SessionDep) -> AIProvider:
-    """The provider from the AI settings. Raises `ai_not_configured` if something is missing.
+def configured_provider(session: SessionDep, space: CurrentSpace) -> AIProvider:
+    """The provider from the space's AI settings. Raises `ai_not_configured` if something is
+    missing.
 
     The model may still be empty here: listing the models is how the user picks one.
     """
-    ai_settings = session.get(AISettings, AI_SETTINGS_ID)
+    ai_settings = session.get(AISettings, space.id)
     if ai_settings is None:
         raise AIError(AIErrorCode.NOT_CONFIGURED)
     return make_provider(
         ai_settings.provider,
         base_url=ai_settings.base_url,
         model=ai_settings.model,
-        api_key=stored_api_key(session),
+        api_key=stored_api_key(session, space.id),
     )
 
 
@@ -50,9 +52,9 @@ def make_provider(
             raise AIError(AIErrorCode.NOT_CONFIGURED)
 
 
-def stored_api_key(session: Session) -> str | None:
-    """The saved API key, decrypted."""
-    ai_settings = session.get(AISettings, AI_SETTINGS_ID)
+def stored_api_key(session: Session, space_id: uuid.UUID) -> str | None:
+    """The space's saved API key, decrypted."""
+    ai_settings = session.get(AISettings, space_id)
     if ai_settings is None or ai_settings.api_key_encrypted is None:
         return None
     return decrypt(ai_settings.api_key_encrypted)
@@ -62,7 +64,28 @@ def stored_api_key(session: Session) -> str | None:
 ProviderDep = Annotated[AIProvider, Depends(configured_provider)]
 
 
-def prompt_text(session: Session, key: str) -> str:
-    """The prompt as the user edited it, or its default."""
-    edited = session.get(Prompt, key)
+def prompt_text(session: Session, space_id: uuid.UUID, key: str) -> str:
+    """The prompt as the user edited it in the space, or its default."""
+    edited = session.get(Prompt, (space_id, key))
     return edited.body if edited is not None else default_prompts()[key]
+
+
+def copy_ai_settings(session: Session, from_space_id: uuid.UUID, to_space_id: uuid.UUID) -> None:
+    """Start a new space with another space's AI settings and edited prompts (ADR 0031).
+
+    What the new space already has is kept. The caller commits.
+    """
+    source = session.get(AISettings, from_space_id)
+    if source is not None and session.get(AISettings, to_space_id) is None:
+        session.add(
+            AISettings(
+                space_id=to_space_id,
+                provider=source.provider,
+                base_url=source.base_url,
+                model=source.model,
+                api_key_encrypted=source.api_key_encrypted,
+            )
+        )
+    for prompt in session.scalars(select(Prompt).where(Prompt.space_id == from_space_id)):
+        if session.get(Prompt, (to_space_id, prompt.key)) is None:
+            session.add(Prompt(space_id=to_space_id, key=prompt.key, body=prompt.body))

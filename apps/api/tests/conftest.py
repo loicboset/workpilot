@@ -30,7 +30,7 @@ from fastapi.testclient import TestClient  # noqa: E402
 from sqlalchemy.orm import Session  # noqa: E402
 
 from app.auth.security import login_throttle  # noqa: E402
-from app.db.models import Base, Milestone, NorthStar, SyncState  # noqa: E402
+from app.db.models import Base, Milestone, NorthStar, Space, SyncState  # noqa: E402
 from app.db.session import SessionLocal  # noqa: E402
 from app.main import app  # noqa: E402
 
@@ -50,14 +50,18 @@ def create_database_if_missing(url: str) -> None:
     server.dispose()
 
 
+def alembic_config() -> Config:
+    config = Config(str(API_DIR / "alembic.ini"))
+    config.set_main_option("script_location", str(API_DIR / "app/db/migrations"))
+    return config
+
+
 @pytest.fixture(scope="session", autouse=True)
 def migrated_database() -> Iterator[None]:
     create_database_if_missing(TEST_DATABASE_URL)
-    config = Config(str(API_DIR / "alembic.ini"))
-    config.set_main_option("script_location", str(API_DIR / "app/db/migrations"))
-    command.upgrade(config, "head")
+    command.upgrade(alembic_config(), "head")
     yield
-    command.downgrade(config, "base")
+    command.downgrade(alembic_config(), "base")
 
 
 @pytest.fixture(autouse=True)
@@ -94,12 +98,27 @@ def client() -> TestClient:
 
 
 @pytest.fixture
-def milestone_id(db: Session) -> str:
-    """The id of a milestone under a North Star, for tests that link to one."""
-    north_star = NorthStar(title="Finish my first novel")
+def space(db: Session) -> Space:
+    """A space, for tests of what lives in one (ADR 0031)."""
+    space = Space(name="Personal", slug="personal")
+    db.add(space)
+    db.commit()
+    return space
+
+
+@pytest.fixture
+def in_space(space: Space) -> str:
+    """Where the space's routes start: `f"{in_space}/todos"`."""
+    return f"/api/spaces/{space.id}"
+
+
+@pytest.fixture
+def milestone_id(db: Session, space: Space) -> str:
+    """The id of a milestone under the space's North Star, for tests that link to one."""
+    north_star = NorthStar(space_id=space.id, title="Finish my first novel")
     db.add(north_star)
     db.flush()
-    milestone = Milestone(north_star_id=north_star.id, title="First draft done")
+    milestone = Milestone(space_id=space.id, north_star_id=north_star.id, title="First draft done")
     db.add(milestone)
     db.commit()
     return str(milestone.id)

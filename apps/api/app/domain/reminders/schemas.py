@@ -6,7 +6,14 @@ from typing import Annotated
 
 from pydantic import AfterValidator, BaseModel, StringConstraints
 
-from app.common import AwareTimestamp, PartialUpdate, RequestBody, SyncedRead, SyncRow, Title
+from app.common import (
+    AwareTimestamp,
+    InSpaceRead,
+    InSpaceSyncRow,
+    PartialUpdate,
+    RequestBody,
+    Title,
+)
 from app.domain.reminders.recurrence import check_rule
 
 # An iCal recurrence rule, e.g. "FREQ=WEEKLY;BYDAY=FR" for every Friday.
@@ -41,7 +48,7 @@ class ReminderUpdate(PartialUpdate):
     time_block_id: uuid.UUID | None = None
 
 
-class ReminderRead(SyncedRead):
+class ReminderRead(InSpaceRead):
     text: str
     remind_at: datetime
     recurrence: str | None
@@ -50,5 +57,5 @@ class ReminderRead(SyncedRead):
     time_block_id: uuid.UUID | None
 
 
-class ReminderSyncRow(ReminderFields, SyncRow):
+class ReminderSyncRow(ReminderFields, InSpaceSyncRow):
     """A reminder as sent by a device through sync."""

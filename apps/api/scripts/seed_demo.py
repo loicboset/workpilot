@@ -1,12 +1,14 @@
-"""Fill the workspace with the Grove concept's demo data (development only).
+"""Fill a space with the Grove concept's demo data (development only).
 
-    make seed             # stops if you already have a North Star of your own
-    make seed REPLACE=1   # puts your North Star and its milestones aside, adds the demo ones
+    make seed             # stops if the space already has a North Star of its own
+    make seed REPLACE=1   # puts its North Star and milestones aside, adds the demo ones
     make seed UNDO=1      # removes the demo data and brings yours back
+    make seed SPACE=work  # in the space at /work (default: the first space)
 
-Rows get fixed ids, so running it again updates them instead of adding more: the time blocks
-move to today, the done work to this week and last week. Nothing of yours is changed: what is
-put aside is soft-deleted (marked deleted, so it syncs) and comes back with UNDO=1.
+Rows get fixed ids, one set per space, so running it again updates them instead of adding
+more: the time blocks move to today, the done work to this week and last week. Nothing of yours
+is changed: what is put aside is soft-deleted (marked deleted, so it syncs) and comes back with
+UNDO=1.
 """
 
 import argparse
@@ -18,9 +20,11 @@ from zoneinfo import ZoneInfo
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.db.base import SyncedMixin
-from app.db.models import Milestone, NorthStar, Profile, TimeBlock, Todo
+from app.common import select_in_space
+from app.db.base import InSpaceMixin
+from app.db.models import Milestone, NorthStar, Profile, Space, TimeBlock, Todo
 from app.db.session import SessionLocal
+from scripts.spaces import find_space
 
 NAMESPACE = uuid.UUID("7b0c1f0e-5d0a-4c55-9a3e-6f1d2b8c9e41")
 
@@ -96,27 +100,37 @@ LAST_WEEK = [
 ]
 
 
-def demo_id(key: str) -> uuid.UUID:
-    return uuid.uuid5(NAMESPACE, key)
+DEMO_KEYS = [
+    "north-star",
+    *(key for key, *_ in MILESTONES),
+    *(f"block-{key}" for key, *_ in TIME_BLOCKS),
+    *(f"todo-this-{index}" for index in range(len(THIS_WEEK))),
+    *(f"todo-last-{index}" for index in range(len(LAST_WEEK))),
+]
 
 
-DEMO_IDS = {
-    demo_id(key)
-    for key in [
-        "north-star",
-        *(key for key, *_ in MILESTONES),
-        *(f"block-{key}" for key, *_ in TIME_BLOCKS),
-        *(f"todo-this-{index}" for index in range(len(THIS_WEEK))),
-        *(f"todo-last-{index}" for index in range(len(LAST_WEEK))),
-    ]
-}
+def demo_id(space: Space, key: str) -> uuid.UUID:
+    return uuid.uuid5(NAMESPACE, f"{space.id}:{key}")
 
 
-def upsert[Row: SyncedMixin](session: Session, model: type[Row], key: str, **fields) -> Row:
-    """The demo row with this key, created or updated (and undeleted)."""
-    row = session.get(model, demo_id(key))
+def demo_ids(space: Space) -> set[uuid.UUID]:
+    return {demo_id(space, key) for key in DEMO_KEYS}
+
+
+def pick_space(session: Session, slug: str | None) -> Space:
+    space = find_space(session, slug)
+    if space is None:
+        sys.exit(f"No space at /{slug}." if slug else "No space yet: finish onboarding first.")
+    return space
+
+
+def upsert[Row: InSpaceMixin](
+    session: Session, model: type[Row], space: Space, key: str, **fields
+) -> Row:
+    """The space's demo row with this key, created or updated (and undeleted)."""
+    row = session.get(model, demo_id(space, key))
     if row is None:
-        row = model(id=demo_id(key), **fields)
+        row = model(id=demo_id(space, key), space_id=space.id, **fields)
         session.add(row)
     else:
         for name, value in fields.items():
@@ -125,12 +139,14 @@ def upsert[Row: SyncedMixin](session: Session, model: type[Row], key: str, **fie
     return row
 
 
-def seed(session: Session, replace: bool) -> None:
+def seed(session: Session, replace: bool, space_slug: str | None = None) -> None:
     profile = session.scalars(
         select(Profile).where(Profile.deleted_at.is_(None)).order_by(Profile.created_at)
     ).first()
     if profile is None:
         sys.exit("No profile yet: sign in and finish onboarding first.")
+    space = pick_space(session, space_slug)
+    ids = demo_ids(space)
     zone = ZoneInfo(profile.timezone)
     today = datetime.now(zone).date()
     now = datetime.now(UTC)
@@ -139,8 +155,8 @@ def seed(session: Session, replace: bool) -> None:
         return datetime.combine(day, time(hour, minute), zone).astimezone(UTC)
 
     # Your North Star and its milestones are put aside (all at the same moment, for --undo).
-    for north_star in session.scalars(select(NorthStar).where(NorthStar.deleted_at.is_(None))):
-        if north_star.id == demo_id("north-star"):
+    for north_star in session.scalars(select_in_space(NorthStar, space.id)):
+        if north_star.id == demo_id(space, "north-star"):
             continue
         if not replace:
             sys.exit(
@@ -150,14 +166,15 @@ def seed(session: Session, replace: bool) -> None:
             )
         north_star.deleted_at = now
         print(f'Put aside the North Star "{north_star.title}".')
-    for milestone in session.scalars(select(Milestone).where(Milestone.deleted_at.is_(None))):
-        if milestone.id not in DEMO_IDS:
+    for milestone in session.scalars(select_in_space(Milestone, space.id)):
+        if milestone.id not in ids:
             milestone.deleted_at = now
             print(f'Put aside the milestone "{milestone.title}".')
 
     north_star = upsert(
         session,
         NorthStar,
+        space,
         "north-star",
         title=NORTH_STAR,
         description="So people can do the best work of their careers, without burning out.",
@@ -169,6 +186,7 @@ def seed(session: Session, replace: bool) -> None:
         milestone = upsert(
             session,
             Milestone,
+            space,
             key,
             north_star_id=north_star.id,
             title=title,
@@ -185,6 +203,7 @@ def seed(session: Session, replace: bool) -> None:
         upsert(
             session,
             TimeBlock,
+            space,
             f"block-{key}",
             title=title,
             start_at=moment(today, *start),
@@ -206,6 +225,7 @@ def seed(session: Session, replace: bool) -> None:
             upsert(
                 session,
                 Todo,
+                space,
                 f"todo-{week}-{index}",
                 title=title,
                 notes=None,
@@ -215,26 +235,34 @@ def seed(session: Session, replace: bool) -> None:
             )
 
     session.commit()
-    print(f"Demo data ready for {today.isoformat()} ({profile.timezone}). The app syncs it soon.")
+    print(
+        f'Demo data ready in "{space.name}" for {today.isoformat()} ({profile.timezone}). '
+        "The app syncs it soon."
+    )
 
 
-def undo(session: Session) -> None:
-    """Soft-delete the demo rows and bring back the North Star and milestones put aside."""
+def undo(session: Session, space_slug: str | None = None) -> None:
+    """Soft-delete the space's demo rows and bring back the North Star and milestones put
+    aside."""
+    space = pick_space(session, space_slug)
+    ids = demo_ids(space)
     now = datetime.now(UTC)
     for model in (NorthStar, Milestone, TimeBlock, Todo):
-        for row in session.scalars(
-            select(model).where(model.id.in_(DEMO_IDS), model.deleted_at.is_(None))
-        ):
+        for row in session.scalars(select_in_space(model, space.id).where(model.id.in_(ids))):
             row.deleted_at = now
     put_aside = session.scalars(
-        select(NorthStar)
-        .where(NorthStar.id.not_in(DEMO_IDS), NorthStar.deleted_at.is_not(None))
+        select_in_space(NorthStar, space.id, include_deleted=True)
+        .where(NorthStar.id.not_in(ids), NorthStar.deleted_at.is_not(None))
         .order_by(NorthStar.deleted_at.desc())
     ).first()
     if put_aside is not None:
         moment = put_aside.deleted_at
         for model in (NorthStar, Milestone):
-            for row in session.scalars(select(model).where(model.deleted_at == moment)):
+            for row in session.scalars(
+                select_in_space(model, space.id, include_deleted=True).where(
+                    model.deleted_at == moment
+                )
+            ):
                 row.deleted_at = None
         print(f'Brought back the North Star "{put_aside.title}" and its milestones.')
     session.commit()
@@ -242,15 +270,16 @@ def undo(session: Session) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Fill the workspace with demo data.")
+    parser = argparse.ArgumentParser(description="Fill a space with demo data.")
     parser.add_argument("--replace", action="store_true", help="put your North Star aside")
     parser.add_argument("--undo", action="store_true", help="remove the demo data")
+    parser.add_argument("--space", help="the space's URL name (default: the first space)")
     args = parser.parse_args()
     with SessionLocal() as session:
         if args.undo:
-            undo(session)
+            undo(session, args.space)
         else:
-            seed(session, replace=args.replace)
+            seed(session, replace=args.replace, space_slug=args.space)
 
 
 if __name__ == "__main__":

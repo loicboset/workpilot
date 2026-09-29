@@ -29,9 +29,10 @@ stay fully apart.
 - Every per-space table gets a required `space_id` → spaces. Links between rows use two-column
   foreign keys, e.g. `(space_id, milestone_id)` → `milestones (space_id, id)`, so the database
   refuses a link across spaces (ADR 0022). A row never changes space.
-- `ai_settings` has one row per space; `prompts` are keyed by space and key. A space created
-  online starts with a copy of those of the space it was created from; otherwise it starts
-  without AI, set up in its Settings.
+- `ai_settings` has one row per space; `prompts` are keyed by space and key. A new space
+  starts with a copy of those of the space it was created from: the device sends that space's
+  id with the new space (`copy_ai_from`), and the server copies them when the space first
+  reaches it, so this works offline too.
 - Every device syncs every space (ADR 0025 unchanged), so switching is instant and works offline.
 - The data from before spaces goes into a first space, **Humetria**.
 

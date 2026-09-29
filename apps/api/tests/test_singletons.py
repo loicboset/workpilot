@@ -21,13 +21,10 @@ def test_profile_put_creates_then_replaces(client: TestClient) -> None:
     assert replaced["city"] is None  # PUT replaces every field
     assert replaced["locale"] == "en"
     assert replaced["theme"] == "system"  # the device's setting
-    assert replaced["palette"] == "grove"
+    assert "palette" not in replaced  # each space has its own (ADR 0031)
 
-    dark = client.put(
-        "/api/profile", json={"first_name": "Loïc", "theme": "dark", "palette": "heather"}
-    ).json()
+    dark = client.put("/api/profile", json={"first_name": "Loïc", "theme": "dark"}).json()
     assert dark["theme"] == "dark"
-    assert dark["palette"] == "heather"
 
     assert client.get("/api/profile").json() == dark
 
@@ -39,15 +36,26 @@ def test_profile_rejects_invalid_values(client: TestClient) -> None:
     )
     assert client.put("/api/profile", json={"first_name": "A", "locale": "de"}).status_code == 422
     assert client.put("/api/profile", json={"first_name": "A", "theme": "sepia"}).status_code == 422
-    assert client.put("/api/profile", json={"first_name": "A", "palette": "red"}).status_code == 422
+    assert (
+        client.put("/api/profile", json={"first_name": "A", "palette": "lake"}).status_code == 422
+    )
     assert client.put("/api/profile", json={"first_name": " "}).status_code == 422
 
 
-def test_north_star_put_and_get(client: TestClient) -> None:
-    assert client.get("/api/north-star").status_code == 404
+def test_north_star_put_and_get(client: TestClient, in_space: str) -> None:
+    assert client.get(f"{in_space}/north-star").status_code == 404
 
     body = {"title": "Finish my first novel", "description": "Calmly.", "target_date": "2027-06-30"}
-    north_star = client.put("/api/north-star", json=body).json()
+    north_star = client.put(f"{in_space}/north-star", json=body).json()
 
     assert north_star["title"] == "Finish my first novel"
-    assert client.get("/api/north-star").json() == north_star
+    assert client.get(f"{in_space}/north-star").json() == north_star
+
+
+def test_each_space_has_its_own_north_star(client: TestClient, in_space: str) -> None:
+    work = client.post("/api/spaces", json={"name": "Work"}).json()
+    client.put(f"{in_space}/north-star", json={"title": "Finish my first novel"})
+
+    assert client.get(f"/api/spaces/{work['id']}/north-star").status_code == 404
+    client.put(f"/api/spaces/{work['id']}/north-star", json={"title": "Ship WorkPilot 1.0"})
+    assert client.get(f"{in_space}/north-star").json()["title"] == "Finish my first novel"

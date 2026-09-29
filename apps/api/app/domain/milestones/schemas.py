@@ -6,7 +6,14 @@ from typing import Annotated
 
 from pydantic import BaseModel, Field
 
-from app.common import AwareTimestamp, PartialUpdate, RequestBody, SyncedRead, SyncRow, Title
+from app.common import (
+    AwareTimestamp,
+    InSpaceRead,
+    InSpaceSyncRow,
+    PartialUpdate,
+    RequestBody,
+    Title,
+)
 
 Position = Annotated[int, Field(ge=0)]
 
@@ -36,7 +43,7 @@ class MilestoneUpdate(PartialUpdate):
     completed_at: AwareTimestamp | None = None
 
 
-class MilestoneRead(SyncedRead):
+class MilestoneRead(InSpaceRead):
     north_star_id: uuid.UUID
     title: str
     description: str | None
@@ -45,5 +52,5 @@ class MilestoneRead(SyncedRead):
     completed_at: datetime | None
 
 
-class MilestoneSyncRow(MilestoneFields, SyncRow):
+class MilestoneSyncRow(MilestoneFields, InSpaceSyncRow):
     """A milestone as sent by a device through sync."""

@@ -11,6 +11,7 @@ from app.db.models.planning import Reminder, TimeBlock, Todo
 from app.db.models.profile import Profile
 from app.db.models.push import PushSubscription
 from app.db.models.review import JournalEntry, ReviewTemplate
+from app.db.models.space import Space
 from app.db.models.sync import SyncState
 
 __all__ = [
@@ -26,6 +27,7 @@ __all__ = [
     "PushSubscription",
     "Reminder",
     "ReviewTemplate",
+    "Space",
     "SyncState",
     "TickerMessage",
     "TimeBlock",

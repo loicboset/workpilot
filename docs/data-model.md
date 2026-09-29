@@ -10,6 +10,9 @@ Conventions:
 
 ## Synced tables (browser ⇄ server)
 
+Every synced table except `spaces` and `profiles` belongs to a space: its rows have a required
+`space_id` → spaces, and links between them stay inside one space ([ADR 0031](decisions/0031-spaces.md)).
+
 Every synced table also has:
 
 | Column | Type | Notes |
@@ -22,7 +25,8 @@ Every synced table also has:
 
 | Table | Columns |
 |---|---|
-| `profiles` | `first_name` text · `last_name` text? · `locale` text (en/fr/es) · `timezone` text · `city` text? · `theme` text (system/light/dark) · `palette` text (grove/lake/heather/olive/birch) |
+| `spaces` | `name` text · `slug` text (unique, the name in URLs: `cote-pro`) · `palette` text (grove/lake/heather/olive/birch) · `archived_at` timestamptz? |
+| `profiles` | Shared by every space. `first_name` text · `last_name` text? · `locale` text (en/fr/es) · `timezone` text · `city` text? · `theme` text (system/light/dark) |
 | `north_stars` | `title` text · `description` text? · `target_date` date? |
 | `milestones` | `north_star_id` → north_stars · `title` text · `description` text? · `target_date` date? · `position` int · `completed_at` timestamptz? |
 | `todos` | `title` text · `notes` text? · `due_date` date? · `priority` smallint? (1–3, 1 = most important) · `completed_at` timestamptz? · `milestone_id` → milestones? |
@@ -36,6 +40,8 @@ Every synced table also has:
 
 Rules:
 
+- A space is archived (`archived_at`), never deleted. A row never moves to another space.
+- One North Star per space. Links (`milestone_id`, `north_star_id`, `todo_id`, `time_block_id`, `review_template_id`) are two-column foreign keys, `(space_id, milestone_id)` → `milestones (space_id, id)`, so a link across spaces is refused.
 - Done = `completed_at` is set (todos, time blocks, milestones).
 - Postpone = change the date (`due_date`, or `start_at`/`end_at`).
 - Icebox = a todo without a `due_date` ([ADR 0029](decisions/0029-icebox-todos-without-a-date.md)). A todo's steps live in its `notes` as a Markdown checklist (`- [ ] step`).
@@ -47,14 +53,15 @@ Rules:
 
 | Table | Columns |
 |---|---|
-| `ai_settings` | `id` int · `provider` enum? (`openai_compatible`, `anthropic`) · `base_url` text? · `model` text? · `api_key_encrypted` text? · `updated_at` |
-| `prompts` | `key` text (primary key, e.g. `ticker`) · `body` text · `updated_at` |
+| `ai_settings` | `space_id` → spaces (primary key) · `provider` enum? (`openai_compatible`, `anthropic`) · `base_url` text? · `model` text? · `api_key_encrypted` text? · `updated_at` |
+| `prompts` | `space_id` → spaces · `key` text (together the primary key, e.g. `ticker`) · `body` text · `updated_at` |
 | `push_subscriptions` | `id` uuid · `endpoint` text (unique) · `p256dh_key` text · `auth_key` text · `device_name` text? · `created_at` |
 | `sync_state` | `id` int (always 1) · `revision` bigint: the last revision handed out |
 
 - `reminders`: due when `remind_at <= now` and `sent_at` is empty or older than `remind_at`; `sent_at` is written by the server only ([ADR 0027](decisions/0027-background-jobs.md)).
-- `ai_settings` has a single row ([ai-providers.md](ai-providers.md)). The API key is encrypted with a key derived from `WORKPILOT_SECRET_KEY` and is never returned by the API.
-- `prompts` only stores prompts the user edited; defaults ship in `apps/api/app/ai/prompts/`.
+- `ai_settings` has one row per space ([ai-providers.md](ai-providers.md)); a new space starts with a copy of the space it was created from. The API key is encrypted with a key derived from `WORKPILOT_SECRET_KEY` and is never returned by the API.
+- `prompts` only stores prompts the user edited, per space; defaults ship in `apps/api/app/ai/prompts/`.
+- A reminder of an archived space is passed over: not sent, and a repeating one moves on.
 
 ## Device-only tables (Dexie, in the browser)
 
@@ -67,6 +74,7 @@ Rules:
 ## Relationships
 
 ```
+spaces      1 ── n everything below, ai_settings, prompts
 north_stars 1 ── n milestones
 milestones  1 ── n todos, time_blocks, notes        (optional link)
 todos / time_blocks 1 ── n reminders                (optional link)
