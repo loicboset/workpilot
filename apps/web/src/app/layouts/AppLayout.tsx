@@ -35,7 +35,7 @@ export function AppLayout() {
   return (
     <div className="mx-auto flex min-h-dvh max-w-6xl flex-col px-4 sm:px-8">
       <header className="flex items-center justify-between gap-4 py-5">
-        <Logo />
+        <Logo showName="from-sm" />
         <div className="flex items-center gap-2">
           <nav aria-label={t('nav.label')} className="flex items-center gap-1">
             {NAV.map((item) => (

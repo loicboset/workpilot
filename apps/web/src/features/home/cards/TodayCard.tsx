@@ -28,7 +28,10 @@ export function TodayCard() {
   const subtitle =
     plan.blocks.length === 0 && todos.length === 0
       ? t('home.today.free')
-      : t('home.today.summary', { blocks: plan.blocks.length, todos: openCount })
+      : t('home.today.summary', {
+          blocks: t('home.today.blocks', { count: plan.blocks.length }),
+          todos: t('home.today.todos', { count: openCount }),
+        })
 
   return (
     <Card

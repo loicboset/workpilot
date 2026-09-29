@@ -16,7 +16,7 @@ export function DirectionCard() {
   return (
     <Card
       title={t('nav.direction')}
-      subtitle={t('home.direction.summary', { reached, total: milestones.length })}
+      subtitle={t('home.direction.summary', { reached, count: milestones.length })}
       icon={<Compass />}
       actions={<Link href="/direction">{t('home.direction.open')}</Link>}
     >

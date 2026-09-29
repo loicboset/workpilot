@@ -84,18 +84,26 @@
       "fieldLabel": "Noter une pensée"
     },
     "today": {
-      "summary": "{{blocks}} plages · {{todos}} à faire",
+      "summary": "{{blocks}} · {{todos}}",
+      "blocks_one": "{{count}} plage",
+      "blocks_many": "{{count}} de plages",
+      "blocks_other": "{{count}} plages",
+      "todos": "{{count}} à faire",
       "free": "Une journée libre",
       "freeHint": "Rien de prévu pour l'instant. ⌘K (Ctrl K) pour ajouter une tâche ou une plage horaire.",
       "open": "Ouvrir"
     },
     "direction": {
-      "summary": "{{reached}} jalons atteints sur {{total}}",
+      "summary_one": "{{reached}} sur {{count}} jalon atteint",
+      "summary_many": "{{reached}} sur {{count}} de jalons atteints",
+      "summary_other": "{{reached}} sur {{count}} jalons atteints",
       "open": "Ouvrir"
     },
     "ideas": {
       "title": "Idées",
-      "summary": "{{count}} graines à regarder plus tard",
+      "summary_one": "{{count}} graine à regarder plus tard",
+      "summary_many": "{{count}} de graines à regarder plus tard",
+      "summary_other": "{{count}} graines à regarder plus tard",
       "empty": "Les idées que vous notez arrivent ici, à regarder dans un moment calme.",
       "add": "Noter une idée",
       "delete": "Supprimer l'idée « {{text}} »"
@@ -251,7 +259,9 @@
       "model": "Modèle",
       "modelHelp": "Testez la connexion pour lister les modèles, ou tapez le nom du modèle.",
       "test": "Enregistrer et tester",
-      "connected": "Connecté. {{count}} modèles disponibles.",
+      "connected_one": "Connecté. {{count}} modèle disponible.",
+      "connected_many": "Connecté. {{count}} de modèles disponibles.",
+      "connected_other": "Connecté. {{count}} modèles disponibles.",
       "errors": {
         "ai_not_configured": "Il manque quelque chose : l'adresse pour un serveur compatible OpenAI, ou la clé pour Claude.",
         "ai_unreachable": "L'IA est injoignable. Le serveur est-il lancé (dans LM Studio : Developer → Start server) ?",

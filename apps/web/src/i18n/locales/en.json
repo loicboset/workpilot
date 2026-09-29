@@ -84,18 +84,23 @@
       "fieldLabel": "Capture a thought"
     },
     "today": {
-      "summary": "{{blocks}} blocks · {{todos}} to do",
+      "summary": "{{blocks}} · {{todos}}",
+      "blocks_one": "{{count}} block",
+      "blocks_other": "{{count}} blocks",
+      "todos": "{{count}} to do",
       "free": "A free day",
       "freeHint": "Nothing planned yet. Press ⌘K (Ctrl K) to add a todo or a time block.",
       "open": "Open"
     },
     "direction": {
-      "summary": "{{reached}} of {{total}} milestones reached",
+      "summary_one": "{{reached}} of {{count}} milestone reached",
+      "summary_other": "{{reached}} of {{count}} milestones reached",
       "open": "Open"
     },
     "ideas": {
       "title": "Ideas",
-      "summary": "{{count}} seeds to look at later",
+      "summary_one": "{{count}} seed to look at later",
+      "summary_other": "{{count}} seeds to look at later",
       "empty": "Ideas you capture land here, to look at when you have a quiet moment.",
       "add": "Capture an idea",
       "delete": "Delete the idea “{{text}}”"
@@ -251,7 +256,8 @@
       "model": "Model",
       "modelHelp": "Test the connection to list the models, or type the model's name.",
       "test": "Save and test",
-      "connected": "Connected. {{count}} models available.",
+      "connected_one": "Connected. {{count}} model available.",
+      "connected_other": "Connected. {{count}} models available.",
       "errors": {
         "ai_not_configured": "Something is missing: the address for OpenAI-compatible servers, or the key for Claude.",
         "ai_unreachable": "The AI can't be reached. Is the server running (in LM Studio: Developer → Start server)?",

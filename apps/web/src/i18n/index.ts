@@ -24,7 +24,18 @@ function detectLocale(): Locale {
  * times look as the user expects ("28 September", "21:47"). Texts come from "en" either way.
  */
 function withRegion(locale: Locale): string {
-  return navigator.languages.find((tag) => tag.toLowerCase().startsWith(`${locale}-`)) ?? locale
+  const withSameLanguage = (tag: string) => tag.toLowerCase().startsWith(`${locale}-`)
+  return navigator.languages.find((tag) => withSameLanguage(tag) && isValidTag(tag)) ?? locale
+}
+
+/** False for tags some browsers report but Intl refuses, e.g. "en-US@posix" on Linux. */
+function isValidTag(tag: string): boolean {
+  try {
+    Intl.getCanonicalLocales(tag)
+    return true
+  } catch {
+    return false
+  }
 }
 
 /** Switch the app's language. */

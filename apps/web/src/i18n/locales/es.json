@@ -84,18 +84,26 @@
       "fieldLabel": "Anotar una idea"
     },
     "today": {
-      "summary": "{{blocks}} bloques · {{todos}} por hacer",
+      "summary": "{{blocks}} · {{todos}}",
+      "blocks_one": "{{count}} bloque",
+      "blocks_many": "{{count}} de bloques",
+      "blocks_other": "{{count}} bloques",
+      "todos": "{{count}} por hacer",
       "free": "Un día libre",
       "freeHint": "Nada previsto por ahora. Pulsa ⌘K (Ctrl K) para añadir una tarea o un bloque de tiempo.",
       "open": "Abrir"
     },
     "direction": {
-      "summary": "{{reached}} de {{total}} hitos alcanzados",
+      "summary_one": "{{reached}} de {{count}} hito alcanzado",
+      "summary_many": "{{reached}} de {{count}} de hitos alcanzados",
+      "summary_other": "{{reached}} de {{count}} hitos alcanzados",
       "open": "Abrir"
     },
     "ideas": {
       "title": "Ideas",
-      "summary": "{{count}} semillas para mirar más tarde",
+      "summary_one": "{{count}} semilla para mirar más tarde",
+      "summary_many": "{{count}} de semillas para mirar más tarde",
+      "summary_other": "{{count}} semillas para mirar más tarde",
       "empty": "Las ideas que anotas llegan aquí, para mirarlas en un momento tranquilo.",
       "add": "Anotar una idea",
       "delete": "Eliminar la idea «{{text}}»"
@@ -251,7 +259,9 @@
       "model": "Modelo",
       "modelHelp": "Prueba la conexión para ver los modelos, o escribe el nombre del modelo.",
       "test": "Guardar y probar",
-      "connected": "Conectado. {{count}} modelos disponibles.",
+      "connected_one": "Conectado. {{count}} modelo disponible.",
+      "connected_many": "Conectado. {{count}} de modelos disponibles.",
+      "connected_other": "Conectado. {{count}} modelos disponibles.",
       "errors": {
         "ai_not_configured": "Falta algo: la dirección para servidores compatibles con OpenAI, o la clave para Claude.",
         "ai_unreachable": "No se puede conectar con la IA. ¿Está el servidor en marcha (en LM Studio: Developer → Start server)?",
