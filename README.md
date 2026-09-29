@@ -35,7 +35,7 @@ Prerequisites: Node 22+, pnpm (`corepack enable`), Python 3.13 + [uv](https://do
 make env                  # creates .env with a random secret; then set your name and
                           # password in WORKPILOT_USER, and WORKPILOT_COOKIE_SECURE=false for http
 make install              # web + api dependencies
-make db                   # start Postgres in Docker
+make db                   # start Postgres in Docker, on port 5433 (POSTGRES_PORT)
 make migrate              # create / update the database tables
 make dev-api              # API on http://localhost:8000
 make dev-web              # web app on http://localhost:5173 (proxies /api)
@@ -63,8 +63,8 @@ docker compose up --build   # http://localhost:8000
 ```
 
 WorkPilot refuses to start with the placeholder password or secret from `.env.example`.
-Its Postgres uses port 5433 on your computer; if that one is taken too, set another
-`POSTGRES_PORT` in `.env` (and the same port in `WORKPILOT_DATABASE_URL`).
+Its Postgres stays inside Docker, so it never clashes with another database on your computer.
+Port 8000 already taken? Set `WORKPILOT_PORT` in `.env`.
 With LM Studio on the same Mac, use `http://host.docker.internal:1234/v1` in Settings → AI.
 
 ## Methodologies

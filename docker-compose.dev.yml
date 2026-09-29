@@ -1,0 +1,6 @@
+# Development only (`make db`): opens the database to this computer, on localhost only, so
+# `make dev-api` and the tests can reach it. `docker compose up` alone keeps it inside Docker.
+services:
+  db:
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5433}:5432"

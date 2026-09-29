@@ -4,8 +4,9 @@ services:
     env_file: .env
     environment:
       WORKPILOT_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-workpilot}:${POSTGRES_PASSWORD:-workpilot}@db:5432/${POSTGRES_DB:-workpilot}
+    # http://localhost:8000 (WORKPILOT_PORT in .env if 8000 is taken on this computer)
     ports:
-      - "8000:8000"
+      - "${WORKPILOT_PORT:-8000}:8000"
     # Lets the app reach an AI server on this computer (e.g. LM Studio) at host.docker.internal.
     # Built into Docker Desktop; needed on Linux (docs/ai-providers.md).
     extra_hosts:
@@ -20,10 +21,8 @@ services:
     env_file: .env
     volumes:
       - db-data:/var/lib/postgresql
-    # Bound to localhost only: reachable by `make dev-api`, never from the internet.
-    # Port 5433 on this computer, so it never clashes with a Postgres already installed here.
-    ports:
-      - "127.0.0.1:${POSTGRES_PORT:-5433}:5432"
+    # No port on this computer: only the app reaches it, so it can't clash with another
+    # Postgres. `make db` opens one for development (docker-compose.dev.yml).
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s

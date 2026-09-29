@@ -18,7 +18,7 @@ dev-api:
 	cd apps/api && uv run uvicorn app.main:app --reload --port 8000
 
 db:
-	docker compose up -d db
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d db
 
 migrate:
 	cd apps/api && uv run alembic upgrade head
