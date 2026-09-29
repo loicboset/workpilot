@@ -10,7 +10,7 @@ import { ReviewCard } from './cards/ReviewCard'
 import { TodayCard } from './cards/TodayCard'
 import { Greeting } from './Greeting'
 import { NorthStarBar } from './NorthStarBar'
-import { WeatherClock } from './WeatherClock'
+import { WeatherClock } from './weather/WeatherClock'
 
 /** The Grove homepage: calm header, the North Star, then the cards of the day. */
 export const HomePage = () => {

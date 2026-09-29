@@ -1,0 +1,162 @@
+/* The weather widget's little landscape (features/home/weather): its colours by day, its
+   animations, and its colours by the light of the sky. */
+@theme {
+  --color-grove-sky-top: #cfe3e9;
+  --color-grove-sky-bottom: #e5eee6;
+  --color-grove-hill: #c6d9c6;
+  --color-grove-cloud: #fbfcfd;
+  --color-grove-storm-cloud: #c3cccd;
+  --color-grove-flash: #fbfcfd; /* lightning */
+  --color-grove-snow: #fbfcfd;
+  --color-grove-moon: #f3eed9; /* and the stars */
+
+  /* Their durations and delays are set per element, and reduced-motion users get the scene
+     paused instead (a still picture): see `WeatherScene`. */
+  --animate-cross: cross 60s linear infinite;
+  --animate-fall: fall 1s linear infinite;
+  --animate-snowfall: snowfall 7s linear infinite;
+  --animate-sway: sway 2.5s ease-in-out infinite alternate;
+  --animate-glow: glow 7s ease-in-out infinite;
+  --animate-flash: flash 9s linear infinite;
+  --animate-twinkle: twinkle 3s ease-in-out infinite alternate;
+
+  /* From just beyond the left edge to just beyond the right one. `cqw` is the width of the
+     nearest `@container`, whatever the card's width. */
+  @keyframes cross {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(100cqw);
+    }
+  }
+  /* Rain, blown a little to the left. */
+  @keyframes fall {
+    from {
+      transform: translate(0, -12px) rotate(5deg);
+    }
+    to {
+      transform: translate(-10px, 100px) rotate(5deg);
+    }
+  }
+  @keyframes snowfall {
+    from {
+      transform: translateY(-8px);
+    }
+    to {
+      transform: translateY(100px);
+    }
+  }
+  @keyframes sway {
+    from {
+      transform: translateX(-3px);
+    }
+    to {
+      transform: translateX(3px);
+    }
+  }
+  @keyframes glow {
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 0.25;
+    }
+    50% {
+      transform: scale(1.12);
+      opacity: 0.4;
+    }
+  }
+  /* Lightning: two soft flickers in half a second, then eight calm seconds (well under the
+     three flashes a second that can trigger seizures). */
+  @keyframes flash {
+    0%,
+    90%,
+    92%,
+    95%,
+    100% {
+      opacity: 0;
+    }
+    90.5% {
+      opacity: 1;
+    }
+    93% {
+      opacity: 0.6;
+    }
+  }
+  @keyframes twinkle {
+    from {
+      opacity: 0.25;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+/* The weather card by the light of the sky. `WeatherClock` sets --sky-glow (the warm light of
+   dawn and dusk) and --sky-night, from 0 to 1, every minute: each colour of the landscape goes
+   from its day shade (as in @theme above), warmed by the glow, to its night one. The sky itself
+   passes through the dusky blue and rose of the blue hour, halfway, rather than through grey.
+   The text and the rain turn light once the sky is dark enough (--sky-dark, 0 or 1). */
+.weather-sky {
+  --color-grove-sky-top: color-mix(
+    in oklab,
+    color-mix(
+      in oklab,
+      color-mix(in oklab, #cfe3e9, #d2d4ec calc(var(--sky-glow) * 100%)),
+      #6f74a6 calc(clamp(0, var(--sky-night) * 2, 1) * 100%)
+    ),
+    #1f2d45 calc(clamp(0, var(--sky-night) * 2 - 1, 1) * 100%)
+  );
+  --color-grove-sky-bottom: color-mix(
+    in oklab,
+    color-mix(
+      in oklab,
+      color-mix(in oklab, #e5eee6, #f6d5bd calc(var(--sky-glow) * 100%)),
+      #c48e9a calc(clamp(0, var(--sky-night) * 2, 1) * 100%)
+    ),
+    #34465c calc(clamp(0, var(--sky-night) * 2 - 1, 1) * 100%)
+  );
+  --color-grove-hill: color-mix(
+    in oklab,
+    color-mix(in oklab, #c6d9c6, #bfc9ae calc(var(--sky-glow) * 100%)),
+    #2a3c37 calc(var(--sky-night) * 100%)
+  );
+  --color-grove-cloud: color-mix(
+    in oklab,
+    color-mix(in oklab, #fbfcfd, #fcede4 calc(var(--sky-glow) * 100%)),
+    #5a687d calc(var(--sky-night) * 100%)
+  );
+  --color-grove-storm-cloud: color-mix(
+    in oklab,
+    color-mix(in oklab, #c3cccd, #bbbbc5 calc(var(--sky-glow) * 100%)),
+    #434e60 calc(var(--sky-night) * 100%)
+  );
+  --color-grove-sun: color-mix(in oklab, #f4d58d, #f4b383 calc(var(--sky-glow) * 100%));
+  --color-grove-ink: color-mix(in oklab, #26322b, #eef1ea calc(var(--sky-dark) * 100%));
+  --color-grove-ink-soft: color-mix(in oklab, #3e4f44, #c3cec6 calc(var(--sky-dark) * 100%));
+  --color-grove-sky-ink: color-mix(in oklab, #2d5663, #cfdae6 calc(var(--sky-dark) * 100%));
+  --color-grove-flash: color-mix(in oklab, #fbfcfd, #aab5c6 calc(var(--sky-dark) * 100%));
+  /* Each minute's step, and the switch of the text, glide instead of jumping. */
+  transition:
+    --sky-night 3s,
+    --sky-glow 3s,
+    --sky-dark 3s;
+}
+
+/* Registered as numbers, so that they can glide (see `transition` above). */
+@property --sky-night {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+@property --sky-glow {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+@property --sky-dark {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
