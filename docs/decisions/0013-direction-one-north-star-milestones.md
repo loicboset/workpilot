@@ -1,6 +1,6 @@
 # 0013. Direction: one North Star + milestones
 
-- Status: Accepted
+- Status: Accepted; one North Star per space since [0031](0031-spaces.md)
 - Date: 2026-09-27
 
 ## Decision

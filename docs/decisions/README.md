@@ -16,7 +16,7 @@ One short file per decision. New decisions get the next number; a changed decisi
 | 0010 | [Capture: strict commands, forgiving arguments](0010-capture-strict-commands-forgiving-arguments.md) | Accepted |
 | 0011 | [Reminders via Web Push](0011-reminders-via-web-push.md) | Accepted |
 | 0012 | [Architect-first process](0012-architect-first-process.md) | Accepted |
-| 0013 | [Direction: one North Star + milestones](0013-direction-one-north-star-milestones.md) | Accepted |
+| 0013 | [Direction: one North Star + milestones](0013-direction-one-north-star-milestones.md) | Accepted, one per space since 0031 |
 | 0014 | [Methodology transparency](0014-methodology-transparency.md) | Accepted |
 | 0015 | [Build in versions](0015-build-in-versions.md) | Accepted |
 | 0016 | [AI in v0.1: foundation + ticker](0016-ai-in-v0-1-foundation-ticker.md) | Accepted |
@@ -33,3 +33,4 @@ One short file per decision. New decisions get the next number; a changed decisi
 | 0027 | [Background jobs](0027-background-jobs.md) | Accepted |
 | 0028 | [UI building blocks: React Aria Components + Tailwind](0028-ui-building-blocks.md) | Accepted |
 | 0029 | [Icebox: the todos without a date](0029-icebox-todos-without-a-date.md) | Accepted |
+| 0031 | [Spaces: separate worlds in one install](0031-spaces.md) | Accepted |
