@@ -1,6 +1,6 @@
 import { CalendarDate, Time } from '@internationalized/date'
 import { describe, expect, it } from 'vitest'
-import { commandsStartingWith, parseCapture } from './parseCapture'
+import { commandsStartingWith, parseCapture, prioritiesToOffer, withPriority } from './parseCapture'
 
 // Wednesday 30 September 2026.
 const TODAY = new CalendarDate(2026, 9, 30)
@@ -57,7 +57,7 @@ describe('/todo', () => {
       / (today|tomorrow|demain|mañana|friday|lundi|wednesday|in|dans|2026)/,
     )[0]
     expect(parseCapture(`/todo ${text}`, TODAY)).toEqual({
-      capture: { kind: 'todo', title, dueDate },
+      capture: { kind: 'todo', title, dueDate, priority: null },
     })
   })
 
@@ -71,12 +71,73 @@ describe('/todo', () => {
 describe('/icebox', () => {
   it('keeps a todo without a date, date words included', () => {
     expect(parseCapture('/icebox Plan the offsite friday', TODAY)).toEqual({
-      capture: { kind: 'icebox', title: 'Plan the offsite friday' },
+      capture: { kind: 'icebox', title: 'Plan the offsite friday', priority: null },
     })
   })
 
   it('needs something to keep', () => {
     expect(parseCapture('/icebox   ', TODAY)).toEqual({ problem: 'noTitle' })
+  })
+})
+
+describe('priorities', () => {
+  it('!1 to !3 anywhere in a todo, taken out of the title', () => {
+    expect(parseCapture('/todo Call the editor tomorrow !1', TODAY)).toEqual({
+      capture: {
+        kind: 'todo',
+        title: 'Call the editor',
+        dueDate: new CalendarDate(2026, 10, 1),
+        priority: 1,
+      },
+    })
+    expect(parseCapture('/todo !2 Call the editor', TODAY)).toMatchObject({
+      capture: { title: 'Call the editor', priority: 2 },
+    })
+  })
+
+  it('in the icebox too', () => {
+    expect(parseCapture('/icebox Redo the login !3', TODAY)).toEqual({
+      capture: { kind: 'icebox', title: 'Redo the login', priority: 3 },
+    })
+  })
+
+  it('only as a whole word, from 1 to 3', () => {
+    for (const title of ['Ship v2!1', 'Fix !4 bugs', 'Read !12 pages', 'Wow!']) {
+      expect(parseCapture(`/todo ${title}`, TODAY)).toMatchObject({
+        capture: { title, priority: null },
+      })
+    }
+  })
+
+  it('the first one counts, the others stay in the title', () => {
+    expect(parseCapture('/todo Call !1 !2', TODAY)).toMatchObject({
+      capture: { title: 'Call !2', priority: 1 },
+    })
+  })
+
+  it('is just text in blocks, ideas and notes', () => {
+    expect(parseCapture('/idea Try !1', TODAY)).toEqual({
+      capture: { kind: 'idea', text: 'Try !1' },
+    })
+    expect(parseCapture('/block Deep work !1 9-11', TODAY)).toMatchObject({
+      capture: { title: 'Deep work !1' },
+    })
+  })
+
+  it('offers the priorities right after a "!" at the end of a todo', () => {
+    expect(prioritiesToOffer('/todo Call !')).toEqual([1, 2, 3])
+    expect(prioritiesToOffer('/icebox !')).toEqual([1, 2, 3])
+    expect(prioritiesToOffer('/todo Call !1')).toEqual([]) // typed already
+    expect(prioritiesToOffer('/todo Call ! ')).toEqual([])
+    expect(prioritiesToOffer('/todo Call!')).toEqual([])
+    expect(prioritiesToOffer('/idea Wow !')).toEqual([])
+  })
+
+  it('sets the priority in the text, in place of any other', () => {
+    expect(withPriority('/todo Call !', 1)).toBe('/todo Call !1 ')
+    expect(withPriority('/todo Call', 3)).toBe('/todo Call !3 ')
+    expect(withPriority('/todo Call !1 tomorrow', 2)).toBe('/todo Call tomorrow !2 ')
+    expect(withPriority('/todo Call !2 ', null)).toBe('/todo Call ')
   })
 })
 

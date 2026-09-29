@@ -184,12 +184,13 @@
     "placeholder": "Whatever is taking up space in your head…",
     "hint": "Type / for a command, or just write: plain text becomes an idea. Enter saves.",
     "commandsLabel": "Commands",
+    "prioritiesLabel": "Priorities",
     "commands": {
-      "todo": "Something to do. Add a day: tomorrow, friday…",
+      "todo": "Something to do. Add a day (tomorrow, friday…) or a priority (!1 to !3)",
       "block": "Time set aside, e.g. “Deep work 9-11 friday”",
       "idea": "A thought to look at later",
       "note": "Something to keep, as written",
-      "icebox": "A todo without a date, for later"
+      "icebox": "A todo without a date, for later. !1 to !3 for a priority"
     },
     "kinds": {
       "todo": "Todo",
@@ -208,7 +209,19 @@
       "noTitle": "Add a few words about what it is.",
       "noTime": "Add a time, e.g. 9-11 or 14:00-15:30.",
       "endBeforeStart": "The end comes before the start."
-    }
+    },
+    "addPriority": "Add a priority",
+    "changePriority": "{{level}}. Press to change it"
+  },
+  "priority": {
+    "short": "P{{priority}}",
+    "levels": {
+      "1": "High priority",
+      "2": "Medium priority",
+      "3": "Low priority"
+    },
+    "none": "No priority",
+    "menu": "Priority"
   },
   "today": {
     "blocks": "Time blocks",

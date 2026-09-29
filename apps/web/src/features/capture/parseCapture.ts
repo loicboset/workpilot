@@ -2,6 +2,7 @@
  * The capture bar's language (ADR 0010): strict commands, forgiving arguments.
  *
  *   /todo Call the editor tomorrow      → a todo due tomorrow (today when no day is given)
+ *   /todo Call the editor !1            → a todo due today, priority 1 (!1 to !3, ADR 0030)
  *   /block Deep work 9-11 friday        → a time block on Friday, 09:00–11:00
  *   /idea Automate the weekly report    → an idea
  *   /note The editor prefers mornings   → a note, kept as written (line breaks too)
@@ -9,16 +10,18 @@
  *   Automate the weekly report          → no command: an idea (the inbox)
  *
  * Dates are read the same way offline and online, without AI. Date words work in English,
- * French and Spanish, whatever the app's language.
+ * French and Spanish, whatever the app's language. A priority goes anywhere in a /todo or an
+ * /icebox; elsewhere "!1" is just text.
  */
 import { Time, type CalendarDate } from '@internationalized/date'
+import { isPriority, PRIORITIES, type Priority } from '@/lib/priority'
 
 export const COMMANDS = ['todo', 'block', 'idea', 'note', 'icebox'] as const
 export type Command = (typeof COMMANDS)[number]
 
 export type Capture =
-  | { kind: 'todo'; title: string; dueDate: CalendarDate }
-  | { kind: 'icebox'; title: string }
+  | { kind: 'todo'; title: string; dueDate: CalendarDate; priority: Priority | null }
+  | { kind: 'icebox'; title: string; priority: Priority | null }
   | { kind: 'block'; title: string; day: CalendarDate; start: Time; end: Time }
   | { kind: 'idea'; text: string }
   | { kind: 'note'; text: string }
@@ -45,17 +48,21 @@ export function parseCapture(input: string, today: CalendarDate): ParseResult {
 
   // The icebox has no dates: "friday" stays in the title.
   if (command === 'icebox') {
-    const title = tidy(rest)
-    return title ? { capture: { kind: 'icebox', title } } : { problem: 'noTitle' }
+    const { priority, remaining } = takePriority(rest)
+    const title = tidy(remaining)
+    return title ? { capture: { kind: 'icebox', title, priority } } : { problem: 'noTitle' }
+  }
+
+  if (command === 'todo') {
+    const { priority, remaining: withoutPriority } = takePriority(rest)
+    const { day, remaining } = takeDay(withoutPriority, today)
+    const title = tidy(remaining)
+    return title
+      ? { capture: { kind: 'todo', title, dueDate: day ?? today, priority } }
+      : { problem: 'noTitle' }
   }
 
   const { day, remaining: withoutDate } = takeDay(rest, today)
-  if (command === 'todo') {
-    const title = tidy(withoutDate)
-    return title
-      ? { capture: { kind: 'todo', title, dueDate: day ?? today } }
-      : { problem: 'noTitle' }
-  }
 
   const { range, remaining: withoutTime } = takeTimeRange(withoutDate)
   const title = tidy(withoutTime)
@@ -74,6 +81,40 @@ export function commandsStartingWith(input: string): Command[] {
   if (!match) return []
   return COMMANDS.filter((command) => command.startsWith(match[1].toLowerCase()))
 }
+
+// --- Priorities (ADR 0030) -------------------------------------------------------------------
+
+// !1, !2 or !3 as a whole word: not "!12", nor "v2!1".
+const PRIORITY = /(^|\s)!([1-3])(?=\s|$)/
+const PRIORITIES_ANYWHERE = new RegExp(PRIORITY.source, 'g')
+// A "!" just typed at the end of a todo: "/todo Call the editor !".
+const PRIORITY_BEING_TYPED = /^(\s*\/(?:todo|icebox)\s(?:.*\s)?)!$/is
+
+/**
+ * The priorities to offer in the menu: all of them right after a "!" typed at the end of a
+ * /todo or an /icebox, none otherwise. Typing the digit is quicker than the menu: "!1" closes it.
+ */
+export const prioritiesToOffer = (input: string): readonly Priority[] =>
+  PRIORITY_BEING_TYPED.test(input) ? PRIORITIES : []
+
+/**
+ * The text with that priority, in place of any other and of a "!" just typed; `null` removes it.
+ * The new "!1" goes at the end, followed by a space so the menu stays closed.
+ */
+export const withPriority = (input: string, priority: Priority | null): string => {
+  const typing = PRIORITY_BEING_TYPED.exec(input)
+  const withoutAny = (typing ? typing[1] : input).replace(PRIORITIES_ANYWHERE, '')
+  return priority === null ? withoutAny : `${withoutAny.trimEnd()} !${priority} `
+}
+
+const takePriority = (text: string): { priority: Priority | null; remaining: string } => {
+  const match = PRIORITY.exec(text)
+  const level = match ? Number(match[2]) : null
+  if (!match || !isPriority(level)) return { priority: null, remaining: text }
+  return { priority: level, remaining: text.replace(match[0], ' ') }
+}
+
+// --- Helpers ---------------------------------------------------------------------------------
 
 function isCommand(value: string): value is Command {
   return (COMMANDS as readonly string[]).includes(value)

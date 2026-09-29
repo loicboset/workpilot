@@ -2,10 +2,14 @@
 
 import uuid
 from datetime import date, datetime
+from typing import Annotated
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.common import AwareTimestamp, PartialUpdate, RequestBody, SyncedRead, SyncRow, Title
+
+# 1 = most important, 3 = least (ADR 0030).
+Priority = Annotated[int, Field(ge=1, le=3)]
 
 
 class TodoFields(BaseModel):
@@ -14,6 +18,7 @@ class TodoFields(BaseModel):
     title: Title
     notes: str | None = None
     due_date: date | None = None
+    priority: Priority | None = None
     completed_at: AwareTimestamp | None = None
     milestone_id: uuid.UUID | None = None
 
@@ -30,6 +35,7 @@ class TodoUpdate(PartialUpdate):
     title: Title | None = None
     notes: str | None = None
     due_date: date | None = None
+    priority: Priority | None = None
     completed_at: AwareTimestamp | None = None
     milestone_id: uuid.UUID | None = None
 
@@ -38,6 +44,7 @@ class TodoRead(SyncedRead):
     title: str
     notes: str | None
     due_date: date | None
+    priority: int | None
     completed_at: datetime | None
     milestone_id: uuid.UUID | None
 

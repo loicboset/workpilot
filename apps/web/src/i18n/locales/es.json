@@ -187,12 +187,13 @@
     "placeholder": "Lo que sea que ocupe tu mente…",
     "hint": "Pulsa / para ver los comandos, o escribe sin más: el texto se guarda como idea. Intro guarda.",
     "commandsLabel": "Comandos",
+    "prioritiesLabel": "Prioridades",
     "commands": {
-      "todo": "Algo que hacer. Añade un día: mañana, viernes…",
+      "todo": "Algo que hacer. Añade un día (mañana, viernes…) o una prioridad (!1 a !3)",
       "block": "Tiempo reservado, p. ej. «Trabajo profundo 9-11 viernes»",
       "idea": "Un pensamiento para ver más tarde",
       "note": "Algo que guardar, tal cual",
-      "icebox": "Una tarea sin fecha, para más tarde"
+      "icebox": "Una tarea sin fecha, para más tarde. !1 a !3 para una prioridad"
     },
     "kinds": {
       "todo": "Tarea",
@@ -211,7 +212,19 @@
       "noTitle": "Añade unas palabras sobre qué es.",
       "noTime": "Añade una hora, p. ej. 9-11 o 14:00-15:30.",
       "endBeforeStart": "El final va antes del inicio."
-    }
+    },
+    "addPriority": "Añadir una prioridad",
+    "changePriority": "{{level}}. Pulsa para cambiarla"
+  },
+  "priority": {
+    "short": "P{{priority}}",
+    "levels": {
+      "1": "Prioridad alta",
+      "2": "Prioridad media",
+      "3": "Prioridad baja"
+    },
+    "none": "Sin prioridad",
+    "menu": "Prioridad"
   },
   "today": {
     "blocks": "Bloques de tiempo",

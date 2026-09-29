@@ -9,6 +9,7 @@ import {
   listTodos,
   moveToIcebox,
   postponeTodo,
+  setTodoPriority,
 } from './todos'
 
 beforeEach(async () => {
@@ -33,6 +34,27 @@ describe('todos repository', () => {
     const titles = (await listTodos()).map((todo) => todo.title)
 
     expect(titles).toEqual(['early', 'late', 'undated'])
+  })
+
+  it('lists a day by priority, the todos without one last', async () => {
+    await db.todos.put({
+      ...newRowFields(),
+      created_at: '2026-09-01T09:00:00Z', // before the other todo without a priority
+      title: 'saved before priorities',
+      notes: null,
+      due_date: '2026-10-01',
+      completed_at: null,
+      milestone_id: null,
+    })
+    await addTodo({ title: 'none', due_date: '2026-10-01' })
+    await addTodo({ title: 'low', due_date: '2026-10-01', priority: 3 })
+    await addTodo({ title: 'high', due_date: '2026-10-01', priority: 1 })
+    const medium = await addTodo({ title: 'medium', due_date: '2026-10-01' })
+    await setTodoPriority(medium.id, 2)
+
+    const titles = (await listTodos()).map((todo) => todo.title)
+
+    expect(titles).toEqual(['high', 'medium', 'low', 'saved before priorities', 'none'])
   })
 
   it('completes, postpones and soft-deletes', async () => {
@@ -67,5 +89,14 @@ describe('todos repository', () => {
 
     expect(open.map((todo) => todo.title)).toEqual(['dated', 'newer', 'older'])
     expect(done.map((todo) => todo.title)).toEqual(['done'])
+  })
+
+  it('puts the icebox todos with a priority first', async () => {
+    await addTodo({ title: 'important', priority: 1 })
+    await addTodo({ title: 'newest' })
+
+    const { open } = await listIcebox()
+
+    expect(open.map((todo) => todo.title)).toEqual(['important', 'newest'])
   })
 })

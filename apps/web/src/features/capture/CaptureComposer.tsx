@@ -6,9 +6,10 @@ import { Alert } from '@/components/ui/Alert'
 import { Input, TextArea } from '@/components/ui/Field'
 import { useTimeZone } from '@/data/profile'
 import { CaptureHint, CapturePreview } from './CapturePreview'
-import { CommandMenu } from './CommandMenu'
-import { commandsStartingWith, parseCapture, type Command } from './parseCapture'
+import { parseCapture, withPriority, type Command } from './parseCapture'
 import { saveCapture } from './saveCapture'
+import { SuggestionMenu } from './SuggestionMenu'
+import { applySuggestion, suggestionKey, suggestionsFor, type Suggestion } from './suggestions'
 
 type CaptureComposerProps = {
   /**
@@ -25,6 +26,7 @@ type CaptureComposerProps = {
 /**
  * Where thoughts are captured, in the ⌘K bar and on the homepage: type, then Enter.
  * "/" opens the command menu, as in Slack or Claude; plain text becomes an idea (ADR 0010).
+ * In a todo, "!" opens the priorities (ADR 0030).
  */
 export const CaptureComposer = ({
   variant,
@@ -52,9 +54,9 @@ export const CaptureComposer = ({
     setActiveIndex(0)
   }
 
-  const pickCommand = (command: Command) => changeText(`/${command} `)
+  const pick = (suggestion: Suggestion) => changeText(applySuggestion(text, suggestion))
 
-  const optionId = (command: Command) => `${menuId}-${command}`
+  const optionId = (suggestion: Suggestion) => `${menuId}-${suggestionKey(suggestion)}`
 
   const save = async () => {
     if (!('capture' in result)) return
@@ -68,10 +70,10 @@ export const CaptureComposer = ({
     if (isMenuOpen && (event.key === 'ArrowDown' || event.key === 'ArrowUp')) {
       event.preventDefault()
       const step = event.key === 'ArrowDown' ? 1 : -1
-      setActiveIndex((activeIndex + step + commands.length) % commands.length)
+      setActiveIndex((activeIndex + step + suggestions.length) % suggestions.length)
     } else if (isMenuOpen && (event.key === 'Enter' || event.key === 'Tab')) {
       event.preventDefault()
-      pickCommand(activeCommand)
+      pick(activeSuggestion)
     } else if (isMenuOpen && event.key === 'Escape') {
       setMenuDismissed(true) // Esc closes the menu only, not the bar
     } else if (event.key === 'Enter' && !(isMultiline && event.shiftKey)) {
@@ -85,13 +87,15 @@ export const CaptureComposer = ({
   // VARS
   const isMultiline = variant === 'card'
   const result = parseCapture(text, today(timeZone))
-  const commands = commandsStartingWith(text)
-  const isMenuOpen = isFocused && !isMenuDismissed && commands.length > 0
-  const activeCommand = commands[activeIndex] // activeIndex is reset whenever the text changes
+  const suggestions = suggestionsFor(text)
+  const isMenuOpen = isFocused && !isMenuDismissed && suggestions.length > 0
+  const activeSuggestion = suggestions[activeIndex] // activeIndex is reset whenever the text changes
+  const menuLabel =
+    suggestions[0]?.kind === 'priority' ? t('capture.prioritiesLabel') : t('capture.commandsLabel')
   const comboboxProps: AriaAttributes = {
     'aria-autocomplete': 'list',
     'aria-controls': isMenuOpen ? menuId : undefined,
-    'aria-activedescendant': isMenuOpen ? optionId(activeCommand) : undefined,
+    'aria-activedescendant': isMenuOpen ? optionId(activeSuggestion) : undefined,
   }
 
   return (
@@ -120,13 +124,14 @@ export const CaptureComposer = ({
           )}
         </TextField>
         {isMenuOpen && (
-          <CommandMenu
+          <SuggestionMenu
             id={menuId}
-            commands={commands}
-            activeCommand={activeCommand}
+            label={menuLabel}
+            suggestions={suggestions}
+            activeSuggestion={activeSuggestion}
             optionId={optionId}
-            onHighlight={(command) => setActiveIndex(commands.indexOf(command))}
-            onPick={pickCommand}
+            onHighlight={(suggestion) => setActiveIndex(suggestions.indexOf(suggestion))}
+            onPick={pick}
             className={isMultiline ? 'absolute inset-x-0 top-full z-20 mt-2' : 'mt-2'}
           />
         )}
@@ -138,7 +143,11 @@ export const CaptureComposer = ({
         ) : isMenuOpen ? (
           <CaptureHint />
         ) : (
-          <CapturePreview result={result} timeZone={timeZone} />
+          <CapturePreview
+            result={result}
+            timeZone={timeZone}
+            onPriorityChange={(priority) => changeText(withPriority(text, priority))}
+          />
         )}
       </div>
     </div>

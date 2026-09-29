@@ -111,3 +111,50 @@ it('Esc closes the capture bar, even while typing', async () => {
 
   await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
 })
+
+it('in a todo, ! opens the priorities, and the preview’s priority can be pressed', async () => {
+  startFakeServer({ signedIn: true })
+  renderApp('/')
+  await screen.findByRole('heading', { name: /Ada/ })
+
+  await userEvent.keyboard('{Control>}k{/Control}')
+  const input = await screen.findByRole('textbox', { name: 'Capture' })
+  await userEvent.type(input, '/todo Call the editor !')
+
+  const menu = screen.getByRole('listbox', { name: 'Priorities' })
+  expect(
+    within(menu)
+      .getAllByRole('option')
+      .map((option) => option.textContent),
+  ).toEqual(['!1High priority', '!2Medium priority', '!3Low priority'])
+  await userEvent.keyboard('{ArrowDown}{Enter}')
+  expect(input).toHaveProperty('value', '/todo Call the editor !2 ')
+  expect(screen.queryByRole('listbox')).toBeNull()
+
+  await userEvent.click(screen.getByRole('button', { name: 'Medium priority. Press to change it' }))
+  expect(input).toHaveProperty('value', '/todo Call the editor !3 ')
+  expect(document.activeElement).toBe(input)
+  await userEvent.keyboard('{Enter}')
+
+  await waitFor(async () => expect(await db.todos.count()).toBe(1))
+  const [todo] = await db.todos.toArray()
+  expect(todo).toMatchObject({ title: 'Call the editor', priority: 3 })
+})
+
+it('a typed priority saves on Enter, without a menu in the way', async () => {
+  startFakeServer({ signedIn: true })
+  renderApp('/')
+  await screen.findByRole('heading', { name: /Ada/ })
+
+  await userEvent.keyboard('{Control>}k{/Control}')
+  await userEvent.type(
+    await screen.findByRole('textbox', { name: 'Capture' }),
+    '/icebox Redo it !1',
+  )
+  expect(screen.queryByRole('listbox')).toBeNull()
+  await userEvent.keyboard('{Enter}')
+
+  await waitFor(async () => expect(await db.todos.count()).toBe(1))
+  const [todo] = await db.todos.toArray()
+  expect(todo).toMatchObject({ title: 'Redo it', due_date: null, priority: 1 })
+})

@@ -33,8 +33,15 @@ def list_todos(
         stmt = stmt.where(Todo.completed_at.is_(None))
     if milestone_id is not None:
         stmt = stmt.where(Todo.milestone_id == milestone_id)
-    # Dated todos first (soonest first), then undated, oldest first.
-    stmt = stmt.order_by(Todo.due_date.is_(None), Todo.due_date, Todo.created_at)
+    # Dated todos first (soonest first), then undated; within a day, by priority (none last),
+    # then oldest first.
+    stmt = stmt.order_by(
+        Todo.due_date.is_(None),
+        Todo.due_date,
+        Todo.priority.is_(None),
+        Todo.priority,
+        Todo.created_at,
+    )
     return list(session.scalars(stmt))
 
 

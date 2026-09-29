@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { twMerge } from 'tailwind-merge'
+import { PriorityBadge } from '@/components/PriorityBadge'
 import { Checkbox } from '@/components/ui/Checkbox'
 import { completeTimeBlock, reopenTimeBlock } from '@/data/timeBlocks'
 import { completeTodo, reopenTodo } from '@/data/todos'
@@ -28,6 +29,7 @@ export const DayRow = ({ item, isFocus, milestone, timeZone }: DayRowProps) => {
 
   // VARS
   const block = item.kind === 'block' ? item.block : null
+  const priority = item.kind === 'todo' ? item.todo.priority : null
 
   return (
     <li className="flex items-center">
@@ -59,6 +61,9 @@ export const DayRow = ({ item, isFocus, milestone, timeZone }: DayRowProps) => {
               )}
             >
               {item.title}
+              {priority && (
+                <PriorityBadge priority={priority} className="ml-1.5 align-text-bottom" />
+              )}
               {milestone && (
                 <span className="sr-only">
                   {' '}

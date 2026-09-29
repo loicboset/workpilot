@@ -25,7 +25,7 @@ Every synced table also has:
 | `profiles` | `first_name` text · `last_name` text? · `locale` text (en/fr/es) · `timezone` text · `city` text? · `theme` text (system/light/dark) · `palette` text (grove/lake/heather/olive/birch) |
 | `north_stars` | `title` text · `description` text? · `target_date` date? |
 | `milestones` | `north_star_id` → north_stars · `title` text · `description` text? · `target_date` date? · `position` int · `completed_at` timestamptz? |
-| `todos` | `title` text · `notes` text? · `due_date` date? · `completed_at` timestamptz? · `milestone_id` → milestones? |
+| `todos` | `title` text · `notes` text? · `due_date` date? · `priority` smallint? (1–3, 1 = most important) · `completed_at` timestamptz? · `milestone_id` → milestones? |
 | `time_blocks` | `title` text · `start_at` timestamptz · `end_at` timestamptz (after `start_at`) · `completed_at` timestamptz? · `milestone_id` → milestones? |
 | `ideas` | `text` text |
 | `notes` | `title` text? · `content` text · `milestone_id` → milestones? |

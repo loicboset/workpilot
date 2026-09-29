@@ -16,6 +16,7 @@ def test_create_with_only_a_title(client: TestClient) -> None:
     todo = response.json()
     assert todo["title"] == "Call Marc"
     assert todo["due_date"] is None
+    assert todo["priority"] is None
     assert todo["completed_at"] is None
     assert todo["deleted_at"] is None
     assert todo["created_at"].endswith("Z")
@@ -63,6 +64,15 @@ def test_list_is_sorted_and_filtered(client: TestClient) -> None:
     assert titles(completed=True) == ["early"]
 
 
+def test_within_a_day_higher_priority_comes_first(client: TestClient) -> None:
+    for title, priority in [("none", None), ("low", 3), ("high", 1), ("medium", 2)]:
+        create_todo(client, title=title, due_date="2026-10-01", priority=priority)
+
+    titles = [todo["title"] for todo in client.get("/api/todos").json()]
+
+    assert titles == ["high", "medium", "low", "none"]
+
+
 def test_postpone_complete_and_reopen(client: TestClient) -> None:
     todo = create_todo(client, due_date="2026-10-01")
     url = f"/api/todos/{todo['id']}"
@@ -79,6 +89,15 @@ def test_postpone_complete_and_reopen(client: TestClient) -> None:
     assert reopened["completed_at"] is None
 
 
+def test_set_and_clear_priority(client: TestClient) -> None:
+    todo = create_todo(client, priority=2)
+    url = f"/api/todos/{todo['id']}"
+    assert todo["priority"] == 2
+
+    assert client.patch(url, json={"priority": 1}).json()["priority"] == 1
+    assert client.patch(url, json={"priority": None}).json()["priority"] is None
+
+
 def test_update_rejects_invalid_input(client: TestClient) -> None:
     todo = create_todo(client)
     url = f"/api/todos/{todo['id']}"
@@ -86,6 +105,8 @@ def test_update_rejects_invalid_input(client: TestClient) -> None:
     assert client.patch(url, json={"title": None}).status_code == 422
     assert client.patch(url, json={"completed_at": "2026-10-03T17:30:00"}).status_code == 422
     assert client.patch(url, json={"milestone_id": str(uuid.uuid4())}).status_code == 422
+    assert client.patch(url, json={"priority": 0}).status_code == 422
+    assert client.patch(url, json={"priority": 4}).status_code == 422
     # The failed updates left the todo unchanged.
     assert client.get(url).json() == todo
 

@@ -109,10 +109,21 @@ def _today(session: Session, timezone: ZoneInfo) -> str:
         .where(TimeBlock.start_at >= start, TimeBlock.start_at < start + timedelta(days=1))
         .order_by(TimeBlock.start_at)
     )
-    todos = session.scalars(select_rows(Todo).where(Todo.due_date == today))
+    todos = session.scalars(
+        select_rows(Todo)
+        .where(Todo.due_date == today)
+        .order_by(Todo.priority.is_(None), Todo.priority, Todo.created_at)
+    )
     items = [f"{_clock(block.start_at, timezone)} {block.title}" for block in blocks]
-    items += [f"todo: {todo.title}{' (done)' if todo.completed_at else ''}" for todo in todos]
+    items += [f"todo: {todo.title}{_todo_details(todo)}" for todo in todos]
     return "; ".join(items) or "nothing planned yet"
+
+
+def _todo_details(todo: Todo) -> str:
+    details = [f"priority {todo.priority}"] if todo.priority else []
+    if todo.completed_at:
+        details.append("done")
+    return f" ({', '.join(details)})" if details else ""
 
 
 def _clock(moment: datetime, timezone: ZoneInfo) -> str:

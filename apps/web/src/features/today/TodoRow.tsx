@@ -18,11 +18,20 @@ import { Checkbox } from '@/components/ui/Checkbox'
 import { IconButton } from '@/components/ui/IconButton'
 import { Menu, MenuItem } from '@/components/ui/Menu'
 import { Dialog, DialogTitle, Modal } from '@/components/ui/Modal'
-import { completeTodo, deleteTodo, moveToIcebox, reopenTodo, updateTodo } from '@/data/todos'
+import { PriorityBadge } from '@/components/PriorityBadge'
+import {
+  completeTodo,
+  deleteTodo,
+  moveToIcebox,
+  reopenTodo,
+  setTodoPriority,
+  updateTodo,
+} from '@/data/todos'
 import type { Milestone, Todo } from '@/db/types'
 import { dayLabel } from '@/lib/format'
 import { checklistProgress } from './checklist'
 import { MilestoneSubmenu } from './MilestoneMenu'
+import { PrioritySubmenu } from './PriorityMenu'
 import { TodoNotesForm } from './TodoNotesForm'
 
 type TodoRowProps = {
@@ -34,8 +43,8 @@ type TodoRowProps = {
 }
 
 /**
- * A todo: tick it done, give it a day or put it in the icebox (ADR 0029), keep notes on it,
- * link it to a milestone, or delete it.
+ * A todo: tick it done, give it a day or put it in the icebox (ADR 0029), a priority
+ * (ADR 0030), keep notes on it, link it to a milestone, or delete it.
  */
 export const TodoRow = ({ todo, milestones, timeZone, showDue = false }: TodoRowProps) => {
   // STATES
@@ -51,8 +60,9 @@ export const TodoRow = ({ todo, milestones, timeZone, showDue = false }: TodoRow
   const milestone = milestones.find((m) => m.id === todo.milestone_id)
   const due = todo.due_date ? parseDate(todo.due_date) : null
   const isOverdue = due !== null && !isDone && due.compare(todayDate) < 0
+  const priority = todo.priority ?? null
   const checklist = checklistProgress(todo.notes)
-  const hasDetails = Boolean(milestone || (showDue && due) || todo.notes)
+  const hasDetails = Boolean(priority || milestone || (showDue && due) || todo.notes)
 
   // METHODS
   const moveTo = (day: CalendarDate) => updateTodo(todo.id, { due_date: day.toString() })
@@ -78,6 +88,7 @@ export const TodoRow = ({ todo, milestones, timeZone, showDue = false }: TodoRow
           <span className={isDone ? 'text-grove-muted line-through' : undefined}>{todo.title}</span>
           {hasDetails && (
             <span className="flex flex-wrap items-center gap-2 text-xs">
+              {priority && <PriorityBadge priority={priority} />}
               {showDue && due && (
                 <span className={isOverdue ? 'text-grove-clay' : 'text-grove-muted'}>
                   {dayLabel(due, t, i18n.language, timeZone)}
@@ -135,6 +146,10 @@ export const TodoRow = ({ todo, milestones, timeZone, showDue = false }: TodoRow
             <NotebookPen aria-hidden />
             {t('today.notes')}
           </MenuItem>
+          <PrioritySubmenu
+            priority={priority}
+            onSelect={(level) => void setTodoPriority(todo.id, level)}
+          />
           <MilestoneSubmenu
             milestones={milestones}
             selectedId={todo.milestone_id}

@@ -3,7 +3,7 @@
 import uuid
 from datetime import date, datetime
 
-from sqlalchemy import CheckConstraint, Date, ForeignKey, Text
+from sqlalchemy import CheckConstraint, Date, ForeignKey, SmallInteger, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base, SyncedMixin
@@ -11,10 +11,13 @@ from app.db.base import Base, SyncedMixin
 
 class Todo(SyncedMixin, Base):
     __tablename__ = "todos"
+    __table_args__ = (CheckConstraint("priority BETWEEN 1 AND 3", name="priority_1_to_3"),)
 
     title: Mapped[str] = mapped_column(Text)
     notes: Mapped[str | None] = mapped_column(Text)
     due_date: Mapped[date | None] = mapped_column(Date, index=True)
+    # 1 = most important, 3 = least; None = no priority (ADR 0030).
+    priority: Mapped[int | None] = mapped_column(SmallInteger)
     completed_at: Mapped[datetime | None]
     milestone_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey("milestones.id", ondelete="SET NULL"), index=True

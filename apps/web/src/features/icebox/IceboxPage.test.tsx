@@ -82,3 +82,19 @@ it('shows how far a checklist in the notes has come', async () => {
 
   expect(await screen.findByText('1 of 2')).toBeTruthy()
 })
+
+it('a todo’s menu sets its priority, which puts it first', async () => {
+  const todo = await addTodo({ title: 'Redo the login', due_date: null })
+  await addTodo({ title: 'Plan the offsite', due_date: null }) // newer: first until then
+  startFakeServer({ signedIn: true })
+  renderApp('/icebox')
+
+  await userEvent.click(await screen.findByRole('button', { name: 'More for “Redo the login”' }))
+  await userEvent.click(screen.getByRole('menuitem', { name: 'Priority' }))
+  await userEvent.click(await screen.findByRole('menuitemradio', { name: 'High priority' }))
+
+  await waitFor(async () => expect((await db.todos.get(todo.id))?.priority).toBe(1))
+  await waitFor(() =>
+    expect(screen.getAllByRole('listitem')[0].textContent).toMatch(/^Redo the login.*P1/),
+  )
+})

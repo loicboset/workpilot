@@ -65,7 +65,8 @@ def test_refresh_asks_the_ai_with_the_users_context(
     db.add(north_star)
     db.flush()
     db.add(Milestone(north_star_id=north_star.id, title="First draft"))
-    db.add(Todo(title="Outline chapter 3", due_date=datetime.now(ZoneInfo("Europe/Zurich")).date()))
+    today = datetime.now(ZoneInfo("Europe/Zurich")).date()
+    db.add(Todo(title="Outline chapter 3", due_date=today, priority=1))
     db.commit()
 
     messages = client.post("/api/ticker-messages/refresh").json()
@@ -83,7 +84,7 @@ def test_refresh_asks_the_ai_with_the_users_context(
         "French",
         "Finish my first novel",
         "First draft (ahead)",
-        "Outline chapter 3",
+        "Outline chapter 3 (priority 1)",
     ]:
         assert expected in prompt
 

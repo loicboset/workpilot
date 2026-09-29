@@ -4,6 +4,7 @@
  */
 
 import type { Locale } from '@/i18n'
+import type { Priority } from '@/lib/priority'
 import type { Palette, Theme } from '@/lib/theme'
 
 /** Fields every synced row has. */
@@ -45,6 +46,8 @@ export interface Todo extends SyncedRow {
   title: string
   notes: string | null
   due_date: string | null
+  /** 1 (most important) to 3, or none. Absent on rows saved before priorities existed: none. */
+  priority?: Priority | null
   completed_at: string | null
   milestone_id: string | null
 }
