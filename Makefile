@@ -1,5 +1,9 @@
 .PHONY: env install dev-web dev-api db migrate test lint typecheck build docker
 
+# The API's port: WORKPILOT_PORT from the environment or .env, else the .env.example default.
+env_value = $(shell sed -n 's/^$(1)=//p' .env 2>/dev/null)
+WORKPILOT_PORT ?= $(or $(call env_value,WORKPILOT_PORT),8100)
+
 # Create .env from .env.example with a fresh random secret (never overwrites an existing .env).
 env:
 	@test ! -f .env || (echo ".env already exists: edit it instead" && exit 1)
@@ -15,7 +19,7 @@ dev-web:
 	cd apps/web && pnpm dev
 
 dev-api:
-	cd apps/api && uv run uvicorn app.main:app --reload --port 8000
+	cd apps/api && uv run uvicorn app.main:app --reload --port $(WORKPILOT_PORT)
 
 db:
 	docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d db

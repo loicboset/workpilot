@@ -4,9 +4,9 @@ services:
     env_file: .env
     environment:
       WORKPILOT_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-workpilot}:${POSTGRES_PASSWORD:-workpilot}@db:5432/${POSTGRES_DB:-workpilot}
-    # http://localhost:8000 (WORKPILOT_PORT in .env if 8000 is taken on this computer)
+    # http://localhost:8100 (WORKPILOT_PORT in .env if 8100 is taken on this computer)
     ports:
-      - "${WORKPILOT_PORT:-8000}:8000"
+      - "${WORKPILOT_PORT:-8100}:8000"
     # Lets the app reach an AI server on this computer (e.g. LM Studio) at host.docker.internal.
     # Built into Docker Desktop; needed on Linux (docs/ai-providers.md).
     extra_hosts:

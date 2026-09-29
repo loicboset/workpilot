@@ -16,7 +16,7 @@ from tests.credentials import TEST_PASSWORD, TEST_USERNAME
 
 TEST_DATABASE_URL = os.environ.get(
     "TEST_DATABASE_URL",
-    "postgresql+psycopg://workpilot:workpilot@localhost:5433/workpilot_test",
+    "postgresql+psycopg://workpilot:workpilot@localhost:5440/workpilot_test",
 )
 os.environ["WORKPILOT_DATABASE_URL"] = TEST_DATABASE_URL
 os.environ["WORKPILOT_USER"] = f"{TEST_USERNAME}:{TEST_PASSWORD}"

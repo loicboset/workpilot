@@ -35,13 +35,16 @@ Prerequisites: Node 22+, pnpm (`corepack enable`), Python 3.13 + [uv](https://do
 make env                  # creates .env with a random secret; then set your name and
                           # password in WORKPILOT_USER, and WORKPILOT_COOKIE_SECURE=false for http
 make install              # web + api dependencies
-make db                   # start Postgres in Docker, on port 5433 (POSTGRES_PORT)
+make db                   # start Postgres in Docker, on port 5440 (POSTGRES_PORT)
 make migrate              # create / update the database tables
-make dev-api              # API on http://localhost:8000
-make dev-web              # web app on http://localhost:5173 (proxies /api)
+make dev-api              # API on http://localhost:8100 (WORKPILOT_PORT)
+make dev-web              # web app on http://localhost:5180 (WORKPILOT_WEB_PORT), proxies /api
 ```
 
-Then open http://localhost:5173, sign in with the name and password from `WORKPILOT_USER`,
+The ports avoid the usual 8000, 5173 and 5433, so WorkPilot runs next to other projects.
+Change them in `.env` if one is still taken.
+
+Then open http://localhost:5180, sign in with the name and password from `WORKPILOT_USER`,
 and answer the three onboarding questions. From there:
 
 - **⌘K** (Ctrl K) captures from anywhere: `/todo Call the editor tomorrow`,
@@ -51,7 +54,7 @@ and answer the three onboarding questions. From there:
 - **Settings → AI → LM Studio**: start LM Studio's server, pick a model, then "Save and test".
   The homepage ticker then gets its messages from your model.
 
-Data model: [docs/data-model.md](docs/data-model.md). API: [docs/api.md](docs/api.md), interactive docs at http://localhost:8000/api/docs when running. AI with LM Studio or a cloud API: [docs/ai-providers.md](docs/ai-providers.md).
+Data model: [docs/data-model.md](docs/data-model.md). API: [docs/api.md](docs/api.md), interactive docs at http://localhost:8100/api/docs when running. AI with LM Studio or a cloud API: [docs/ai-providers.md](docs/ai-providers.md).
 
 Other commands: `make test` (needs `make db` running; the test database is created automatically), `make lint`, `make typecheck`, `make build`.
 
@@ -59,12 +62,12 @@ Other commands: `make test` (needs `make db` running; the test database is creat
 
 ```bash
 make env                    # then set WORKPILOT_USER (and WORKPILOT_COOKIE_SECURE=false for http)
-docker compose up --build   # http://localhost:8000
+docker compose up --build   # http://localhost:8100
 ```
 
 WorkPilot refuses to start with the placeholder password or secret from `.env.example`.
 Its Postgres stays inside Docker, so it never clashes with another database on your computer.
-Port 8000 already taken? Set `WORKPILOT_PORT` in `.env`.
+Port 8100 already taken? Set `WORKPILOT_PORT` in `.env`.
 With LM Studio on the same Mac, use `http://host.docker.internal:1234/v1` in Settings → AI.
 
 ## Methodologies
