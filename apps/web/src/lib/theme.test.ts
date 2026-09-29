@@ -1,5 +1,5 @@
 import { afterEach, expect, it, vi } from 'vitest'
-import { applyTheme, watchTheme } from './theme'
+import { applyPalette, applyTheme, watchTheme } from './theme'
 
 /** A device whose screen is light or dark, and can turn. */
 const stubDevice = (isDark: boolean) => {
@@ -60,4 +60,10 @@ it("ignores the device's changes once a theme is picked", () => {
   device.turn(false)
   expect(shownTheme()).toBe('dark')
   stop()
+})
+
+it('shows the picked palette, and keeps it for the next load', () => {
+  applyPalette('heather')
+  expect(document.documentElement.dataset.palette).toBe('heather')
+  expect(localStorage.getItem('workpilot:palette')).toBe('heather')
 })

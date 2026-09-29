@@ -311,7 +311,16 @@
       "themeHelp": "Change aussitôt, sur tous vos appareils.",
       "system": "Comme l’appareil",
       "light": "Clair",
-      "dark": "Sombre"
+      "dark": "Sombre",
+      "palette": "Couleurs",
+      "paletteHelp": "Chacune, en clair comme en sombre.",
+      "palettes": {
+        "grove": "Bosquet",
+        "lake": "Lac",
+        "heather": "Bruyère",
+        "olive": "Olivier",
+        "birch": "Bouleau"
+      }
     },
     "ai": {
       "title": "IA",

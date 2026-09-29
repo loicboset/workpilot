@@ -19,6 +19,16 @@ class Theme(StrEnum):
     DARK = "dark"
 
 
+class Palette(StrEnum):
+    """The app's colours, in light and dark alike. `grove`, the forest's greens, by default."""
+
+    GROVE = "grove"
+    LAKE = "lake"
+    HEATHER = "heather"
+    OLIVE = "olive"
+    BIRCH = "birch"
+
+
 class JournalKind(StrEnum):
     FREE = "free"
     DAILY = "daily"

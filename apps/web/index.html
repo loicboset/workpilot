@@ -10,17 +10,20 @@
     <meta name="apple-mobile-web-app-title" content="WorkPilot" />
     <title>WorkPilot</title>
     <script>
-      // Start in the theme picked on this device, before the app loads: no flash of light
-      // colours on a dark screen. The app then applies the profile's (src/lib/theme.ts).
+      // Start in the theme and palette picked on this device, before the app loads: no flash
+      // of light colours on a dark screen, nor of Grove's greens. The app then applies the
+      // profile's (src/lib/theme.ts).
       ;(function () {
-        var theme
+        var theme, palette
         try {
           theme = localStorage.getItem('workpilot:theme')
+          palette = localStorage.getItem('workpilot:palette')
         } catch (error) {}
         var isDark =
           theme === 'dark' ||
           (theme !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches)
         document.documentElement.dataset.theme = isDark ? 'dark' : 'light'
+        document.documentElement.dataset.palette = palette || 'grove'
       })()
     </script>
   </head>

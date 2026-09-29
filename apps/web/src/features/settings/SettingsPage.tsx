@@ -15,6 +15,7 @@ import { useSignOut } from '@/features/auth/session'
 import { LanguageSelect, TimezoneComboBox } from '@/features/profile/ProfileFields'
 import { changeLocale } from '@/i18n'
 import { AISettingsForm } from './AISettingsForm'
+import { PalettePicker } from './PalettePicker'
 import { ThemeSelect } from './ThemeSelect'
 
 export function SettingsPage() {
@@ -32,7 +33,10 @@ export function SettingsPage() {
       </Card>
 
       <Card title={t('settings.appearance.title')} icon={<SunMoon />}>
-        <ThemeSelect />
+        <div className="flex flex-col gap-5">
+          <ThemeSelect />
+          <PalettePicker />
+        </div>
       </Card>
 
       <Card title={t('settings.ai.title')} subtitle={t('settings.ai.subtitle')} icon={<Sparkles />}>

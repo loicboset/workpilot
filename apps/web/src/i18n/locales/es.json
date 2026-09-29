@@ -311,7 +311,16 @@
       "themeHelp": "Cambia al instante, en todos tus dispositivos.",
       "system": "Como el dispositivo",
       "light": "Claro",
-      "dark": "Oscuro"
+      "dark": "Oscuro",
+      "palette": "Colores",
+      "paletteHelp": "Cada uno, tanto en claro como en oscuro.",
+      "palettes": {
+        "grove": "Arboleda",
+        "lake": "Lago",
+        "heather": "Brezo",
+        "olive": "Olivo",
+        "birch": "Abedul"
+      }
     },
     "ai": {
       "title": "IA",

@@ -23,8 +23,7 @@ export function Logo({ showName = 'always', className }: LogoProps) {
         <path d="M9 23c0-8 5-13 14-14-1 9-6 14-14 14Z" className="fill-grove-moss" />
         <path
           d="M9 23c3-4 6-7 10-9"
-          fill="none"
-          stroke="var(--color-grove-moss-soft)"
+          className="fill-none stroke-grove-moss-soft"
           strokeWidth="1.6"
           strokeLinecap="round"
         />

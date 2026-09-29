@@ -307,7 +307,16 @@
       "themeHelp": "Changes at once, on all your devices.",
       "system": "Same as the device",
       "light": "Light",
-      "dark": "Dark"
+      "dark": "Dark",
+      "palette": "Colours",
+      "paletteHelp": "Each works in light and dark.",
+      "palettes": {
+        "grove": "Grove",
+        "lake": "Lake",
+        "heather": "Heather",
+        "olive": "Olive",
+        "birch": "Birch"
+      }
     },
     "ai": {
       "title": "AI",

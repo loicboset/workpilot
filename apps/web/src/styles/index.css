@@ -5,24 +5,44 @@
 /* `dark:` follows the theme picked in the settings, not only the device's (see below). */
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
-/* Grove design tokens (the chosen homepage concept). Calm, never alarming. The light theme's
-   values: the dark theme's are below. */
+/* Grove design tokens (the chosen homepage concept). Calm, never alarming. Two kinds of
+   colours: the palette's (surfaces, text, the primary, progress), picked in the settings, and
+   the accents, the same in every palette. Each has a light value and a dark one. */
+
+/* The palette's colours. Their utilities read the palette's variable directly (`inline`):
+   `bg-grove-moss` is `var(--grove-moss)`, so an element with `data-palette` shows another
+   palette than the page's, like the previews in the settings. The values: see the palettes. */
+@theme inline {
+  --color-grove-bg: var(--grove-bg); /* page */
+  --color-grove-card: var(--grove-card); /* cards, raised surfaces */
+  --color-grove-field: var(--grove-field); /* text fields */
+  --color-grove-line: var(--grove-line); /* borders */
+  --color-grove-ink: var(--grove-ink); /* text */
+  --color-grove-muted: var(--grove-muted); /* secondary text */
+  --color-grove-moss: var(--grove-moss); /* primary actions, links, focus */
+  --color-grove-moss-dark: var(--grove-moss-dark); /* primary, hovered or pressed */
+  --color-grove-moss-soft: var(--grove-moss-soft); /* success, selected */
+  --color-grove-ink-soft: var(--grove-ink-soft); /* text on tinted surfaces */
+  --color-grove-fern: var(--grove-fern); /* labels, and work linked to a milestone */
+  --color-grove-leaf: var(--grove-leaf); /* progress: rings, bars, the path walked */
+  --color-grove-leaf-soft: var(--grove-leaf-soft); /* progress still to come */
+  --color-grove-sage: var(--grove-sage); /* milestones ahead */
+  --color-grove-sage-soft: var(--grove-sage-soft); /* the path ahead, later today */
+  --color-grove-stone: var(--grove-stone); /* checkbox borders: 3:1 contrast on cards */
+  --color-grove-on-fill: var(--grove-on-fill); /* text and icons on moss, berry and leaf fills */
+  --color-grove-scrim: var(--grove-scrim); /* behind dialogs */
+  --color-grove-shadow: var(--grove-shadow);
+
+  /* The circle to breathe with (it rests at 55% opacity, see `breathe`). */
+  --color-grove-breath: var(--grove-breath);
+  --color-grove-breath-deep: var(--grove-breath-deep);
+
+  --shadow-grove: 0 1px 2px var(--grove-shadow), 0 8px 24px var(--grove-shadow);
+}
+
 @theme {
-  --color-grove-bg: #edf0e8; /* page */
-  --color-grove-card: #fbfaf6; /* cards, raised surfaces */
-  --color-grove-field: #f1f4ec; /* text fields */
-  --color-grove-line: #dce2d4; /* borders */
-  --color-grove-ink: #26322b; /* text */
-  --color-grove-muted: #56665b; /* secondary text */
-  --color-grove-moss: #335a40; /* primary actions, links, focus */
-  --color-grove-moss-dark: #22402d; /* primary, hovered or pressed */
-  --color-grove-moss-soft: #dde8dc; /* success, selected */
-  --color-grove-ink-soft: #3e4f44; /* text on tinted surfaces */
-  --color-grove-fern: #3f6b4e; /* labels, and work linked to a milestone */
-  --color-grove-leaf: #5e8c6b; /* progress: rings, bars, the path walked */
-  --color-grove-leaf-soft: #dce5d6; /* progress still to come */
-  --color-grove-sage: #b5c4ae; /* milestones ahead */
-  --color-grove-sage-soft: #cbd6c4; /* the path ahead, later today */
+  /* The accents, in every palette: information, "now" and errors keep their colours. The
+     palettes' hues keep clear of theirs. */
   --color-grove-sand: #f1e6cf;
   --color-grove-sand-ink: #6e4e1e;
   --color-grove-sky: #d9e8ec; /* information */
@@ -34,23 +54,14 @@
   --color-grove-clay-ink: #8a4f22;
   --color-grove-sun: #f4d58d;
   --color-grove-sun-ink: #c9a24a;
-  --color-grove-stone: #767676; /* checkbox borders: 3:1 contrast on cards */
   --color-grove-berry: #a4462f; /* errors: warm, not alarm red */
   --color-grove-berry-soft: #f6e4dc;
-  --color-grove-on-fill: #ffffff; /* text and icons on moss, berry and leaf fills */
-  --color-grove-scrim: rgb(38 50 43 / 0.25); /* behind dialogs */
-  --color-grove-shadow: rgb(38 50 43 / 0.05);
-
-  /* The circle to breathe with (it rests at 55% opacity, see `breathe`). */
-  --color-grove-breath: #b5d1b9;
-  --color-grove-breath-deep: #8fb498;
 
   --font-sans: 'Figtree Variable', system-ui, sans-serif;
   --font-serif: 'Lora Variable', Georgia, serif;
 
   --radius-card: 28px;
   --radius-control: 14px; /* buttons and fields */
-  --shadow-grove: 0 1px 2px var(--color-grove-shadow), 0 8px 24px var(--color-grove-shadow);
 
   /* Slow, calm motion. Use with `motion-safe:` so reduced-motion users get none. */
   --animate-breathe: breathe 10s ease-in-out infinite;
@@ -89,29 +100,15 @@
 }
 
 /* The dark theme: the same tokens, by night. `data-theme` on <html> is set before the app
-   loads (index.html), then from the profile (lib/theme.ts). Each text keeps at least 4.5:1
-   contrast on its surfaces, and borders and progress 3:1, as in the light theme. The sun,
-   and the weather card (weather.css), keep their colours: the card follows the real sky. */
+   loads (index.html), then from the profile (lib/theme.ts). Here, the accents' night values;
+   each palette's are with it, below. Each text keeps at least 4.5:1 contrast on its surfaces,
+   and borders and progress 3:1, as in the light theme. The sun, and the weather card
+   (weather.css), keep their colours: the card follows the real sky. */
 :root {
   color-scheme: light;
 }
 :root[data-theme='dark'] {
   color-scheme: dark; /* the browser's own scrollbars, pickers and autofill */
-  --color-grove-bg: #151b17;
-  --color-grove-card: #1d2520;
-  --color-grove-field: #19201c;
-  --color-grove-line: #313d35;
-  --color-grove-ink: #e4e9e1;
-  --color-grove-muted: #a2afa5;
-  --color-grove-moss: #8fc49c;
-  --color-grove-moss-dark: #aad6b4; /* by night, hovering lights up */
-  --color-grove-moss-soft: #263b2d;
-  --color-grove-ink-soft: #cad5cc;
-  --color-grove-fern: #9cc5a6;
-  --color-grove-leaf: #74a881;
-  --color-grove-leaf-soft: #2b3a30;
-  --color-grove-sage: #56705c;
-  --color-grove-sage-soft: #3b4a40;
   --color-grove-sand: #3b3222;
   --color-grove-sand-ink: #e6c78f;
   --color-grove-sky: #1f343b;
@@ -121,20 +118,261 @@
   --color-grove-clay: #df9058;
   --color-grove-clay-soft: #3a2c20;
   --color-grove-clay-ink: #f0b688;
-  --color-grove-stone: #83908a;
   --color-grove-berry: #ec8f77;
   --color-grove-berry-soft: #3f2621;
-  --color-grove-on-fill: #0f1c14; /* the fills are light by night */
-  --color-grove-scrim: rgb(0 0 0 / 0.5);
-  --color-grove-shadow: rgb(0 0 0 / 0.3);
-  --color-grove-breath: #3d5c46;
-  --color-grove-breath-deep: #5f8d6b;
+}
+
+/* The palettes, picked in the settings: `data-palette` on <html>, set like `data-theme`
+   (index.html, then lib/theme.ts). On any element, it shows that palette inside it. Each is
+   Grove's with another hue, token by token: the same lightness and chroma (OKLCH), so the
+   same contrast and the same calm. Grove comes first: on <html>, the others win by coming
+   later, with the same specificity. */
+/* Grove: the forest’s greens. The default, and the fallback before `data-palette` is set. */
+:root,
+[data-palette='grove'] {
+  --grove-bg: #edf0e8;
+  --grove-card: #fbfaf6;
+  --grove-field: #f1f4ec;
+  --grove-line: #dce2d4;
+  --grove-ink: #26322b;
+  --grove-muted: #56665b;
+  --grove-moss: #335a40;
+  --grove-moss-dark: #22402d;
+  --grove-moss-soft: #dde8dc;
+  --grove-ink-soft: #3e4f44;
+  --grove-fern: #3f6b4e;
+  --grove-leaf: #5e8c6b;
+  --grove-leaf-soft: #dce5d6;
+  --grove-sage: #b5c4ae;
+  --grove-sage-soft: #cbd6c4;
+  --grove-stone: #767676;
+  --grove-on-fill: #ffffff;
+  --grove-scrim: rgb(38 50 43 / 0.25);
+  --grove-shadow: rgb(38 50 43 / 0.05);
+  --grove-breath: #b5d1b9;
+  --grove-breath-deep: #8fb498;
+}
+:root[data-theme='dark'],
+[data-theme='dark'] [data-palette='grove'] {
+  --grove-bg: #151b17;
+  --grove-card: #1d2520;
+  --grove-field: #19201c;
+  --grove-line: #313d35;
+  --grove-ink: #e4e9e1;
+  --grove-muted: #a2afa5;
+  --grove-moss: #8fc49c;
+  --grove-moss-dark: #aad6b4; /* by night, hovering lights up */
+  --grove-moss-soft: #263b2d;
+  --grove-ink-soft: #cad5cc;
+  --grove-fern: #9cc5a6;
+  --grove-leaf: #74a881;
+  --grove-leaf-soft: #2b3a30;
+  --grove-sage: #56705c;
+  --grove-sage-soft: #3b4a40;
+  --grove-stone: #83908a;
+  --grove-on-fill: #0f1c14; /* the fills are light by night */
+  --grove-scrim: rgb(0 0 0 / 0.5);
+  --grove-shadow: rgb(0 0 0 / 0.3);
+  --grove-breath: #3d5c46;
+  --grove-breath-deep: #5f8d6b;
+}
+/* Lake: slate and water blues, bluer than the sky’s information tiles. */
+[data-palette='lake'] {
+  --grove-bg: #e9eff6;
+  --grove-card: #f7fafe;
+  --grove-field: #edf3fa;
+  --grove-line: #d6e1ec;
+  --grove-ink: #273039;
+  --grove-muted: #566370;
+  --grove-moss: #3a5172;
+  --grove-moss-dark: #283952;
+  --grove-moss-soft: #dce5f2;
+  --grove-ink-soft: #3f4c59;
+  --grove-fern: #476186;
+  --grove-leaf: #6581aa;
+  --grove-leaf-soft: #d9e2f1;
+  --grove-sage: #b1c0d5;
+  --grove-sage-soft: #c7d3e4;
+  --grove-stone: #767676;
+  --grove-on-fill: #ffffff;
+  --grove-scrim: rgb(39 48 57 / 0.25);
+  --grove-shadow: rgb(39 48 57 / 0.05);
+  --grove-breath: #b7cae6;
+  --grove-breath-deep: #93abcd;
+}
+[data-theme='dark'][data-palette='lake'],
+[data-theme='dark'] [data-palette='lake'] {
+  --grove-bg: #151a1f;
+  --grove-card: #1d232a;
+  --grove-field: #1a1f24;
+  --grove-line: #313b44;
+  --grove-ink: #e1e8ef;
+  --grove-muted: #a2acb8;
+  --grove-moss: #96b7e8;
+  --grove-moss-dark: #afcbf5;
+  --grove-moss-soft: #2a3648;
+  --grove-ink-soft: #cad3dd;
+  --grove-fern: #a1bbe1;
+  --grove-leaf: #7b9bcb;
+  --grove-leaf-soft: #2d3644;
+  --grove-sage: #596a82;
+  --grove-sage-soft: #3d4654;
+  --grove-stone: #858e97;
+  --grove-on-fill: #101923;
+  --grove-scrim: rgb(0 0 0 / 0.5);
+  --grove-shadow: rgb(0 0 0 / 0.3);
+  --grove-breath: #425470;
+  --grove-breath-deep: #6582ac;
+}
+/* Heather: the moor’s mauves. */
+[data-palette='heather'] {
+  --grove-bg: #f2ecf3;
+  --grove-card: #fcf9fc;
+  --grove-field: #f6f0f7;
+  --grove-line: #e6dbe7;
+  --grove-ink: #342b35;
+  --grove-muted: #695d6a;
+  --grove-moss: #5e4566;
+  --grove-moss-dark: #433049;
+  --grove-moss-soft: #eae0ed;
+  --grove-ink-soft: #524553;
+  --grove-fern: #705379;
+  --grove-leaf: #91729b;
+  --grove-leaf-soft: #e8ddeb;
+  --grove-sage: #c8b8cd;
+  --grove-sage-soft: #dacdde;
+  --grove-stone: #767676;
+  --grove-on-fill: #ffffff;
+  --grove-scrim: rgb(52 43 53 / 0.25);
+  --grove-shadow: rgb(52 43 53 / 0.05);
+  --grove-breath: #d5c0dc;
+  --grove-breath-deep: #b99ec1;
+}
+[data-theme='dark'][data-palette='heather'],
+[data-theme='dark'] [data-palette='heather'] {
+  --grove-bg: #1c181d;
+  --grove-card: #262027;
+  --grove-field: #211c22;
+  --grove-line: #3f3640;
+  --grove-ink: #ebe5ec;
+  --grove-muted: #b1a7b3;
+  --grove-moss: #cba5d6;
+  --grove-moss-dark: #dcbce5;
+  --grove-moss-soft: #3d2f42;
+  --grove-ink-soft: #d7ced8;
+  --grove-fern: #caadd3;
+  --grove-leaf: #ae8aba;
+  --grove-leaf-soft: #3c323f;
+  --grove-sage: #736179;
+  --grove-sage-soft: #4c424f;
+  --grove-stone: #928993;
+  --grove-on-fill: #1e151f;
+  --grove-scrim: rgb(0 0 0 / 0.5);
+  --grove-shadow: rgb(0 0 0 / 0.3);
+  --grove-breath: #604b66;
+  --grove-breath-deep: #93739d;
+}
+/* Olive: the khaki greens of olive trees and dry grass. */
+[data-palette='olive'] {
+  --grove-bg: #f0efe7;
+  --grove-card: #fbfaf6;
+  --grove-field: #f4f3eb;
+  --grove-line: #e2e0d1;
+  --grove-ink: #312f23;
+  --grove-muted: #656251;
+  --grove-moss: #515329;
+  --grove-moss-dark: #393b1b;
+  --grove-moss-soft: #e4e6d7;
+  --grove-ink-soft: #4e4b39;
+  --grove-fern: #606434;
+  --grove-leaf: #808451;
+  --grove-leaf-soft: #e1e3d3;
+  --grove-sage: #bfc1a8;
+  --grove-sage-soft: #d2d4c0;
+  --grove-stone: #767676;
+  --grove-on-fill: #ffffff;
+  --grove-scrim: rgb(49 47 35 / 0.25);
+  --grove-shadow: rgb(49 47 35 / 0.05);
+  --grove-breath: #c8ccab;
+  --grove-breath-deep: #aaad84;
+}
+[data-theme='dark'][data-palette='olive'],
+[data-theme='dark'] [data-palette='olive'] {
+  --grove-bg: #1a1913;
+  --grove-card: #24231b;
+  --grove-field: #1f1e17;
+  --grove-line: #3c3a2d;
+  --grove-ink: #e9e7df;
+  --grove-muted: #aeac9d;
+  --grove-moss: #b6bb7f;
+  --grove-moss-dark: #cace9d;
+  --grove-moss-soft: #363721;
+  --grove-ink-soft: #d4d2c6;
+  --grove-fern: #b9be90;
+  --grove-leaf: #9a9f64;
+  --grove-leaf-soft: #363728;
+  --grove-sage: #696b4e;
+  --grove-sage-soft: #464738;
+  --grove-stone: #8f8d81;
+  --grove-on-fill: #1b190c;
+  --grove-scrim: rgb(0 0 0 / 0.5);
+  --grove-shadow: rgb(0 0 0 / 0.3);
+  --grove-breath: #545735;
+  --grove-breath-deep: #818551;
+}
+/* Birch: warm greys, like its bark. Only the accents keep a colour. */
+[data-palette='birch'] {
+  --grove-bg: #f1eeeb;
+  --grove-card: #fbfaf8;
+  --grove-field: #f5f2ef;
+  --grove-line: #e3dfd9;
+  --grove-ink: #312e2a;
+  --grove-muted: #65615a;
+  --grove-moss: #564f46;
+  --grove-moss-dark: #3d3731;
+  --grove-moss-soft: #e6e4e0;
+  --grove-ink-soft: #4e4943;
+  --grove-fern: #665e54;
+  --grove-leaf: #877e73;
+  --grove-leaf-soft: #e4e1dd;
+  --grove-sage: #c2beb8;
+  --grove-sage-soft: #d5d1cc;
+  --grove-stone: #767676;
+  --grove-on-fill: #ffffff;
+  --grove-scrim: rgb(49 46 42 / 0.25);
+  --grove-shadow: rgb(49 46 42 / 0.05);
+  --grove-breath: #cdc7c0;
+  --grove-breath-deep: #afa89e;
+}
+[data-theme='dark'][data-palette='birch'],
+[data-theme='dark'] [data-palette='birch'] {
+  --grove-bg: #1b1917;
+  --grove-card: #25221f;
+  --grove-field: #201e1b;
+  --grove-line: #3d3934;
+  --grove-ink: #e9e7e3;
+  --grove-muted: #aeaaa5;
+  --grove-moss: #beb3a6;
+  --grove-moss-dark: #d0c8bc;
+  --grove-moss-soft: #383530;
+  --grove-ink-soft: #d5d1cc;
+  --grove-fern: #c0b8ad;
+  --grove-leaf: #a2988b;
+  --grove-leaf-soft: #383532;
+  --grove-sage: #6d6861;
+  --grove-sage-soft: #484542;
+  --grove-stone: #8f8c87;
+  --grove-on-fill: #1c1813;
+  --grove-scrim: rgb(0 0 0 / 0.5);
+  --grove-shadow: rgb(0 0 0 / 0.3);
+  --grove-breath: #58534b;
+  --grove-breath-deep: #887f73;
 }
 
 body {
   margin: 0;
-  background: var(--color-grove-bg);
-  color: var(--color-grove-ink);
+  background: var(--grove-bg);
+  color: var(--grove-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
 }

@@ -135,8 +135,9 @@
     #434e60 calc(var(--sky-night) * 100%)
   );
   --color-grove-sun: color-mix(in oklab, #f4d58d, #f4b383 calc(var(--sky-glow) * 100%));
-  --color-grove-ink: color-mix(in oklab, #26322b, #eef1ea calc(var(--sky-dark) * 100%));
-  --color-grove-ink-soft: color-mix(in oklab, #3e4f44, #c3cec6 calc(var(--sky-dark) * 100%));
+  /* The text's are palette variables (index.css): the card keeps its own in every palette. */
+  --grove-ink: color-mix(in oklab, #26322b, #eef1ea calc(var(--sky-dark) * 100%));
+  --grove-ink-soft: color-mix(in oklab, #3e4f44, #c3cec6 calc(var(--sky-dark) * 100%));
   --color-grove-sky-ink: color-mix(in oklab, #2d5663, #cfdae6 calc(var(--sky-dark) * 100%));
   --color-grove-flash: color-mix(in oklab, #fbfcfd, #aab5c6 calc(var(--sky-dark) * 100%));
   --color-grove-sky-halo: color-mix(in oklab, transparent, #1f2d45 calc(var(--sky-dark) * 100%));

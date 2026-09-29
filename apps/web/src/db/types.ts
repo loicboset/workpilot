@@ -4,7 +4,7 @@
  */
 
 import type { Locale } from '@/i18n'
-import type { Theme } from '@/lib/theme'
+import type { Palette, Theme } from '@/lib/theme'
 
 /** Fields every synced row has. */
 export interface SyncedRow {
@@ -22,6 +22,8 @@ export interface Profile extends SyncedRow {
   city: string | null
   /** Absent on rows saved before the setting existed: `system`, as on the server. */
   theme?: Theme
+  /** Absent on rows saved before the setting existed: `grove`, as on the server. */
+  palette?: Palette
 }
 
 export interface NorthStar extends SyncedRow {
