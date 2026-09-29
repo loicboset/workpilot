@@ -1,0 +1,18 @@
+# syntax=docker/dockerfile:1
+# Development images (`make dev`, docker-compose.dev.yml): only the tools. The code is this
+# folder, mounted, so a change reaches the running API and web app without a rebuild.
+# Dependencies install when a container starts, into volumes apart from this computer's.
+
+# --- The web app: Vite's dev server -----------------------------------------
+FROM node:22-alpine AS web
+RUN corepack enable
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+
+# --- The API: uvicorn --reload ----------------------------------------------
+FROM python:3.13-slim AS api
+COPY --from=ghcr.io/astral-sh/uv:0.12 /uv /bin/uv
+# The virtualenv lives outside the mounted code, and Python writes no __pycache__ into it.
+ENV UV_PROJECT_ENVIRONMENT=/venv \
+    UV_LINK_MODE=copy \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PATH="/venv/bin:$PATH"

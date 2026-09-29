@@ -22,9 +22,8 @@ space's Settings (or with `PATCH /api/spaces/{space_id}/ai/settings`), then chec
 
    | WorkPilot runs… | Base URL | LM Studio settings |
    |---|---|---|
-   | with `make dev-api`, on the same computer | `http://localhost:1234/v1` | none |
-   | in Docker Desktop (Mac, Windows), same computer | `http://host.docker.internal:1234/v1` | none |
-   | in Docker on Linux, same computer | `http://host.docker.internal:1234/v1` | turn on **Serve on Local Network** and **Require Authentication** |
+   | in Docker Desktop (Mac, Windows), same computer, `make dev` included | `http://host.docker.internal:1234/v1` | none |
+   | in Docker on Linux, same computer, `make dev` included | `http://host.docker.internal:1234/v1` | turn on **Serve on Local Network** and **Require Authentication** |
    | on another machine | an address that machine can reach (e.g. over Tailscale) | same as above |
 
 3. Pick the model from `GET /api/spaces/{space_id}/ai/models`. If LM Studio loads models on demand, the first

@@ -29,17 +29,19 @@ docs/        roadmap, decisions (ADRs), methodologies
 
 ## Getting started (development)
 
-Prerequisites: Node 22+, pnpm (`corepack enable`), Python 3.13 + [uv](https://docs.astral.sh/uv/), Docker (for Postgres).
+Prerequisites: Docker, which runs Postgres, the API and the web app. Node 22+, pnpm
+(`corepack enable`) and Python 3.13 + [uv](https://docs.astral.sh/uv/) run the migrations, the tests
+and your editor's tooling.
 
 ```bash
 make env                  # creates .env with a random secret; then set your name and
                           # password in WORKPILOT_USER, and WORKPILOT_COOKIE_SECURE=false for http
-make install              # web + api dependencies
+make install              # web + api dependencies on this computer (tests, editor)
 make db                   # start Postgres in Docker, on port 5440 (POSTGRES_PORT)
 make migrate              # create / update the database tables
 make dev                  # API on http://localhost:8100 (WORKPILOT_PORT) and web app on
-                          # http://localhost:5180 (WORKPILOT_WEB_PORT), both reloading on each
-                          # change; or one at a time with `make dev-api` and `make dev-web`
+                          # http://localhost:5180 (WORKPILOT_WEB_PORT), both in Docker and
+                          # reloading on each change
 make seed                 # optional: the demo data of the Grove homepage concept, see below
 ```
 
@@ -57,7 +59,7 @@ and answer the three onboarding questions. From there:
 - **Review** looks back on the notes of the last 7 days, day by day.
 - **Ideas & notes** lists what you captured, to read, change or delete (from the Review page).
 - **Direction** holds your North Star and milestones.
-- **Settings → AI → LM Studio**: start LM Studio's server, "Test" to list its models, pick one, then "Save".
+- **Settings → AI → LM Studio (Docker)**: start LM Studio's server, "Test" to list its models, pick one, then "Save".
   The homepage ticker then gets its messages from your model.
 
 `make seed` fills a space (the first one, or `SPACE=work` for the one at `/work`) with the
@@ -88,7 +90,8 @@ Port 8110 already taken? Set `WORKPILOT_DOCKER_PORT` in `.env`.
 The image holds a copy of the code, so a change only reaches it with `--build`. To see
 changes as you make them, use `make dev` instead: the Docker app has its own port, so the
 development web app never talks to it.
-With LM Studio on the same Mac, use `http://host.docker.internal:1234/v1` in Settings → AI.
+With LM Studio on the same Mac, use `http://host.docker.internal:1234/v1` in Settings → AI, as
+with `make dev`.
 
 ## Methodologies
 

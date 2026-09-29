@@ -14,6 +14,8 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, repoRoot, 'WORKPILOT_')
   const apiPort = env.WORKPILOT_PORT || '8100'
   const webPort = Number(env.WORKPILOT_WEB_PORT || '5180')
+  // In Docker (`make dev`) the API is another container; otherwise it's on this computer.
+  const apiUrl = env.WORKPILOT_API_URL || `http://localhost:${apiPort}`
 
   return {
     plugins: [
@@ -38,7 +40,7 @@ export default defineConfig(({ mode }) => {
       port: webPort,
       // Fail when the port is taken instead of quietly moving to another one.
       strictPort: true,
-      proxy: { '/api': `http://localhost:${apiPort}` },
+      proxy: { '/api': apiUrl },
     },
     test: {
       environment: 'jsdom',

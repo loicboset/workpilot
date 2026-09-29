@@ -1,6 +1,61 @@
-# Development only (`make db`): opens the database to this computer, on localhost only, so
-# `make dev-api` and the tests can reach it. `docker compose up` alone keeps it inside Docker.
+# Development only (`make dev`, `make db`), on top of docker-compose.yml.
+# - The API and the web app run in Docker on the code of this folder, reloading on each change.
+#   Their dependencies live in volumes, so they never mix with this computer's.
+# - The database opens to this computer, on localhost only, for `make migrate` and the tests.
+# `docker compose up` alone runs the built app and keeps the database inside Docker.
 services:
   db:
     ports:
       - "127.0.0.1:${POSTGRES_PORT:-5440}:5432"
+
+  # http://localhost:8100 (WORKPILOT_PORT). Unlike the built app, it doesn't migrate the
+  # database when it starts: `make migrate` does.
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      target: api
+    env_file: .env
+    environment:
+      WORKPILOT_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-workpilot}:${POSTGRES_PASSWORD:-workpilot}@db:5432/${POSTGRES_DB:-workpilot}
+    working_dir: /workpilot/apps/api
+    command: sh -c "uv sync --frozen && exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+    volumes:
+      - .:/workpilot
+      - api-venv:/venv
+    ports:
+      - "127.0.0.1:${WORKPILOT_PORT:-8100}:8000"
+    # An AI server on this computer (e.g. LM Studio) is at host.docker.internal.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # http://localhost:5180 (WORKPILOT_WEB_PORT), which sends /api to the api service.
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      target: web
+    environment:
+      # Inside the container; the port on this computer comes from .env below.
+      WORKPILOT_WEB_PORT: "5180"
+      WORKPILOT_API_URL: http://api:8000
+    working_dir: /workpilot/apps/web
+    # CI: pnpm may rebuild node_modules without asking, as there is no terminal to ask in.
+    # Its store goes in a volume too; left alone it lands in this folder.
+    command: sh -c "CI=true pnpm install --frozen-lockfile --store-dir /pnpm-store && exec pnpm dev --host 0.0.0.0"
+    volumes:
+      - .:/workpilot
+      - web-node-modules:/workpilot/apps/web/node_modules
+      - pnpm-store:/pnpm-store
+    ports:
+      - "127.0.0.1:${WORKPILOT_WEB_PORT:-5180}:5180"
+    depends_on:
+      - api
+
+volumes:
+  api-venv:
+  web-node-modules:
+  pnpm-store:
