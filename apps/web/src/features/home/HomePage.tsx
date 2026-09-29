@@ -3,6 +3,7 @@ import { refreshTicker } from '@/data/ticker'
 import { useProfile, useTimeZone } from '@/data/profile'
 import { Ticker } from '@/features/ticker/Ticker'
 import { CaptureCard } from './cards/CaptureCard'
+import { ConnectorsCard } from './cards/ConnectorsCard'
 import { DirectionCard } from './cards/DirectionCard'
 import { LearningCard } from './cards/LearningCard'
 import { OpportunitiesCard } from './cards/OpportunitiesCard'
@@ -40,6 +41,7 @@ export const HomePage = () => {
         <ReviewCard />
         <OpportunitiesCard />
         <LearningCard />
+        <ConnectorsCard />
       </div>
     </div>
   )

@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { formatClock } from '@/lib/format'
+import { useMinuteClock } from '@/lib/useMinuteClock'
 import { skyLight } from './daylight'
 import { useWeather } from './weather'
 import { WeatherCard } from './WeatherCard'
@@ -32,22 +32,4 @@ export const WeatherClock = ({ city, timeZone }: WeatherClockProps) => {
       weather={weather ?? undefined}
     />
   )
-}
-
-/** The current time, updated at the start of every minute. */
-const useMinuteClock = (): Date => {
-  // STATES
-  const [now, setNow] = useState(() => new Date())
-
-  // EFFECTS
-  useEffect(() => {
-    const tick = () => {
-      setNow(new Date())
-      timer = setTimeout(tick, 60_000 - (Date.now() % 60_000))
-    }
-    let timer = setTimeout(tick, 60_000 - (Date.now() % 60_000))
-    return () => clearTimeout(timer)
-  }, [])
-
-  return now
 }

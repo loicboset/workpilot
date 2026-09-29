@@ -35,3 +35,4 @@ One short file per decision. New decisions get the next number; a changed decisi
 | 0029 | [Icebox: the todos without a date](0029-icebox-todos-without-a-date.md) | Accepted |
 | 0030 | [Todo priority: !1, !2, !3](0030-todo-priority.md) | Accepted |
 | 0031 | [Spaces: separate worlds in one install](0031-spaces.md) | Accepted |
+| 0032 | [Connectors: RSS first](0032-connectors-rss-first.md) | Accepted |

@@ -295,6 +295,45 @@
     "toIcebox": "Mettre dans l'Icebox",
     "moreFor": "Plus pour « {{text}} »"
   },
+  "connectors": {
+    "title": "Connecteurs",
+    "subtitle": "Ce que votre IA peut lire",
+    "list": "Vos connexions",
+    "empty": "Rien de connecté pour l'instant. Ajoutez un flux : un blog, une newsletter, une chaîne YouTube, un podcast…",
+    "unavailable": "Vos connexions ne peuvent pas être chargées pour le moment.",
+    "add": "Ajouter un flux",
+    "edit": "Modifier le flux",
+    "pause": "Mettre en pause",
+    "resume": "Reprendre",
+    "remove": "Retirer",
+    "moreFor": "Plus pour « {{name}} »",
+    "status": {
+      "paused": "En pause",
+      "justChecked": "Vérifié à l'instant",
+      "checked": "Vérifié {{ago}}",
+      "notChecked": "Pas encore vérifié",
+      "feed_unreachable": "Injoignable lors de la dernière vérification",
+      "feed_not_found": "Plus de flux à cette adresse",
+      "failed": "La dernière vérification n'a pas marché"
+    },
+    "form": {
+      "url": "Adresse",
+      "urlHelp": "Le flux, ou le site qui en a un : un blog, une newsletter, une chaîne YouTube…",
+      "urlInvalid": "Saisissez une adresse web, par exemple exemple.fr/feed.",
+      "name": "Nom",
+      "nameHelp": "Facultatif : le titre du flux par défaut",
+      "instruction": "Pour votre IA",
+      "instructionHelp": "Facultatif : ce qu'elle doit faire de ce flux, par exemple « Ne me parle que des outils d'IA. »",
+      "add": "Ajouter"
+    },
+    "errors": {
+      "feed_unreachable": "Cette adresse est injoignable. Vérifiez-la, ou réessayez plus tard.",
+      "feed_not_found": "Il n'y a pas de flux à cette adresse. Essayez le lien « RSS » du site.",
+      "connector_exists": "Ce flux est déjà connecté.",
+      "offline": "Les connexions se gèrent en ligne. Réessayez une fois connecté.",
+      "unexpected": "Quelque chose s'est mal passé. Réessayez."
+    }
+  },
   "direction": {
     "subtitle": "Là où vous allez, et les étapes du chemin.",
     "northStarTitle": "Étoile polaire",

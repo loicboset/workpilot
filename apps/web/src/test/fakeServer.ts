@@ -2,8 +2,8 @@ import { vi } from 'vitest'
 
 /**
  * A stand-in for the WorkPilot API, installed as `fetch`. It knows one user and answers the
- * auth routes; sync accepts every push and has nothing to pull. `offline: true` makes every
- * request fail like a browser without network.
+ * auth routes; sync accepts every push and has nothing to pull; there are no connectors.
+ * `offline: true` makes every request fail like a browser without network.
  */
 export function startFakeServer({
   password = 'right-password',
@@ -36,6 +36,7 @@ export function startFakeServer({
     }
     if (path.startsWith('/api/sync/pull'))
       return json(200, { changes: [], cursor: 0, has_more: false })
+    if (path === '/api/connectors' && method === 'GET') return json(200, [])
     return json(404, { detail: 'not found' })
   })
 

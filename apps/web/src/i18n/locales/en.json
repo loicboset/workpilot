@@ -291,6 +291,45 @@
     "toIcebox": "Move to the icebox",
     "moreFor": "More for “{{text}}”"
   },
+  "connectors": {
+    "title": "Connectors",
+    "subtitle": "What your AI can read",
+    "list": "Your connections",
+    "empty": "Nothing connected yet. Add a feed: a blog, a newsletter, a YouTube channel, a podcast…",
+    "unavailable": "Your connections can't be loaded right now.",
+    "add": "Add a feed",
+    "edit": "Change the feed",
+    "pause": "Pause",
+    "resume": "Resume",
+    "remove": "Remove",
+    "moreFor": "More for “{{name}}”",
+    "status": {
+      "paused": "Paused",
+      "justChecked": "Just checked",
+      "checked": "Checked {{ago}}",
+      "notChecked": "Not checked yet",
+      "feed_unreachable": "Couldn't be reached at the last check",
+      "feed_not_found": "No feed at this address any more",
+      "failed": "The last check didn't work"
+    },
+    "form": {
+      "url": "Address",
+      "urlHelp": "The feed, or the site that has one: a blog, a newsletter, a YouTube channel…",
+      "urlInvalid": "Enter a web address, e.g. example.com/feed.",
+      "name": "Name",
+      "nameHelp": "Optional: the feed's title by default",
+      "instruction": "For your AI",
+      "instructionHelp": "Optional: what it should do with this feed, e.g. “Only tell me about AI tools.”",
+      "add": "Add"
+    },
+    "errors": {
+      "feed_unreachable": "This address can't be reached. Check it, or try again later.",
+      "feed_not_found": "There's no feed at this address. Try the site's “RSS” link.",
+      "connector_exists": "This feed is already connected.",
+      "offline": "Connections are managed online. Try again once you're connected.",
+      "unexpected": "Something went wrong. Try again."
+    }
+  },
   "direction": {
     "subtitle": "Where you are heading, and the steps on the way.",
     "northStarTitle": "North Star",

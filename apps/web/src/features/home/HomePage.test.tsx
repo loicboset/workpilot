@@ -32,7 +32,16 @@ const openHome = async () => {
 
 it('has the cards of the Grove concept', async () => {
   await openHome()
-  for (const name of ['Capture', 'Today', 'Direction', 'Review', 'Opportunities', 'Learning']) {
+  const cards = [
+    'Capture',
+    'Today',
+    'Direction',
+    'Review',
+    'Opportunities',
+    'Learning',
+    'Connectors',
+  ]
+  for (const name of cards) {
     expect(screen.getByRole('region', { name })).toBeTruthy()
   }
 })

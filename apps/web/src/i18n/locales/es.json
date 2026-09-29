@@ -295,6 +295,45 @@
     "toIcebox": "Mover al Icebox",
     "moreFor": "Más para «{{text}}»"
   },
+  "connectors": {
+    "title": "Conectores",
+    "subtitle": "Lo que tu IA puede leer",
+    "list": "Tus conexiones",
+    "empty": "Aún no hay nada conectado. Añade un feed: un blog, una newsletter, un canal de YouTube, un pódcast…",
+    "unavailable": "Tus conexiones no se pueden cargar ahora mismo.",
+    "add": "Añadir un feed",
+    "edit": "Cambiar el feed",
+    "pause": "Pausar",
+    "resume": "Reanudar",
+    "remove": "Quitar",
+    "moreFor": "Más para «{{name}}»",
+    "status": {
+      "paused": "En pausa",
+      "justChecked": "Revisado ahora mismo",
+      "checked": "Revisado {{ago}}",
+      "notChecked": "Aún sin revisar",
+      "feed_unreachable": "No se pudo conectar en la última revisión",
+      "feed_not_found": "Ya no hay un feed en esta dirección",
+      "failed": "La última revisión no funcionó"
+    },
+    "form": {
+      "url": "Dirección",
+      "urlHelp": "El feed, o el sitio que tiene uno: un blog, una newsletter, un canal de YouTube…",
+      "urlInvalid": "Escribe una dirección web, por ejemplo ejemplo.com/feed.",
+      "name": "Nombre",
+      "nameHelp": "Opcional: el título del feed por defecto",
+      "instruction": "Para tu IA",
+      "instructionHelp": "Opcional: qué debe hacer con este feed, por ejemplo «Háblame solo de herramientas de IA».",
+      "add": "Añadir"
+    },
+    "errors": {
+      "feed_unreachable": "No se puede conectar con esta dirección. Revísala o inténtalo más tarde.",
+      "feed_not_found": "No hay ningún feed en esta dirección. Prueba el enlace «RSS» del sitio.",
+      "connector_exists": "Este feed ya está conectado.",
+      "offline": "Las conexiones se gestionan en línea. Inténtalo de nuevo cuando tengas conexión.",
+      "unexpected": "Algo salió mal. Inténtalo de nuevo."
+    }
+  },
   "direction": {
     "subtitle": "Hacia dónde vas, y los pasos del camino.",
     "northStarTitle": "Estrella polar",

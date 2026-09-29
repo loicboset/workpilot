@@ -60,3 +60,13 @@ export function formatTimeOfDay(time: Time, locale: string) {
     date,
   )
 }
+
+/** "5 minutes ago", "2 hours ago", "yesterday", as the locale says it. A moment ahead is "now". */
+export const formatAgo = (iso: string, locale: string, now = Date.now()) => {
+  const format = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' })
+  const minutes = Math.min(0, Math.round((Date.parse(iso) - now) / 60_000))
+  if (minutes > -60) return format.format(minutes, 'minute')
+  const hours = Math.round(minutes / 60)
+  if (hours > -24) return format.format(hours, 'hour')
+  return format.format(Math.round(hours / 24), 'day')
+}
