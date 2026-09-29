@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     # Send the session cookie over HTTPS only. Set to false for local development over http.
     cookie_secure: bool = True
 
-    database_url: str = "postgresql+psycopg://workpilot:workpilot@localhost:5432/workpilot"
+    database_url: str = "postgresql+psycopg://workpilot:workpilot@localhost:5433/workpilot"
 
     # Who push services can contact about this server's notifications: "mailto:you@example.org"
     # or your site's https URL. Apple refuses made-up addresses. Unset: no reminders are sent.

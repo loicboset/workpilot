@@ -21,8 +21,9 @@ services:
     volumes:
       - db-data:/var/lib/postgresql
     # Bound to localhost only: reachable by `make dev-api`, never from the internet.
+    # Port 5433 on this computer, so it never clashes with a Postgres already installed here.
     ports:
-      - "127.0.0.1:5432:5432"
+      - "127.0.0.1:${POSTGRES_PORT:-5433}:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s

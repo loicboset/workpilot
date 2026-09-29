@@ -63,6 +63,8 @@ docker compose up --build   # http://localhost:8000
 ```
 
 WorkPilot refuses to start with the placeholder password or secret from `.env.example`.
+Its Postgres uses port 5433 on your computer; if that one is taken too, set another
+`POSTGRES_PORT` in `.env` (and the same port in `WORKPILOT_DATABASE_URL`).
 With LM Studio on the same Mac, use `http://host.docker.internal:1234/v1` in Settings → AI.
 
 ## Methodologies
