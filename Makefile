@@ -1,4 +1,4 @@
-.PHONY: env install dev-web dev-api db migrate seed import test lint typecheck build docker
+.PHONY: env install dev dev-web dev-api db migrate seed import test lint typecheck build docker
 
 # The API's port: WORKPILOT_PORT from the environment or .env, else the .env.example default.
 env_value = $(shell sed -n 's/^$(1)=//p' .env 2>/dev/null)
@@ -14,6 +14,11 @@ env:
 install:
 	cd apps/web && pnpm install
 	cd apps/api && uv sync
+
+# Postgres, the API and the web app, reloading on each change. Ctrl+C stops the API and the web
+# app; Postgres keeps running (`docker compose stop db` stops it).
+dev: db
+	@$(MAKE) -j2 dev-api dev-web
 
 dev-web:
 	cd apps/web && pnpm dev

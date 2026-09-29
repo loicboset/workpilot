@@ -37,8 +37,9 @@ make env                  # creates .env with a random secret; then set your nam
 make install              # web + api dependencies
 make db                   # start Postgres in Docker, on port 5440 (POSTGRES_PORT)
 make migrate              # create / update the database tables
-make dev-api              # API on http://localhost:8100 (WORKPILOT_PORT)
-make dev-web              # web app on http://localhost:5180 (WORKPILOT_WEB_PORT), proxies /api
+make dev                  # API on http://localhost:8100 (WORKPILOT_PORT) and web app on
+                          # http://localhost:5180 (WORKPILOT_WEB_PORT), both reloading on each
+                          # change; or one at a time with `make dev-api` and `make dev-web`
 make seed                 # optional: the demo data of the Grove homepage concept, see below
 ```
 
@@ -78,12 +79,15 @@ Other commands: `make test` (needs `make db` running; the test database is creat
 
 ```bash
 make env                    # then set WORKPILOT_USER (and WORKPILOT_COOKIE_SECURE=false for http)
-docker compose up --build   # http://localhost:8100
+docker compose up --build   # http://localhost:8110
 ```
 
 WorkPilot refuses to start with the placeholder password or secret from `.env.example`.
 Its Postgres stays inside Docker, so it never clashes with another database on your computer.
-Port 8100 already taken? Set `WORKPILOT_PORT` in `.env`.
+Port 8110 already taken? Set `WORKPILOT_DOCKER_PORT` in `.env`.
+The image holds a copy of the code, so a change only reaches it with `--build`. To see
+changes as you make them, use `make dev` instead: the Docker app has its own port, so the
+development web app never talks to it.
 With LM Studio on the same Mac, use `http://host.docker.internal:1234/v1` in Settings → AI.
 
 ## Methodologies
