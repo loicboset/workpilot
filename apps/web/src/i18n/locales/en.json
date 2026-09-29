@@ -324,9 +324,9 @@
       "apiKeyStored": "A key is stored (encrypted). Type a new one to replace it.",
       "model": "Model",
       "modelHelp": "Test the connection to list the models, or type the model's name.",
-      "test": "Save and test",
-      "connected_one": "Connected. {{count}} model available.",
-      "connected_other": "Connected. {{count}} models available.",
+      "test": "Test",
+      "connected_one": "Connected. {{count}} model available. Save to keep these settings.",
+      "connected_other": "Connected. {{count}} models available. Save to keep these settings.",
       "errors": {
         "ai_not_configured": "Something is missing: the address for OpenAI-compatible servers, or the key for Claude.",
         "ai_unreachable": "The AI can't be reached. Is the server running (in LM Studio: Developer → Start server)?",

@@ -28,6 +28,14 @@ class AISettingsUpdate(PartialUpdate):
     api_key: Setting | None = None
 
 
+class AISettingsTry(RequestBody):
+    """Settings to test before saving them. Without `api_key`, the stored key is used."""
+
+    provider: AIProviderKind
+    base_url: Setting | None = None
+    api_key: Setting | None = None
+
+
 class PromptRead(BaseModel):
     key: str
     body: str

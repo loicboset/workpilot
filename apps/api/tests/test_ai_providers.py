@@ -43,7 +43,10 @@ def claude(
     return AnthropicProvider(api_key="sk-test", model=model, http_client=fake_server(handler, sent))
 
 
-def chat_completion(content: str) -> httpx2.Response:
+def chat_completion(content: str, reasoning: str | None = None) -> httpx2.Response:
+    message = {"role": "assistant", "content": content}
+    if reasoning is not None:
+        message["reasoning_content"] = reasoning  # LM Studio's field for a model's thinking
     return httpx2.Response(
         200,
         json={
@@ -55,7 +58,7 @@ def chat_completion(content: str) -> httpx2.Response:
                 {
                     "index": 0,
                     "finish_reason": "stop",
-                    "message": {"role": "assistant", "content": content},
+                    "message": message,
                 }
             ],
         },
@@ -94,6 +97,21 @@ def test_openai_compatible_asks_for_json_in_the_answers_shape() -> None:
     assert body["messages"] == [{"role": "user", "content": "Say hello"}]
     assert body["response_format"]["type"] == "json_schema"
     assert body["response_format"]["json_schema"]["schema"]["required"] == ["text"]
+
+
+def test_openai_compatible_finds_an_answer_left_in_the_reasoning() -> None:
+    # Qwen3 in LM Studio: the thinking block never closes, so the JSON lands in the reasoning.
+    provider = lm_studio(lambda _: chat_completion("", reasoning='{"text": "Hello"}'))
+
+    assert provider.generate("Say hello", Greeting) == Greeting(text="Hello")
+
+
+def test_openai_compatible_thinking_alone_is_no_answer() -> None:
+    provider = lm_studio(lambda _: chat_completion("", reasoning="Let me greet them warmly…"))
+
+    with pytest.raises(AIError) as raised:
+        provider.generate("Say hello", Greeting)
+    assert raised.value.code == AIErrorCode.INVALID_ANSWER
 
 
 def test_openai_compatible_lists_models_sorted() -> None:

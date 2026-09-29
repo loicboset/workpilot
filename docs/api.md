@@ -32,7 +32,7 @@ Interactive docs: `/api/docs` when the server runs. Conventions: [ADR 0023](deci
 | Ticker messages | `GET /api/ticker-messages` (newest first) · `POST /api/ticker-messages/refresh` (asks the AI for new ones when they are over 6 hours old; `409 ai_not_configured` without AI) | `limit` (1–50, default 10) |
 | Sync | `GET /api/sync/pull?since=&limit=` · `POST /api/sync/push` (see below) | |
 | AI settings (server only) | `GET /api/ai/settings` · `PATCH /api/ai/settings` (`provider`: `openai_compatible` or `anthropic`; `api_key` write-only, `null` removes it) | |
-| AI models (server only) | `GET /api/ai/models`: model ids from the configured provider (also a connection test) | |
+| AI models (server only) | `GET /api/ai/models`: model ids from the configured provider (also a connection test) · `POST /api/ai/models/try` (`provider`, `base_url`, optional `api_key`, else the stored one): the same for settings not yet saved | |
 | Prompts (server only) | `GET /api/ai/prompts` · `GET`, `PUT`, `DELETE /api/ai/prompts/{key}` (`DELETE` = reset to default) | |
 | Push (server only) | `GET /api/push/public-key` (the browser's `applicationServerKey`) · `POST /api/push/subscriptions` (same endpoint again = update) · `DELETE /api/push/subscriptions?endpoint=…` | |
 

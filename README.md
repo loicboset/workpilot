@@ -56,7 +56,7 @@ and answer the three onboarding questions. From there:
 - **Review** looks back on the notes of the last 7 days, day by day.
 - **Ideas & notes** lists what you captured, to read, change or delete (from the Review page).
 - **Direction** holds your North Star and milestones.
-- **Settings → AI → LM Studio**: start LM Studio's server, pick a model, then "Save and test".
+- **Settings → AI → LM Studio**: start LM Studio's server, "Test" to list its models, pick one, then "Save".
   The homepage ticker then gets its messages from your model.
 
 `make seed` fills a signed-up workspace with the concept's demo data: a North Star with five

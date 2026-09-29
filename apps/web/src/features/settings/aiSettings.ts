@@ -37,10 +37,16 @@ export function useSaveAISettings() {
   })
 }
 
-/** Ask the provider for its models: also tests the URL and the key. */
-export function fetchModels(): Promise<string[]> {
-  return request<string[]>('GET', '/ai/models')
+/** Settings to test before saving them. Without `api_key`, the stored key is used. */
+export type AISettingsTry = {
+  provider: AIProviderKind
+  base_url: string | null
+  api_key?: string
 }
+
+/** The models these settings offer, without saving them: tests the URL and the key. */
+export const tryAISettings = (settings: AISettingsTry): Promise<string[]> =>
+  request<string[]>('POST', '/ai/models/try', settings)
 
 /** The translation key for a failed AI call (codes from the server, ADR 0026). */
 export function aiErrorKey(error: unknown): string {

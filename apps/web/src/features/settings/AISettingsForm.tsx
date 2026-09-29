@@ -11,7 +11,7 @@ import { TextField } from '@/components/ui/TextField'
 import { refreshTicker } from '@/data/ticker'
 import {
   aiErrorKey,
-  fetchModels,
+  tryAISettings,
   useAISettings,
   useSaveAISettings,
   type AIProviderKind,
@@ -41,9 +41,8 @@ export function AISettingsForm() {
 
 type Status = { tone: 'success' | 'error'; message: string } | null
 
-function Fields({ saved }: { saved: AISettings }) {
-  const { t } = useTranslation()
-  const save = useSaveAISettings()
+const Fields = ({ saved }: { saved: AISettings }) => {
+  // STATES
   const [provider, setProvider] = useState<AIProviderKind>(saved.provider ?? 'openai_compatible')
   const [baseUrl, setBaseUrl] = useState(saved.base_url ?? '')
   const [apiKey, setApiKey] = useState('') // write-only: the stored key is never sent back
@@ -52,7 +51,14 @@ function Fields({ saved }: { saved: AISettings }) {
   const [status, setStatus] = useState<Status>(null)
   const [isTesting, setTesting] = useState(false)
 
-  async function saveSettings() {
+  // RQ
+  const save = useSaveAISettings()
+
+  // HOOKS
+  const { t } = useTranslation()
+
+  // METHODS
+  const saveSettings = async () => {
     await save.mutateAsync({
       provider,
       base_url: baseUrl.trim() || null,
@@ -60,18 +66,21 @@ function Fields({ saved }: { saved: AISettings }) {
       ...(apiKey ? { api_key: apiKey } : {}),
     })
     setApiKey('')
+    if (model.trim()) void refreshTicker()
   }
 
-  /** Save, then list the models: proves the address and the key work. */
-  async function testConnection() {
+  /** List the models of the settings as typed, saving nothing: proves the address and the key. */
+  const testConnection = async () => {
     setTesting(true)
     setStatus(null)
     try {
-      await saveSettings()
-      const found = await fetchModels()
+      const found = await tryAISettings({
+        provider,
+        base_url: baseUrl.trim() || null,
+        ...(apiKey ? { api_key: apiKey } : {}),
+      })
       setModels(found)
       setStatus({ tone: 'success', message: t('settings.ai.connected', { count: found.length }) })
-      if (model.trim()) void refreshTicker()
     } catch (error) {
       setStatus({ tone: 'error', message: t(aiErrorKey(error)) })
     } finally {
@@ -147,7 +156,7 @@ function Fields({ saved }: { saved: AISettings }) {
       </ComboBox>
       {status && <Alert tone={status.tone}>{status.message}</Alert>}
       <div className="flex flex-wrap gap-3">
-        <Button type="submit" isPending={save.isPending && !isTesting}>
+        <Button type="submit" isPending={save.isPending}>
           {t('common.save')}
         </Button>
         <Button variant="secondary" onPress={() => void testConnection()} isPending={isTesting}>

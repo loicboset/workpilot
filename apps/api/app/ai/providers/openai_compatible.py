@@ -8,6 +8,7 @@ from contextlib import contextmanager
 
 import httpx2
 import openai
+from openai.types.chat import ParsedChatCompletionMessage
 from pydantic import BaseModel, ValidationError
 
 from app.ai.providers.base import MAX_RETRIES, TIMEOUT, AIError, AIErrorCode, error_for_status
@@ -43,7 +44,8 @@ class OpenAICompatibleProvider:
                 messages=[{"role": "user", "content": prompt}],
                 response_format=answer,
             )
-        parsed = completion.choices[0].message.parsed
+        message = completion.choices[0].message
+        parsed = message.parsed or _answer_in_reasoning(message, answer)
         if parsed is None:  # the model refused
             raise AIError(AIErrorCode.INVALID_ANSWER)
         return parsed
@@ -51,6 +53,23 @@ class OpenAICompatibleProvider:
     def list_models(self) -> list[str]:
         with _as_ai_errors():
             return sorted(model.id for model in self._client.models.list())
+
+
+def _answer_in_reasoning[Answer: BaseModel](
+    message: ParsedChatCompletionMessage[Answer], answer: type[Answer]
+) -> Answer | None:
+    """The answer a reasoning model left in `reasoning_content`, with `content` empty.
+
+    Qwen3 in LM Studio does this: its template opens a thinking block, and the forced JSON
+    never closes it, so the server files the whole answer as reasoning.
+    """
+    reasoning = (message.model_extra or {}).get("reasoning_content")
+    if message.content or not isinstance(reasoning, str):
+        return None
+    try:
+        return answer.model_validate_json(reasoning)
+    except ValidationError:
+        return None
 
 
 @contextmanager

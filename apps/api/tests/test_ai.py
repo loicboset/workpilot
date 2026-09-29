@@ -125,3 +125,59 @@ def test_an_unreachable_provider_is_a_502(client: TestClient) -> None:
 
     assert response.status_code == 502
     assert response.json() == {"detail": "ai_unreachable"}
+
+
+# --- Trying settings before saving them ----------------------------------------------------
+
+
+@pytest.fixture
+def made_with(monkeypatch: pytest.MonkeyPatch) -> dict:
+    """What `POST /api/ai/models/try` built its provider from. The provider is a fake."""
+    made: dict = {}
+
+    def make_fake(kind: str, **settings: str | None) -> FakeProvider:
+        made.update(kind=kind, **settings)
+        return FakeProvider()
+
+    monkeypatch.setattr("app.ai.router.make_provider", make_fake)
+    return made
+
+
+def test_trying_settings_lists_the_models_and_saves_nothing(
+    client: TestClient, made_with: dict
+) -> None:
+    settings = {"provider": "openai_compatible", "base_url": "http://localhost:1234/v1"}
+
+    response = client.post("/api/ai/models/try", json=settings)
+
+    assert response.json() == ["gemma-3-12b", "qwen3-8b"]
+    assert made_with["base_url"] == "http://localhost:1234/v1"
+    assert client.get("/api/ai/settings").json()["base_url"] is None
+
+
+def test_trying_settings_uses_the_stored_key_unless_one_is_sent(
+    client: TestClient, made_with: dict
+) -> None:
+    client.patch("/api/ai/settings", json={"provider": "anthropic", "api_key": "sk-stored"})
+
+    client.post("/api/ai/models/try", json={"provider": "anthropic"})
+    assert made_with["api_key"] == "sk-stored"
+
+    client.post("/api/ai/models/try", json={"provider": "anthropic", "api_key": "sk-typed"})
+    assert made_with["api_key"] == "sk-typed"
+
+
+def test_trying_incomplete_settings_is_a_409(client: TestClient) -> None:
+    response = client.post("/api/ai/models/try", json={"provider": "openai_compatible"})
+
+    assert response.status_code == 409
+    assert response.json() == {"detail": "ai_not_configured"}
+
+
+def test_trying_an_unreachable_server_is_a_502(client: TestClient) -> None:
+    settings = {"provider": "openai_compatible", "base_url": "http://127.0.0.1:9/v1"}
+
+    response = client.post("/api/ai/models/try", json=settings)
+
+    assert response.status_code == 502
+    assert response.json() == {"detail": "ai_unreachable"}

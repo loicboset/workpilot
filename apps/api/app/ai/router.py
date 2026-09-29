@@ -4,8 +4,14 @@ from fastapi import APIRouter, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.ai.default_prompts import default_prompts
-from app.ai.schemas import AISettingsRead, AISettingsUpdate, PromptRead, PromptWrite
-from app.ai.service import AI_SETTINGS_ID, ProviderDep
+from app.ai.schemas import (
+    AISettingsRead,
+    AISettingsTry,
+    AISettingsUpdate,
+    PromptRead,
+    PromptWrite,
+)
+from app.ai.service import AI_SETTINGS_ID, ProviderDep, make_provider, stored_api_key
 from app.crypto import encrypt
 from app.db.models import AISettings, Prompt
 from app.db.session import SessionDep
@@ -52,6 +58,18 @@ def _settings_read(ai_settings: AISettings | None) -> AISettingsRead:
 @router.get("/models", response_model=list[str])
 def list_models(provider: ProviderDep) -> list[str]:
     """The models the configured provider offers. Also tests its URL and key."""
+    return provider.list_models()
+
+
+@router.post("/models/try", response_model=list[str])
+def try_settings(data: AISettingsTry, session: SessionDep) -> list[str]:
+    """The models these settings offer, without saving them: tests the URL and the key."""
+    provider = make_provider(
+        data.provider,
+        base_url=data.base_url,
+        model=None,
+        api_key=data.api_key or stored_api_key(session),
+    )
     return provider.list_models()
 
 

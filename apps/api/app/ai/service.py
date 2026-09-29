@@ -29,19 +29,33 @@ def configured_provider(session: SessionDep) -> AIProvider:
     ai_settings = session.get(AISettings, AI_SETTINGS_ID)
     if ai_settings is None:
         raise AIError(AIErrorCode.NOT_CONFIGURED)
-    api_key = decrypt(ai_settings.api_key_encrypted) if ai_settings.api_key_encrypted else None
+    return make_provider(
+        ai_settings.provider,
+        base_url=ai_settings.base_url,
+        model=ai_settings.model,
+        api_key=stored_api_key(session),
+    )
 
-    match ai_settings.provider:
-        case AIProviderKind.OPENAI_COMPATIBLE if ai_settings.base_url:
-            return OpenAICompatibleProvider(
-                base_url=ai_settings.base_url, model=ai_settings.model, api_key=api_key
-            )
+
+def make_provider(
+    kind: AIProviderKind, *, base_url: str | None, model: str | None, api_key: str | None
+) -> AIProvider:
+    """The provider for these settings, saved or not. Raises `ai_not_configured` if incomplete."""
+    match kind:
+        case AIProviderKind.OPENAI_COMPATIBLE if base_url:
+            return OpenAICompatibleProvider(base_url=base_url, model=model, api_key=api_key)
         case AIProviderKind.ANTHROPIC if api_key:
-            return AnthropicProvider(
-                api_key=api_key, model=ai_settings.model, base_url=ai_settings.base_url
-            )
+            return AnthropicProvider(api_key=api_key, model=model, base_url=base_url)
         case _:
             raise AIError(AIErrorCode.NOT_CONFIGURED)
+
+
+def stored_api_key(session: Session) -> str | None:
+    """The saved API key, decrypted."""
+    ai_settings = session.get(AISettings, AI_SETTINGS_ID)
+    if ai_settings is None or ai_settings.api_key_encrypted is None:
+        return None
+    return decrypt(ai_settings.api_key_encrypted)
 
 
 # For routes: `provider: ProviderDep`. Tests replace it with a fake provider.
