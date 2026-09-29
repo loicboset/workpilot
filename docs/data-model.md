@@ -38,6 +38,7 @@ Rules:
 
 - Done = `completed_at` is set (todos, time blocks, milestones).
 - Postpone = change the date (`due_date`, or `start_at`/`end_at`).
+- Icebox = a todo without a `due_date` ([ADR 0029](decisions/0029-icebox-todos-without-a-date.md)). A todo's steps live in its `notes` as a Markdown checklist (`- [ ] step`).
 - A guided review copies the template's questions into `content` as headings.
 - Built-in review templates are inserted as normal rows on first launch.
 - The header ticker shows the latest `ticker_messages` (by `created_at`). They are AI-generated only.

@@ -46,6 +46,25 @@ export const reopenTodo = (id: string) => updateTodo(id, { completed_at: null })
 export const postponeTodo = (id: string, dueDate: string) => updateTodo(id, { due_date: dueDate })
 export const deleteTodo = (id: string) => deleteLocally('todos', id)
 
+// --- Icebox (ADR 0029): the todos without a date --------------------------------------------
+
+export const moveToIcebox = (id: string) => updateTodo(id, { due_date: null })
+
+/** Icebox todos, newest first: the open ones, and the done ones apart. */
+export const listIcebox = async (): Promise<{ open: Todo[]; done: Todo[] }> => {
+  const todos = await db.todos
+    .filter((todo) => todo.deleted_at === null && todo.due_date === null)
+    .toArray()
+  todos.sort((a, b) => b.created_at.localeCompare(a.created_at))
+  return {
+    open: todos.filter((todo) => todo.completed_at === null),
+    done: todos.filter((todo) => todo.completed_at !== null),
+  }
+}
+
+/** Live version of `listIcebox` for React components. `undefined` while loading. */
+export const useIcebox = () => useLiveQuery(listIcebox)
+
 // ISO dates and timestamps sort correctly as plain strings.
 function byDueDateThenCreation(a: Todo, b: Todo): number {
   if (a.due_date === b.due_date) return a.created_at.localeCompare(b.created_at)

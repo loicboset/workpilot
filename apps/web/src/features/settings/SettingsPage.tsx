@@ -2,6 +2,7 @@ import { LogOut, Sparkles, UserRound } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
+import { PageTitle } from '@/components/PageTitle'
 import { Alert } from '@/components/ui/Alert'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
@@ -23,7 +24,7 @@ export function SettingsPage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-6 pt-2">
-      <h1 className="font-serif text-3xl text-grove-ink">{t('nav.settings')}</h1>
+      <PageTitle>{t('nav.settings')}</PageTitle>
 
       <Card title={t('settings.you')} icon={<UserRound />}>
         {profile ? <ProfileForm profile={profile} /> : <Spinner label={t('common.loading')} />}

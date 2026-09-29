@@ -48,9 +48,12 @@ Change them in `.env` if one is still taken.
 Then open http://localhost:5180, sign in with the name and password from `WORKPILOT_USER`,
 and answer the three onboarding questions. From there:
 
-- **⌘K** (Ctrl K) captures from anywhere: `/todo Call the editor tomorrow`,
-  `/block Deep work 9-11 friday`, `/idea …` (plain text is an idea).
+- **⌘K** (Ctrl K) captures from anywhere: `/todo Call the editor tomorrow` (today when no day
+  is given), `/block Deep work 9-11 friday`, `/idea …` (plain text is an idea), `/note …`,
+  `/icebox Redo the login` (a todo without a date).
 - **Today** shows the day's time blocks and todos: tick, move, link to a milestone, delete.
+- **Icebox** holds the todos without a date. ❄️ on any todo puts it there; a day takes it out.
+- **Ideas & notes** lists what you captured, to read, change or delete.
 - **Direction** holds your North Star and milestones.
 - **Settings → AI → LM Studio**: start LM Studio's server, pick a model, then "Save and test".
   The homepage ticker then gets its messages from your model.

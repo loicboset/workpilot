@@ -37,6 +37,26 @@ it('has the cards of the Grove concept', async () => {
   }
 })
 
+it("opens a card's page from its title; the arrow and the logo lead back home", async () => {
+  await openHome()
+  const card = screen.getByRole('region', { name: 'Today' })
+  await userEvent.click(within(card).getByRole('link', { name: 'Today' }))
+  expect(await screen.findByRole('heading', { level: 1, name: 'Today' })).toBeTruthy()
+
+  await userEvent.click(screen.getByRole('link', { name: 'Back to home' }))
+  await screen.findByRole('heading', { name: 'Hi Ada,' })
+
+  await userEvent.click(
+    within(screen.getByRole('region', { name: 'Direction' })).getByRole('link', {
+      name: 'Direction',
+    }),
+  )
+  expect(await screen.findByRole('heading', { level: 1, name: 'Direction' })).toBeTruthy()
+
+  await userEvent.click(screen.getByRole('link', { name: 'WorkPilot' }))
+  await screen.findByRole('heading', { name: 'Hi Ada,' })
+})
+
 it('shows the day with the next thing to do standing out, and ticks it', async () => {
   const deepWork = { ...newRowFields(), title: 'Deep work', start_at: at(9, 0), end_at: at(11, 0) }
   await db.time_blocks.bulkPut([

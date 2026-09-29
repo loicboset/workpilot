@@ -53,6 +53,7 @@ it('/ opens the command menu: arrows choose, Enter picks, and the menu closes', 
     expect.stringMatching(/^\/block/),
     expect.stringMatching(/^\/idea/),
     expect.stringMatching(/^\/note/),
+    expect.stringMatching(/^\/icebox/),
   ])
   expect(input.getAttribute('aria-activedescendant')).toBe(options[0].id)
 

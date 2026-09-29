@@ -17,6 +17,7 @@ export const DirectionCard = () => {
   return (
     <HomeCard
       title={t('nav.direction')}
+      href="/direction"
       aside={t(`home.direction.seasons.${seasonOf(today(timeZone), timeZone)}`)}
       icon={<Compass />}
       tone="sky"

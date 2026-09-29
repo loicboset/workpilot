@@ -2,6 +2,8 @@ import type { RouteObject } from 'react-router'
 import { SignInPage } from '@/features/auth/SignInPage'
 import { DirectionPage } from '@/features/direction/DirectionPage'
 import { HomePage } from '@/features/home/HomePage'
+import { IceboxPage } from '@/features/icebox/IceboxPage'
+import { NotesPage } from '@/features/notes/NotesPage'
 import { OnboardingPage } from '@/features/onboarding/OnboardingPage'
 import { SettingsPage } from '@/features/settings/SettingsPage'
 import { TodayPage } from '@/features/today/TodayPage'
@@ -41,6 +43,8 @@ export const routes: RouteObject[] = [
         children: [
           { index: true, element: <HomePage /> },
           { path: '/today', element: <TodayPage /> },
+          { path: '/icebox', element: <IceboxPage /> },
+          { path: '/notes', element: <NotesPage /> },
           { path: '/direction', element: <DirectionPage /> },
           { path: '/settings', element: <SettingsPage /> },
         ],

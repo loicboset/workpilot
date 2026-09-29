@@ -11,6 +11,7 @@ export const CaptureCard = () => {
   return (
     <HomeCard
       title={t('home.capture.title')}
+      href="/notes"
       aside={t('home.capture.subtitle')}
       icon={<Pencil />}
       tone="sand"

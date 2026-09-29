@@ -12,7 +12,7 @@
   },
   "nav": {
     "label": "Main",
-    "home": "Home",
+    "backHome": "Back to home",
     "today": "Today",
     "direction": "Direction",
     "settings": "Settings",
@@ -196,17 +196,19 @@
       "todo": "Something to do. Add a day: tomorrow, friday…",
       "block": "Time set aside, e.g. “Deep work 9-11 friday”",
       "idea": "A thought to look at later",
-      "note": "Something to keep, as written"
+      "note": "Something to keep, as written",
+      "icebox": "A todo without a date, for later"
     },
     "kinds": {
       "todo": "Todo",
       "block": "Time block",
       "idea": "Idea",
-      "note": "Note"
+      "note": "Note",
+      "icebox": "Icebox"
     },
     "preview": {
       "due": "due {{day}}",
-      "noDate": "no date"
+      "icebox": "no date, in the icebox"
     },
     "saved": "Saved: {{kind}}. Keep going, or press Esc when your mind feels clear.",
     "problems": {
@@ -226,7 +228,6 @@
     "overdue": "From before",
     "dueToday": "Today",
     "dueThatDay": "That day",
-    "someday": "Someday",
     "addTodo": "Add a todo",
     "addTodoPlaceholder": "Add a todo for this day, then Enter",
     "addBlock": "Add a time block",
@@ -242,9 +243,42 @@
     "moveNextWeek": "Move to next week",
     "pickDay": "Pick a day",
     "pickDayFor": "When for “{{title}}”?",
-    "noDate": "Remove the date",
+    "moveToday": "Move to today",
+    "moveToIcebox": "Move to the icebox",
     "linkMilestone": "Link to a milestone",
-    "noMilestone": "No milestone"
+    "noMilestone": "No milestone",
+    "notes": "Notes",
+    "notesFor": "Notes for “{{title}}”",
+    "notesPlaceholder": "Anything to remember. “- [ ] step” makes a checklist.",
+    "checklist": "{{done}} of {{total}}",
+    "hasNotes": "Has notes"
+  },
+  "icebox": {
+    "title": "Icebox",
+    "subtitle": "Todos without a date, kept for later",
+    "add": "Add to the icebox",
+    "addPlaceholder": "Add a todo for later, then Enter",
+    "empty": "Nothing in the icebox.",
+    "showDone_one": "Show the done one",
+    "showDone_other": "Show the {{count}} done ones",
+    "hideDone": "Hide the done ones"
+  },
+  "notes": {
+    "title": "Ideas & notes",
+    "ideas": "Ideas",
+    "ideasSubtitle": "Thoughts to look at later",
+    "noIdeas": "No ideas yet. Plain text in the capture bar lands here.",
+    "addIdea": "Add an idea",
+    "addIdeaPlaceholder": "An idea, then Enter",
+    "notes": "Notes",
+    "notesSubtitle": "Things to keep, as written",
+    "noNotes": "No notes yet.",
+    "addNote": "New note",
+    "editNote": "Change the note",
+    "noteTitle": "Title",
+    "noteContent": "Note",
+    "toIcebox": "Move to the icebox",
+    "moreFor": "More for “{{text}}”"
   },
   "direction": {
     "subtitle": "Where you are heading, and the steps on the way.",

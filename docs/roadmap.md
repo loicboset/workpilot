@@ -6,7 +6,7 @@ Decisions are recorded in [decisions/](decisions/README.md). This file is the hi
 
 | Version | Scope |
 |---|---|
-| **v0.1 Core loop** (MVP) | Login, PWA, offline-first + sync, i18n system (EN first), Docker image. Short onboarding (you, North Star + milestones, AI provider). Capture bar (Cmd/Ctrl+K) with `/todo`, `/block`, `/idea`. Today (todos + time blocks: done, delete, postpone, link to milestone). Direction (North Star, milestones, progress, "time aligned"). Grove homepage with weather widget. AI foundation + AI ticker. |
+| **v0.1 Core loop** (MVP) | Login, PWA, offline-first + sync, i18n system (EN first), Docker image. Short onboarding (you, North Star + milestones, AI provider). Capture bar (Cmd/Ctrl+K) with `/todo`, `/block`, `/idea`, `/note`, `/icebox`. Today (todos + time blocks: done, delete, postpone, link to milestone). Icebox (todos without a date). Ideas & notes page. Direction (North Star, milestones, progress, "time aligned"). Grove homepage with weather widget. AI foundation + AI ticker. |
 | v0.2 Reflection | Review (free journal + daily / weekly / monthly templates). Push reminders (`/remind`). |
 | v0.3 AI pilot | AI voice, prompt library, link suggestions, milestone helper, morning plan. Opportunities (ICE + experiments). |
 | v0.4 Learning | References + notes. Learning (AI flashcards and quizzes, FSRS). |
@@ -23,7 +23,7 @@ Decisions are recorded in [decisions/](decisions/README.md). This file is the hi
 6. Feature specs (per version)
 7. Data schema: done for v0.1 ([data-model.md](data-model.md))
 8. Self-hosting and distribution: free hosting, backups, updates, license
-9. UI, built in steps with screenshots (building blocks: ADR 0028): all v0.1 screens built: sign-in, onboarding, Grove homepage, capture bar, Today, Direction, settings
+9. UI, built in steps with screenshots (building blocks: ADR 0028): all v0.1 screens built: sign-in, onboarding, Grove homepage, capture bar, Today, Icebox, Ideas & notes, Direction, settings
 
 ## Open questions
 

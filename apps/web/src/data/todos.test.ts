@@ -1,6 +1,15 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { db } from '@/db/db'
-import { addTodo, completeTodo, deleteTodo, listTodos, postponeTodo } from './todos'
+import { newRowFields } from './localWrites'
+import {
+  addTodo,
+  completeTodo,
+  deleteTodo,
+  listIcebox,
+  listTodos,
+  moveToIcebox,
+  postponeTodo,
+} from './todos'
 
 beforeEach(async () => {
   await db.delete()
@@ -35,5 +44,28 @@ describe('todos repository', () => {
     await deleteTodo(todo.id)
     expect(await listTodos()).toEqual([])
     expect((await db.todos.get(todo.id))?.deleted_at).not.toBeNull() // kept, so it syncs
+  })
+
+  it('keeps the todos without a date in the icebox, newest first, the done ones apart', async () => {
+    const written = (title: string, created_at: string, completed_at: string | null = null) =>
+      db.todos.put({
+        ...newRowFields(),
+        created_at,
+        title,
+        notes: null,
+        due_date: null,
+        completed_at,
+        milestone_id: null,
+      })
+    await written('older', '2026-09-01T09:00:00Z')
+    await written('done', '2026-09-02T09:00:00Z', '2026-09-05T17:00:00Z')
+    await written('newer', '2026-09-03T09:00:00Z')
+    const dated = await addTodo({ title: 'dated', due_date: '2026-10-01' })
+    await moveToIcebox(dated.id)
+
+    const { open, done } = await listIcebox()
+
+    expect(open.map((todo) => todo.title)).toEqual(['dated', 'newer', 'older'])
+    expect(done.map((todo) => todo.title)).toEqual(['done'])
   })
 })

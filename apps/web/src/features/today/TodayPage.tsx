@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, Clock3, ListTodo, Plus } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router'
+import { PageTitle } from '@/components/PageTitle'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { IconButton } from '@/components/ui/IconButton'
@@ -35,14 +36,13 @@ export function TodayPage() {
   return (
     <div className="space-y-6">
       <header className="flex flex-wrap items-center justify-between gap-4 pt-2">
-        <div>
-          <h1 className="font-serif text-3xl text-grove-ink">
-            {dayLabel(day, t, i18n.language, timeZone)}
-          </h1>
-          <p className="text-sm text-grove-muted first-letter:uppercase">
-            {formatDay(day, i18n.language, timeZone)}
-          </p>
-        </div>
+        <PageTitle
+          subtitle={
+            <p className="first-letter:uppercase">{formatDay(day, i18n.language, timeZone)}</p>
+          }
+        >
+          {dayLabel(day, t, i18n.language, timeZone)}
+        </PageTitle>
         <div className="flex items-center gap-2">
           <IconButton
             variant="secondary"
@@ -117,12 +117,6 @@ export function TodayPage() {
               milestones={milestones}
               timeZone={timeZone}
               empty={t('today.noTodos')}
-            />
-            <TodoGroup
-              title={t('today.someday')}
-              todos={plan.someday}
-              milestones={milestones}
-              timeZone={timeZone}
             />
           </Card>
         </div>

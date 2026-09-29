@@ -9,7 +9,10 @@ import type { Capture } from './parseCapture'
 export async function saveCapture(capture: Capture, timeZone: string): Promise<void> {
   switch (capture.kind) {
     case 'todo':
-      await addTodo({ title: capture.title, due_date: capture.dueDate?.toString() ?? null })
+      await addTodo({ title: capture.title, due_date: capture.dueDate.toString() })
+      return
+    case 'icebox':
+      await addTodo({ title: capture.title, due_date: null })
       return
     case 'block':
       await addTimeBlock({

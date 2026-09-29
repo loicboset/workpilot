@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { MenuTrigger } from 'react-aria-components'
 import { useTranslation } from 'react-i18next'
 import { MethodInfo } from '@/components/MethodInfo'
+import { PageTitle } from '@/components/PageTitle'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Checkbox } from '@/components/ui/Checkbox'
@@ -39,8 +40,7 @@ export function DirectionPage() {
   return (
     <div className="space-y-6 pt-2">
       <header>
-        <h1 className="font-serif text-3xl text-grove-ink">{t('nav.direction')}</h1>
-        <p className="text-sm text-grove-muted">{t('direction.subtitle')}</p>
+        <PageTitle subtitle={t('direction.subtitle')}>{t('nav.direction')}</PageTitle>
       </header>
 
       {/* Only once loaded: the form starts from the saved North Star. */}

@@ -1,10 +1,11 @@
 import { useQueryClient } from '@tanstack/react-query'
-import { Compass, Feather, Home, Settings, Sun, type LucideIcon } from 'lucide-react'
+import { Feather, Settings, type LucideIcon } from 'lucide-react'
 import { useEffect } from 'react'
 import { Link as AriaLink } from 'react-aria-components'
 import { useTranslation } from 'react-i18next'
 import { Outlet, useLocation } from 'react-router'
 import { twMerge } from 'tailwind-merge'
+import { tv } from 'tailwind-variants'
 import { Logo } from '@/components/brand/Logo'
 import { Button } from '@/components/ui/Button'
 import { useProfile } from '@/data/profile'
@@ -12,18 +13,14 @@ import { SESSION_QUERY_KEY } from '@/features/auth/session'
 import { CaptureBar } from '@/features/capture/CaptureBar'
 import { openCaptureBar } from '@/features/capture/captureStore'
 import { changeLocale, currentLocale } from '@/i18n'
+import { focusRing } from '@/lib/styles'
 import { startSync } from '@/sync/scheduler'
 import { useSyncStatus } from '@/sync/status'
 import { RequireOnboarding } from '../RequireOnboarding'
 
 const IS_MAC = /mac|iphone|ipad/i.test(navigator.userAgent)
 
-const NAV: { href: string; labelKey: string; icon: LucideIcon }[] = [
-  { href: '/', labelKey: 'nav.home', icon: Home },
-  { href: '/today', labelKey: 'nav.today', icon: Sun },
-  { href: '/direction', labelKey: 'nav.direction', icon: Compass },
-  { href: '/settings', labelKey: 'nav.settings', icon: Settings },
-]
+const logoLinkStyles = tv({ extend: focusRing, base: 'inline-flex rounded-full' })
 
 /** The frame of every signed-in page: navigation, the capture bar, and sync while it's shown. */
 export function AppLayout() {
@@ -35,12 +32,12 @@ export function AppLayout() {
   return (
     <div className="mx-auto flex min-h-dvh max-w-360 flex-col px-4 sm:px-8 lg:px-12">
       <header className="flex items-center justify-between gap-4 py-5">
-        <Logo showName="from-sm" />
+        <AriaLink href="/" className={logoLinkStyles}>
+          <Logo showName="from-sm" />
+        </AriaLink>
         <div className="flex items-center gap-2">
           <nav aria-label={t('nav.label')} className="flex items-center gap-1">
-            {NAV.map((item) => (
-              <NavLink key={item.href} {...item} label={t(item.labelKey)} />
-            ))}
+            <NavLink href="/settings" label={t('nav.settings')} icon={Settings} />
           </nav>
           <Button size="sm" onPress={openCaptureBar} aria-keyshortcuts="Meta+K Control+K">
             <Feather className="size-4" aria-hidden />
@@ -63,19 +60,19 @@ export function AppLayout() {
 
 function NavLink({ href, label, icon: Icon }: { href: string; label: string; icon: LucideIcon }) {
   const { pathname } = useLocation()
-  const isCurrent = href === '/' ? pathname === '/' : pathname.startsWith(href)
+  const isCurrent = pathname.startsWith(href)
   return (
     <AriaLink
       href={href}
       aria-current={isCurrent ? 'page' : undefined}
       aria-label={label}
       className={twMerge(
-        'flex h-9 items-center gap-2 rounded-full px-3 text-sm font-medium text-grove-muted transition-colors hovered:bg-grove-card hovered:text-grove-ink focus-visible:outline-2 focus-visible:outline-grove-moss',
+        'flex h-9 items-center gap-2 rounded-full px-2.5 text-sm sm:px-3 font-medium text-grove-muted transition-colors hovered:bg-grove-card hovered:text-grove-ink focus-visible:outline-2 focus-visible:outline-grove-moss',
         isCurrent && 'bg-grove-card text-grove-moss shadow-grove',
       )}
     >
       <Icon className="size-4" aria-hidden />
-      <span className="hidden md:inline">{label}</span>
+      <span className="hidden lg:inline">{label}</span>
     </AriaLink>
   )
 }

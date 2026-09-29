@@ -12,7 +12,7 @@
   },
   "nav": {
     "label": "Principale",
-    "home": "Accueil",
+    "backHome": "Retour à l'accueil",
     "today": "Aujourd'hui",
     "direction": "Cap",
     "settings": "Réglages",
@@ -199,17 +199,19 @@
       "todo": "Une chose à faire. Ajoutez un jour : demain, vendredi…",
       "block": "Du temps réservé, p. ex. « Travail profond 9h-11h vendredi »",
       "idea": "Une pensée à regarder plus tard",
-      "note": "Quelque chose à garder, tel quel"
+      "note": "Quelque chose à garder, tel quel",
+      "icebox": "Une tâche sans date, pour plus tard"
     },
     "kinds": {
       "todo": "Tâche",
       "block": "Plage horaire",
       "idea": "Idée",
-      "note": "Note"
+      "note": "Note",
+      "icebox": "Icebox"
     },
     "preview": {
       "due": "pour {{day}}",
-      "noDate": "sans date"
+      "icebox": "sans date, dans l'Icebox"
     },
     "saved": "C'est noté : {{kind}}. Continuez, ou Échap quand votre esprit est léger.",
     "problems": {
@@ -229,7 +231,6 @@
     "overdue": "D'avant",
     "dueToday": "Aujourd'hui",
     "dueThatDay": "Ce jour-là",
-    "someday": "Un jour",
     "addTodo": "Ajouter une tâche",
     "addTodoPlaceholder": "Ajoutez une tâche pour ce jour, puis Entrée",
     "addBlock": "Ajouter une plage horaire",
@@ -245,9 +246,43 @@
     "moveNextWeek": "Déplacer à la semaine prochaine",
     "pickDay": "Choisir un jour",
     "pickDayFor": "Quand pour « {{title}} » ?",
-    "noDate": "Retirer la date",
+    "moveToday": "Déplacer à aujourd'hui",
+    "moveToIcebox": "Mettre dans l'Icebox",
     "linkMilestone": "Relier à un jalon",
-    "noMilestone": "Aucun jalon"
+    "noMilestone": "Aucun jalon",
+    "notes": "Notes",
+    "notesFor": "Notes pour « {{title}} »",
+    "notesPlaceholder": "Tout ce qui est à retenir. « - [ ] étape » fait une liste à cocher.",
+    "checklist": "{{done}} sur {{total}}",
+    "hasNotes": "A des notes"
+  },
+  "icebox": {
+    "title": "Icebox",
+    "subtitle": "Les tâches sans date, gardées pour plus tard",
+    "add": "Mettre dans l'Icebox",
+    "addPlaceholder": "Ajoutez une tâche pour plus tard, puis Entrée",
+    "empty": "Rien dans l'Icebox.",
+    "showDone_one": "Voir celle qui est faite",
+    "showDone_other": "Voir les {{count}} faites",
+    "showDone_many": "Voir les {{count}} faites",
+    "hideDone": "Cacher les tâches faites"
+  },
+  "notes": {
+    "title": "Idées et notes",
+    "ideas": "Idées",
+    "ideasSubtitle": "Des pensées à regarder plus tard",
+    "noIdeas": "Pas encore d'idée. Le texte simple de la barre Noter arrive ici.",
+    "addIdea": "Ajouter une idée",
+    "addIdeaPlaceholder": "Une idée, puis Entrée",
+    "notes": "Notes",
+    "notesSubtitle": "Ce qui est à garder, tel quel",
+    "noNotes": "Pas encore de note.",
+    "addNote": "Nouvelle note",
+    "editNote": "Modifier la note",
+    "noteTitle": "Titre",
+    "noteContent": "Note",
+    "toIcebox": "Mettre dans l'Icebox",
+    "moreFor": "Plus pour « {{text}} »"
   },
   "direction": {
     "subtitle": "Là où vous allez, et les étapes du chemin.",

@@ -1,10 +1,11 @@
 /**
  * The capture bar's language (ADR 0010): strict commands, forgiving arguments.
  *
- *   /todo Call the editor tomorrow      → a todo due tomorrow
+ *   /todo Call the editor tomorrow      → a todo due tomorrow (today when no day is given)
  *   /block Deep work 9-11 friday        → a time block on Friday, 09:00–11:00
  *   /idea Automate the weekly report    → an idea
  *   /note The editor prefers mornings   → a note, kept as written (line breaks too)
+ *   /icebox Redo the login              → a todo without a date, in the icebox (ADR 0029)
  *   Automate the weekly report          → no command: an idea (the inbox)
  *
  * Dates are read the same way offline and online, without AI. Date words work in English,
@@ -12,11 +13,12 @@
  */
 import { Time, type CalendarDate } from '@internationalized/date'
 
-export const COMMANDS = ['todo', 'block', 'idea', 'note'] as const
+export const COMMANDS = ['todo', 'block', 'idea', 'note', 'icebox'] as const
 export type Command = (typeof COMMANDS)[number]
 
 export type Capture =
-  | { kind: 'todo'; title: string; dueDate: CalendarDate | null }
+  | { kind: 'todo'; title: string; dueDate: CalendarDate }
+  | { kind: 'icebox'; title: string }
   | { kind: 'block'; title: string; day: CalendarDate; start: Time; end: Time }
   | { kind: 'idea'; text: string }
   | { kind: 'note'; text: string }
@@ -41,10 +43,18 @@ export function parseCapture(input: string, today: CalendarDate): ParseResult {
     return rest ? { capture: { kind: command, text: rest } } : { problem: 'noTitle' }
   }
 
+  // The icebox has no dates: "friday" stays in the title.
+  if (command === 'icebox') {
+    const title = tidy(rest)
+    return title ? { capture: { kind: 'icebox', title } } : { problem: 'noTitle' }
+  }
+
   const { day, remaining: withoutDate } = takeDay(rest, today)
   if (command === 'todo') {
     const title = tidy(withoutDate)
-    return title ? { capture: { kind: 'todo', title, dueDate: day } } : { problem: 'noTitle' }
+    return title
+      ? { capture: { kind: 'todo', title, dueDate: day ?? today } }
+      : { problem: 'noTitle' }
   }
 
   const { range, remaining: withoutTime } = takeTimeRange(withoutDate)

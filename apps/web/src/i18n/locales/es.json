@@ -12,7 +12,7 @@
   },
   "nav": {
     "label": "Principal",
-    "home": "Inicio",
+    "backHome": "Volver al inicio",
     "today": "Hoy",
     "direction": "Rumbo",
     "settings": "Ajustes",
@@ -199,17 +199,19 @@
       "todo": "Algo que hacer. Añade un día: mañana, viernes…",
       "block": "Tiempo reservado, p. ej. «Trabajo profundo 9-11 viernes»",
       "idea": "Un pensamiento para ver más tarde",
-      "note": "Algo que guardar, tal cual"
+      "note": "Algo que guardar, tal cual",
+      "icebox": "Una tarea sin fecha, para más tarde"
     },
     "kinds": {
       "todo": "Tarea",
       "block": "Bloque de tiempo",
       "idea": "Idea",
-      "note": "Nota"
+      "note": "Nota",
+      "icebox": "Icebox"
     },
     "preview": {
       "due": "para {{day}}",
-      "noDate": "sin fecha"
+      "icebox": "sin fecha, en el Icebox"
     },
     "saved": "Anotado: {{kind}}. Sigue, o pulsa Esc cuando tu mente esté despejada.",
     "problems": {
@@ -229,7 +231,6 @@
     "overdue": "De antes",
     "dueToday": "Hoy",
     "dueThatDay": "Ese día",
-    "someday": "Algún día",
     "addTodo": "Añadir una tarea",
     "addTodoPlaceholder": "Añade una tarea para este día y pulsa Intro",
     "addBlock": "Añadir un bloque de tiempo",
@@ -245,9 +246,43 @@
     "moveNextWeek": "Mover a la próxima semana",
     "pickDay": "Elegir un día",
     "pickDayFor": "¿Cuándo para «{{title}}»?",
-    "noDate": "Quitar la fecha",
+    "moveToday": "Mover a hoy",
+    "moveToIcebox": "Mover al Icebox",
     "linkMilestone": "Vincular a un hito",
-    "noMilestone": "Sin hito"
+    "noMilestone": "Sin hito",
+    "notes": "Notas",
+    "notesFor": "Notas para «{{title}}»",
+    "notesPlaceholder": "Lo que haya que recordar. «- [ ] paso» crea una lista.",
+    "checklist": "{{done}} de {{total}}",
+    "hasNotes": "Tiene notas"
+  },
+  "icebox": {
+    "title": "Icebox",
+    "subtitle": "Tareas sin fecha, guardadas para más tarde",
+    "add": "Mover al Icebox",
+    "addPlaceholder": "Añade una tarea para más tarde y pulsa Intro",
+    "empty": "Nada en el Icebox.",
+    "showDone_one": "Ver la hecha",
+    "showDone_other": "Ver las {{count}} hechas",
+    "showDone_many": "Ver las {{count}} hechas",
+    "hideDone": "Ocultar las hechas"
+  },
+  "notes": {
+    "title": "Ideas y notas",
+    "ideas": "Ideas",
+    "ideasSubtitle": "Pensamientos para ver más tarde",
+    "noIdeas": "Aún no hay ideas. El texto simple de la barra Anotar llega aquí.",
+    "addIdea": "Añadir una idea",
+    "addIdeaPlaceholder": "Una idea y pulsa Intro",
+    "notes": "Notas",
+    "notesSubtitle": "Lo que hay que guardar, tal cual",
+    "noNotes": "Aún no hay notas.",
+    "addNote": "Nueva nota",
+    "editNote": "Cambiar la nota",
+    "noteTitle": "Título",
+    "noteContent": "Nota",
+    "toIcebox": "Mover al Icebox",
+    "moreFor": "Más para «{{text}}»"
   },
   "direction": {
     "subtitle": "Hacia dónde vas, y los pasos del camino.",

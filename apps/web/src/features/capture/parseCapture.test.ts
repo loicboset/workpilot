@@ -22,7 +22,8 @@ describe('commands', () => {
 
   it('completes a command from its first letters', () => {
     expect(commandsStartingWith('/b')).toEqual(['block'])
-    expect(commandsStartingWith('/')).toEqual(['todo', 'block', 'idea', 'note'])
+    expect(commandsStartingWith('/')).toEqual(['todo', 'block', 'idea', 'note', 'icebox'])
+    expect(commandsStartingWith('/i')).toEqual(['idea', 'icebox'])
     expect(commandsStartingWith('/todo')).toEqual(['todo'])
   })
 
@@ -40,7 +41,7 @@ describe('commands', () => {
 
 describe('/todo', () => {
   it.each([
-    ['Call the editor', null],
+    ['Call the editor', TODAY], // no day: today
     ['Call the editor today', TODAY],
     ['Call the editor tomorrow', new CalendarDate(2026, 10, 1)],
     ['Appeler l’éditeur demain', new CalendarDate(2026, 10, 1)],
@@ -62,8 +63,20 @@ describe('/todo', () => {
 
   it('only takes whole words as dates', () => {
     expect(parseCapture('/todo Read Monday.com docs', TODAY)).toMatchObject({
-      capture: { title: 'Read Monday.com docs', dueDate: null },
+      capture: { title: 'Read Monday.com docs', dueDate: TODAY },
     })
+  })
+})
+
+describe('/icebox', () => {
+  it('keeps a todo without a date, date words included', () => {
+    expect(parseCapture('/icebox Plan the offsite friday', TODAY)).toEqual({
+      capture: { kind: 'icebox', title: 'Plan the offsite friday' },
+    })
+  })
+
+  it('needs something to keep', () => {
+    expect(parseCapture('/icebox   ', TODAY)).toEqual({ problem: 'noTitle' })
   })
 })
 

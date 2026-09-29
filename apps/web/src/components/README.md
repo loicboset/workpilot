@@ -30,3 +30,4 @@ See them all with `pnpm dev`, then open `/dev/ui`.
 | `Modal`, `Dialog`, `DialogTitle` | A window over the page; Esc closes it.                                                              |
 | `Popover`                        | A floating panel next to what opened it.                                                            |
 | `MethodInfo`                     | The ⓘ explaining the method a feature is built on (ADR 0014).                                       |
+| `PageTitle`                      | A page's title and subtitle, after a small arrow back to the homepage.                              |

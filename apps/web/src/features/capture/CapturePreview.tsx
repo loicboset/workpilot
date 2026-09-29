@@ -28,16 +28,18 @@ export const CapturePreview = ({ result, timeZone }: { result: ParseResult; time
   const Icon = COMMAND_ICONS[capture.kind]
   let details = ''
   if (capture.kind === 'todo') {
-    details = capture.dueDate
-      ? t('capture.preview.due', {
-          day: dayLabel(capture.dueDate, t, locale, timeZone, { inSentence: true }),
-        })
-      : t('capture.preview.noDate')
+    details = t('capture.preview.due', {
+      day: dayLabel(capture.dueDate, t, locale, timeZone, { inSentence: true }),
+    })
+  } else if (capture.kind === 'icebox') {
+    details = t('capture.preview.icebox')
   } else if (capture.kind === 'block') {
     details = `${dayLabel(capture.day, t, locale, timeZone)} · ${formatTimeOfDay(capture.start, locale)}–${formatTimeOfDay(capture.end, locale)}`
   }
   const title = 'text' in capture ? capture.text : capture.title
-  const isToday = capture.kind === 'block' && capture.day.compare(today(timeZone)) === 0
+  const day =
+    capture.kind === 'block' ? capture.day : capture.kind === 'todo' ? capture.dueDate : null
+  const isToday = day !== null && day.compare(today(timeZone)) === 0
 
   return (
     <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm" aria-live="polite">

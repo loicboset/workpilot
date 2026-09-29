@@ -39,6 +39,7 @@ export const TodayCard = () => {
   return (
     <HomeCard
       title={t('nav.today')}
+      href="/today"
       aside={plan ? aside : undefined}
       icon={<Clock />}
       tone="moss"

@@ -1,11 +1,15 @@
 import { useId, type ReactNode } from 'react'
+import { Link } from 'react-aria-components'
 import { twMerge } from 'tailwind-merge'
 import { tv } from 'tailwind-variants'
+import { focusRing } from '@/lib/styles'
 
 export type HomeCardTone = 'moss' | 'sand' | 'sky' | 'rose'
 
 type HomeCardProps = {
   title: string
+  /** The page the title opens, e.g. "/today". Without it, the title is plain text. */
+  href?: string
   /** A few words at the top right, e.g. "Empty your mind". */
   aside?: string
   /** A lucide icon, shown in a tile tinted with `tone`. */
@@ -29,9 +33,15 @@ const tileStyles = tv({
   },
 })
 
+const titleLinkStyles = tv({
+  extend: focusRing,
+  base: 'cursor-pointer rounded-sm underline-offset-4 transition-colors hovered:text-grove-moss hovered:underline',
+})
+
 /** A homepage card of the Grove concept: a tinted icon tile, a serif title, a quiet aside. */
 export const HomeCard = ({
   title,
+  href,
   aside,
   icon,
   tone,
@@ -55,7 +65,13 @@ export const HomeCard = ({
           {icon}
         </span>
         <h2 id={titleId} className="font-serif text-[22px] leading-7 font-medium text-grove-ink">
-          {title}
+          {href ? (
+            <Link href={href} className={titleLinkStyles}>
+              {title}
+            </Link>
+          ) : (
+            title
+          )}
         </h2>
         {aside && (
           <p className="ml-auto pl-3 text-right text-[13px] leading-4 text-grove-muted">{aside}</p>
