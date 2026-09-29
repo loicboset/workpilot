@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { PageTitle } from '@/components/PageTitle'
+import { SpacePageTitle } from '@/features/spaces/SpacePageTitle'
 import { IdeasCard } from './IdeasCard'
 import { NotesCard } from './NotesCard'
 
@@ -11,7 +11,7 @@ export const NotesPage = () => {
   return (
     <div className="space-y-6 pt-2">
       <header>
-        <PageTitle>{t('notes.title')}</PageTitle>
+        <SpacePageTitle>{t('notes.title')}</SpacePageTitle>
       </header>
       <div className="grid items-start gap-6 lg:grid-cols-2">
         <IdeasCard />

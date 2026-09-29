@@ -1,6 +1,6 @@
 import { db, syncedTable } from '@/db/db'
 import type { WritableTableName } from '@/db/tables'
-import type { SyncedRow } from '@/db/types'
+import type { SpaceRow, SyncedRow } from '@/db/types'
 import { requestSync } from '@/sync/scheduler'
 
 /**
@@ -18,6 +18,12 @@ export function newRowFields(): SyncedRow {
   const now = nowIso()
   return { id: crypto.randomUUID(), created_at: now, updated_at: now, deleted_at: null }
 }
+
+/** The fields every new row of a space starts with (ADR 0031). */
+export const newSpaceRowFields = (spaceId: string): SpaceRow => ({
+  ...newRowFields(),
+  space_id: spaceId,
+})
 
 /** Save a whole row and queue it for sync. */
 export async function saveLocally<Row extends SyncedRow>(

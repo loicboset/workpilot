@@ -2,11 +2,14 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '@/db/db'
 import type { Todo } from '@/db/types'
 import { byPriority, type Priority } from '@/lib/priority'
-import { deleteLocally, newRowFields, nowIso, saveLocally, updateLocally } from './localWrites'
+import { useSpace } from './currentSpace'
+import { deleteLocally, newSpaceRowFields, nowIso, saveLocally, updateLocally } from './localWrites'
+import { activeRowsIn } from './spaceRows'
 
 /**
  * Todos repository (ADR 0017, 0025): screens read and change todos only through here.
- * Reads come from Dexie and update live; writes are saved locally, then synced.
+ * Reads come from Dexie and update live; writes are saved locally, then synced. Reads are of
+ * one space: hooks take the page's space, plain functions its id (ADR 0031).
  * Each synced resource has a repository like this one in src/data.
  */
 
@@ -16,22 +19,26 @@ export type TodoFields = Pick<
 >
 
 /**
- * Active todos, sorted like the API: dated first (soonest first), then undated; within a day,
- * by priority (none last), then oldest first.
+ * The space's active todos, sorted like the API: dated first (soonest first), then undated;
+ * within a day, by priority (none last), then oldest first.
  */
-export async function listTodos(): Promise<Todo[]> {
-  const todos = await db.todos.filter((todo) => todo.deleted_at === null).toArray()
+export async function listTodos(spaceId: string): Promise<Todo[]> {
+  const todos = await activeRowsIn(db.todos, spaceId)
   return todos.sort(byDueDateThenCreation)
 }
 
-/** Live version of `listTodos` for React components. `undefined` while loading. */
+/** Live version of `listTodos` for the page's space. `undefined` while loading. */
 export function useTodos(): Todo[] | undefined {
-  return useLiveQuery(listTodos)
+  const { id } = useSpace()
+  return useLiveQuery(() => listTodos(id), [id])
 }
 
-export function addTodo(fields: Pick<TodoFields, 'title'> & Partial<TodoFields>): Promise<Todo> {
+export function addTodo(
+  spaceId: string,
+  fields: Pick<TodoFields, 'title'> & Partial<TodoFields>,
+): Promise<Todo> {
   return saveLocally<Todo>('todos', {
-    ...newRowFields(),
+    ...newSpaceRowFields(spaceId),
     notes: null,
     due_date: null,
     priority: null,
@@ -57,11 +64,9 @@ export const deleteTodo = (id: string) => deleteLocally('todos', id)
 
 export const moveToIcebox = (id: string) => updateTodo(id, { due_date: null })
 
-/** Icebox todos, by priority then newest first: the open ones, and the done ones apart. */
-export const listIcebox = async (): Promise<{ open: Todo[]; done: Todo[] }> => {
-  const todos = await db.todos
-    .filter((todo) => todo.deleted_at === null && todo.due_date === null)
-    .toArray()
+/** The space's icebox, by priority then newest first: the open todos, and the done ones apart. */
+export const listIcebox = async (spaceId: string): Promise<{ open: Todo[]; done: Todo[] }> => {
+  const todos = (await activeRowsIn(db.todos, spaceId)).filter((todo) => todo.due_date === null)
   todos.sort(
     (a, b) => byPriority(a.priority, b.priority) || b.created_at.localeCompare(a.created_at),
   )
@@ -71,8 +76,11 @@ export const listIcebox = async (): Promise<{ open: Todo[]; done: Todo[] }> => {
   }
 }
 
-/** Live version of `listIcebox` for React components. `undefined` while loading. */
-export const useIcebox = () => useLiveQuery(listIcebox)
+/** Live version of `listIcebox` for the page's space. `undefined` while loading. */
+export const useIcebox = () => {
+  const { id } = useSpace()
+  return useLiveQuery(() => listIcebox(id), [id])
+}
 
 // ISO dates and timestamps sort correctly as plain strings.
 function byDueDateThenCreation(a: Todo, b: Todo): number {

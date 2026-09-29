@@ -66,6 +66,12 @@
       "label": "Jalon {{number}}",
       "placeholder": "p. ex. Premier jet terminé",
       "addAnother": "En ajouter un"
+    },
+    "space": {
+      "title": "Votre premier espace",
+      "subtitle": "Une part de votre vie, avec sa propre direction.",
+      "explain": "Comme un profil de navigateur, un espace garde son étoile polaire, ses journées, ses notes et ses couleurs, à part des autres. Donnez-lui le nom de la part de votre vie qu'il accueille.",
+      "later": "Vous pourrez ajouter d'autres espaces plus tard, depuis « Tous les espaces » dans le menu des espaces."
     }
   },
   "home": {
@@ -360,7 +366,7 @@
     "appearance": {
       "title": "Apparence",
       "theme": "Thème",
-      "themeHelp": "Change aussitôt, sur tous vos appareils.",
+      "themeHelp": "Le même dans chaque espace. Change aussitôt, sur tous vos appareils.",
       "system": "Comme l’appareil",
       "light": "Clair",
       "dark": "Sombre",
@@ -372,7 +378,8 @@
         "heather": "Bruyère",
         "olive": "Olivier",
         "birch": "Bouleau"
-      }
+      },
+      "paletteHelpSpace": "Les couleurs de {{name}}. Chacune, en clair comme en sombre."
     },
     "ai": {
       "title": "IA",
@@ -402,8 +409,10 @@
         "ai_provider_error": "L'IA a répondu par une erreur. Le journal du serveur donne les détails.",
         "ai_invalid_answer": "La réponse du modèle n'avait pas la forme attendue. Essayez un modèle plus grand (7B ou plus).",
         "unexpected": "Un problème est survenu. Merci de réessayer."
-      }
-    }
+      },
+      "subtitleSpace": "Pour {{name}} : un modèle local (LM Studio, Ollama) ou une API dans le cloud. Facultatif."
+    },
+    "youShared": "Les mêmes dans chaque espace."
   },
   "methods": {
     "label": "Méthode",
@@ -416,6 +425,36 @@
       "origin": "Toyota et le lean management, années 1960",
       "applied": "Votre étoile polaire est le « vrai nord ». Les jalons sont les étapes du chemin. Tâches et plages horaires peuvent être reliées à un jalon, pour voir quelle part de votre semaine a servi votre étoile polaire.",
       "adapted": "Simplifié pour une personne : une étoile polaire et ses jalons, pas de matrice de stratégie, pas de déclinaison en équipe. Les liens sont facultatifs."
+    }
+  },
+  "spaces": {
+    "choose": "Choisir un espace",
+    "chooseSubtitle": "Chaque espace garde son étoile polaire, ses journées, ses notes et ses couleurs.",
+    "new": "Nouvel espace",
+    "newTitle": "Un nouvel espace",
+    "newExplain": "Viendra ensuite son étoile polaire. Il reprend les réglages d'IA de l'espace d'où vous venez.",
+    "create": "Créer",
+    "name": "Nom",
+    "namePlaceholder": "p. ex. Travail, Perso",
+    "noNorthStar": "Pas encore d'étoile polaire",
+    "archived": "Archivé",
+    "more": "Plus pour « {{name}} »",
+    "rename": "Renommer",
+    "renameTitle": "Renommer « {{name}} »",
+    "renameExplain": "Son adresse change avec son nom.",
+    "archive": "Archiver",
+    "archiveTitle": "Archiver « {{name}} » ?",
+    "archiveExplain": "Il reste ici, grisé, et ses rappels s'arrêtent. Rien n'est supprimé : vous pouvez le restaurer à tout moment.",
+    "onlyActive": "Votre seul espace actif",
+    "restore": "Restaurer",
+    "all": "Tous les espaces",
+    "current": "Espace : {{name}}",
+    "here": "(celui-ci)",
+    "setupStep": "{{name}} · Étape {{number}} sur {{total}}",
+    "problems": {
+      "noLetters": "Utilisez au moins une lettre ou un chiffre.",
+      "reserved": "L'application utilise déjà ce nom. Choisissez-en un autre.",
+      "taken": "Vous avez déjà un espace de ce nom."
     }
   }
 }

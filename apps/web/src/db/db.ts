@@ -9,6 +9,7 @@ import type {
   Profile,
   Reminder,
   ReviewTemplate,
+  Space,
   SyncedRow,
   TickerMessage,
   TimeBlock,
@@ -40,6 +41,9 @@ export interface Conflict {
   saved_at: string
 }
 
+/** Where the last pull stopped, in `meta` (ADR 0025): the next one asks for what came after. */
+export const CURSOR_KEY = 'sync.cursor'
+
 /** Small key/value store for local app state (e.g. the sync cursor). */
 export interface MetaEntry {
   key: string
@@ -47,6 +51,7 @@ export interface MetaEntry {
 }
 
 export const db = new Dexie('workpilot') as Dexie & {
+  spaces: EntityTable<Space, 'id'>
   profiles: EntityTable<Profile, 'id'>
   north_stars: EntityTable<NorthStar, 'id'>
   milestones: EntityTable<Milestone, 'id'>
@@ -82,6 +87,25 @@ db.version(2).stores({
   outbox: '[table+id]',
   conflicts: '++seq, [table+id]',
 })
+
+// Spaces (ADR 0031). Rows saved before them have no `space_id`: the server gave each one its
+// space. The sync cursor is forgotten, so this device pulls everything again, once: an app from
+// before spaces skipped the `spaces` rows it didn't know, but still moved its cursor past them.
+db.version(3)
+  .stores({
+    spaces: 'id, slug',
+    north_stars: 'id, space_id',
+    milestones: 'id, space_id, north_star_id, position',
+    review_templates: 'id, space_id, kind',
+    todos: 'id, space_id, due_date, milestone_id',
+    time_blocks: 'id, space_id, start_at, milestone_id',
+    reminders: 'id, space_id, remind_at',
+    ideas: 'id, space_id, created_at',
+    notes: 'id, space_id, milestone_id, updated_at',
+    journal_entries: 'id, space_id, entry_date',
+    ticker_messages: 'id, space_id, created_at',
+  })
+  .upgrade((tx) => tx.table('meta').delete(CURSOR_KEY))
 
 /** A synced table by name, for code that handles every table the same way (sync). */
 export function syncedTable(name: SyncedTableName): Table<SyncedRow, string> {

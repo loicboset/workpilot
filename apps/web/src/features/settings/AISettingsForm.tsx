@@ -8,6 +8,7 @@ import { ListBoxItem } from '@/components/ui/ListBoxItem'
 import { Select } from '@/components/ui/Select'
 import { Spinner } from '@/components/ui/Spinner'
 import { TextField } from '@/components/ui/TextField'
+import { useSpace } from '@/data/currentSpace'
 import { refreshTicker } from '@/data/ticker'
 import {
   aiErrorKey,
@@ -56,6 +57,7 @@ const Fields = ({ saved }: { saved: AISettings }) => {
 
   // HOOKS
   const { t } = useTranslation()
+  const space = useSpace()
 
   // METHODS
   const saveSettings = async () => {
@@ -66,7 +68,7 @@ const Fields = ({ saved }: { saved: AISettings }) => {
       ...(apiKey ? { api_key: apiKey } : {}),
     })
     setApiKey('')
-    if (model.trim()) void refreshTicker()
+    if (model.trim()) void refreshTicker(space.id)
   }
 
   /** List the models of the settings as typed, saving nothing: proves the address and the key. */
@@ -74,7 +76,7 @@ const Fields = ({ saved }: { saved: AISettings }) => {
     setTesting(true)
     setStatus(null)
     try {
-      const found = await tryAISettings({
+      const found = await tryAISettings(space.id, {
         provider,
         base_url: baseUrl.trim() || null,
         ...(apiKey ? { api_key: apiKey } : {}),

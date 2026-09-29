@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { MenuTrigger } from 'react-aria-components'
 import { useTranslation } from 'react-i18next'
 import { MethodInfo } from '@/components/MethodInfo'
-import { PageTitle } from '@/components/PageTitle'
+import { SpacePageTitle } from '@/features/spaces/SpacePageTitle'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Checkbox } from '@/components/ui/Checkbox'
@@ -14,6 +14,7 @@ import { IconButton } from '@/components/ui/IconButton'
 import { Menu, MenuItem } from '@/components/ui/Menu'
 import { Meter } from '@/components/ui/Meter'
 import { TextField } from '@/components/ui/TextField'
+import { useSpace } from '@/data/currentSpace'
 import {
   addMilestone,
   completeMilestone,
@@ -40,7 +41,7 @@ export function DirectionPage() {
   return (
     <div className="space-y-6 pt-2">
       <header>
-        <PageTitle subtitle={t('direction.subtitle')}>{t('nav.direction')}</PageTitle>
+        <SpacePageTitle subtitle={t('direction.subtitle')}>{t('nav.direction')}</SpacePageTitle>
       </header>
 
       {/* Only once loaded: the form starts from the saved North Star. */}
@@ -79,6 +80,7 @@ export function DirectionPage() {
 
 function NorthStarCard({ northStar }: { northStar: NorthStar | null }) {
   const { t, i18n } = useTranslation()
+  const space = useSpace()
   const timeZone = useTimeZone()
   const [isEditing, setEditing] = useState(northStar === null)
   const [title, setTitle] = useState(northStar?.title ?? '')
@@ -88,7 +90,7 @@ function NorthStarCard({ northStar }: { northStar: NorthStar | null }) {
   )
 
   async function save() {
-    await saveNorthStar({
+    await saveNorthStar(space.id, {
       title: title.trim(),
       description: description.trim() || null,
       target_date: target?.toString() ?? null,
@@ -200,7 +202,7 @@ function MilestonesCard({
         onKeyDown={(event) => {
           if (event.key !== 'Enter') return event.continuePropagation()
           if (title.trim()) {
-            void addMilestone(northStar.id, { title })
+            void addMilestone(northStar, { title })
             setTitle('')
           }
         }}

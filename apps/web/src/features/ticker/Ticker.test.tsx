@@ -1,8 +1,9 @@
 import '@/i18n'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, expect, it } from 'vitest'
 import { db } from '@/db/db'
+import { renderInSpace, spaceRow } from '@/test/renderApp'
 import { Ticker } from './Ticker'
 
 // No AI messages: the built-in English tips.
@@ -22,7 +23,7 @@ const clockOf = (container: HTMLElement) => {
 }
 
 it('shows the next message when its clock has filled', async () => {
-  const { container } = render(<Ticker />)
+  const { container } = renderInSpace(<Ticker />, spaceRow())
   await screen.findByText(FIRST_TIP)
 
   fireEvent.animationEnd(clockOf(container))
@@ -31,7 +32,7 @@ it('shows the next message when its clock has filled', async () => {
 })
 
 it('holds the clock while hovered, and while paused', async () => {
-  const { container } = render(<Ticker />)
+  const { container } = renderInSpace(<Ticker />, spaceRow())
   const tip = await screen.findByText(FIRST_TIP)
   expect(clockOf(container).style.animationPlayState).toBe('running')
 

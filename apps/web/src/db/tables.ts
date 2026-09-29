@@ -1,5 +1,6 @@
 /** The tables that sync with the server. Same names as on the server (apps/api/app/sync/tables.py). */
 export const SYNCED_TABLES = [
+  'spaces',
   'profiles',
   'north_stars',
   'milestones',

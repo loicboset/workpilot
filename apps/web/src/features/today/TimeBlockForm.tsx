@@ -7,6 +7,7 @@ import { Form } from '@/components/ui/Form'
 import { Dialog, DialogTitle, Modal } from '@/components/ui/Modal'
 import { TextField } from '@/components/ui/TextField'
 import { TimeField } from '@/components/ui/TimeField'
+import { useSpace } from '@/data/currentSpace'
 import { addTimeBlock, updateTimeBlock } from '@/data/timeBlocks'
 import type { TimeBlock } from '@/db/types'
 import { momentOf, zoned } from '@/lib/dates'
@@ -46,6 +47,7 @@ function BlockFields({
   onDone,
 }: Omit<TimeBlockFormProps, 'isOpen' | 'onOpenChange'> & { onDone: () => void }) {
   const { t } = useTranslation()
+  const space = useSpace()
   const [title, setTitle] = useState(block?.title ?? '')
   const [start, setStart] = useState<Time | null>(
     block ? timeOf(block.start_at, timeZone) : new Time(9),
@@ -57,7 +59,7 @@ function BlockFields({
     if (!title.trim() || !start || !end || endIsBeforeStart) return
     const times = { start_at: momentOf(day, start, timeZone), end_at: momentOf(day, end, timeZone) }
     if (block) await updateTimeBlock(block.id, { title: title.trim(), ...times })
-    else await addTimeBlock({ title, ...times })
+    else await addTimeBlock(space.id, { title, ...times })
     onDone()
   }
 

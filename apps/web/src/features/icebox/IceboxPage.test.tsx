@@ -4,13 +4,17 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { addTodo, completeTodo } from '@/data/todos'
 import { db } from '@/db/db'
+import type { Space } from '@/db/types'
 import { startFakeServer } from '@/test/fakeServer'
-import { renderApp, seedProfile } from '@/test/renderApp'
+import { renderApp, seedProfile, seedSpace } from '@/test/renderApp'
+
+let space: Space
 
 beforeEach(async () => {
   await db.delete()
   await db.open()
   await seedProfile('Ada')
+  space = await seedSpace()
 })
 
 afterEach(() => {
@@ -18,12 +22,12 @@ afterEach(() => {
 })
 
 it('holds the todos without a date; the done ones wait behind a button', async () => {
-  await addTodo({ title: 'Redo the login', due_date: null })
-  const done = await addTodo({ title: 'Remove sqlite', due_date: null })
+  await addTodo(space.id, { title: 'Redo the login', due_date: null })
+  const done = await addTodo(space.id, { title: 'Remove sqlite', due_date: null })
   await completeTodo(done.id)
-  await addTodo({ title: 'Call the editor', due_date: today('Europe/Zurich').toString() })
+  await addTodo(space.id, { title: 'Call the editor', due_date: today('Europe/Zurich').toString() })
   startFakeServer({ signedIn: true })
-  renderApp('/icebox')
+  renderApp('/personal/icebox')
 
   expect(await screen.findByText('Redo the login')).toBeTruthy()
   expect(screen.queryByText('Call the editor')).toBeNull()
@@ -35,7 +39,7 @@ it('holds the todos without a date; the done ones wait behind a button', async (
 
 it('the field puts a todo in the icebox', async () => {
   startFakeServer({ signedIn: true })
-  renderApp('/icebox')
+  renderApp('/personal/icebox')
 
   await userEvent.type(
     await screen.findByRole('textbox', { name: 'Add to the icebox' }),
@@ -48,19 +52,19 @@ it('the field puts a todo in the icebox', async () => {
 })
 
 it('❄️ moves a todo of the day to the icebox, and "Move to today" brings it back', async () => {
-  const todo = await addTodo({
+  const todo = await addTodo(space.id, {
     title: 'Call the editor',
     due_date: today('Europe/Zurich').toString(),
   })
   startFakeServer({ signedIn: true })
-  const { router } = renderApp('/today')
+  const { router } = renderApp('/personal/today')
 
   await userEvent.click(await screen.findByRole('button', { name: 'More for “Call the editor”' }))
   await userEvent.click(screen.getByRole('menuitem', { name: 'Move to the icebox' }))
   await waitFor(async () => expect((await db.todos.get(todo.id))?.due_date).toBeNull())
   await waitFor(() => expect(screen.queryByText('Call the editor')).toBeNull())
 
-  await router.navigate('/icebox')
+  await router.navigate('/personal/icebox')
   const menuButton = await screen.findByRole('button', { name: 'More for “Call the editor”' })
   await userEvent.click(menuButton)
   const menu = screen.getByRole('menu')
@@ -72,22 +76,22 @@ it('❄️ moves a todo of the day to the icebox, and "Move to today" brings it 
 })
 
 it('shows how far a checklist in the notes has come', async () => {
-  await addTodo({
+  await addTodo(space.id, {
     title: 'Vibe coder guide',
     due_date: null,
     notes: '- [ ] connect GitHub\n- [x] seeded users',
   })
   startFakeServer({ signedIn: true })
-  renderApp('/icebox')
+  renderApp('/personal/icebox')
 
   expect(await screen.findByText('1 of 2')).toBeTruthy()
 })
 
 it('a todo’s menu sets its priority, which puts it first', async () => {
-  const todo = await addTodo({ title: 'Redo the login', due_date: null })
-  await addTodo({ title: 'Plan the offsite', due_date: null }) // newer: first until then
+  const todo = await addTodo(space.id, { title: 'Redo the login', due_date: null })
+  await addTodo(space.id, { title: 'Plan the offsite', due_date: null }) // newer: first until then
   startFakeServer({ signedIn: true })
-  renderApp('/icebox')
+  renderApp('/personal/icebox')
 
   await userEvent.click(await screen.findByRole('button', { name: 'More for “Redo the login”' }))
   await userEvent.click(screen.getByRole('menuitem', { name: 'Priority' }))

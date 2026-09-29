@@ -66,6 +66,12 @@
       "label": "Hito {{number}}",
       "placeholder": "p. ej. Primer borrador terminado",
       "addAnother": "Añadir otro"
+    },
+    "space": {
+      "title": "Tu primer espacio",
+      "subtitle": "Una parte de tu vida, con su propio rumbo.",
+      "explain": "Como un perfil del navegador, un espacio guarda su estrella polar, sus días, sus notas y sus colores, aparte de los demás. Ponle el nombre de la parte de tu vida que acoge.",
+      "later": "Podrás añadir otros espacios más adelante, desde «Todos los espacios» en el menú de espacios."
     }
   },
   "home": {
@@ -360,7 +366,7 @@
     "appearance": {
       "title": "Apariencia",
       "theme": "Tema",
-      "themeHelp": "Cambia al instante, en todos tus dispositivos.",
+      "themeHelp": "El mismo en cada espacio. Cambia al instante, en todos tus dispositivos.",
       "system": "Como el dispositivo",
       "light": "Claro",
       "dark": "Oscuro",
@@ -372,7 +378,8 @@
         "heather": "Brezo",
         "olive": "Olivo",
         "birch": "Abedul"
-      }
+      },
+      "paletteHelpSpace": "Los colores de {{name}}. Cada uno, tanto en claro como en oscuro."
     },
     "ai": {
       "title": "IA",
@@ -402,8 +409,10 @@
         "ai_provider_error": "La IA respondió con un error. El registro del servidor tiene los detalles.",
         "ai_invalid_answer": "La respuesta del modelo no tenía la forma esperada. Prueba un modelo más grande (7B o más).",
         "unexpected": "Algo ha fallado. Inténtalo de nuevo."
-      }
-    }
+      },
+      "subtitleSpace": "Para {{name}}: un modelo local (LM Studio, Ollama) o una API en la nube. Opcional."
+    },
+    "youShared": "Lo mismo en cada espacio."
   },
   "methods": {
     "label": "Método",
@@ -416,6 +425,36 @@
       "origin": "Toyota y la gestión lean, años sesenta",
       "applied": "Tu estrella polar es el «norte verdadero». Los hitos son los pasos del camino. Tareas y bloques de tiempo pueden vincularse a un hito, para ver qué parte de tu semana sirvió a tu estrella polar.",
       "adapted": "Simplificado para una persona: una estrella polar y sus hitos, sin matriz estratégica, sin despliegue en equipo. Los vínculos son opcionales."
+    }
+  },
+  "spaces": {
+    "choose": "Elige un espacio",
+    "chooseSubtitle": "Cada espacio guarda su estrella polar, sus días, sus notas y sus colores.",
+    "new": "Nuevo espacio",
+    "newTitle": "Un espacio nuevo",
+    "newExplain": "Después viene su estrella polar. Empieza con los ajustes de IA del espacio del que vienes.",
+    "create": "Crear",
+    "name": "Nombre",
+    "namePlaceholder": "p. ej. Trabajo, Personal",
+    "noNorthStar": "Aún sin estrella polar",
+    "archived": "Archivado",
+    "more": "Más para «{{name}}»",
+    "rename": "Renombrar",
+    "renameTitle": "Renombrar «{{name}}»",
+    "renameExplain": "Su dirección cambia con su nombre.",
+    "archive": "Archivar",
+    "archiveTitle": "¿Archivar «{{name}}»?",
+    "archiveExplain": "Se queda aquí, en gris, y sus recordatorios se detienen. No se elimina nada: puedes restaurarlo cuando quieras.",
+    "onlyActive": "Tu único espacio activo",
+    "restore": "Restaurar",
+    "all": "Todos los espacios",
+    "current": "Espacio: {{name}}",
+    "here": "(este)",
+    "setupStep": "{{name}} · Paso {{number}} de {{total}}",
+    "problems": {
+      "noLetters": "Usa al menos una letra o un número.",
+      "reserved": "La aplicación ya usa este nombre. Elige otro.",
+      "taken": "Ya tienes un espacio con este nombre."
     }
   }
 }

@@ -1,10 +1,7 @@
-import { useLiveQuery } from 'dexie-react-hooks'
 import type { ReactNode } from 'react'
 import { Navigate } from 'react-router'
 import { useProfile } from '@/data/profile'
-import { db } from '@/db/db'
-import { CURSOR_KEY } from '@/sync/engine'
-import { useSyncStatus } from '@/sync/status'
+import { useHasHeardFromServer } from '@/sync/useHasHeardFromServer'
 
 /**
  * Sends a user without a profile to onboarding, but only once this device has heard from the
@@ -13,12 +10,8 @@ import { useSyncStatus } from '@/sync/status'
  */
 export function RequireOnboarding({ children }: { children: ReactNode }) {
   const profile = useProfile()
-  const hasSynced = useLiveQuery(async () => (await db.meta.get(CURSOR_KEY)) !== undefined)
-  const syncState = useSyncStatus((status) => status.state)
-  const serverUnreachable = syncState === 'offline' || syncState === 'retrying'
+  const hasHeardFromServer = useHasHeardFromServer()
 
-  if (profile === null && (hasSynced || serverUnreachable)) {
-    return <Navigate to="/onboarding" replace />
-  }
+  if (profile === null && hasHeardFromServer) return <Navigate to="/onboarding" replace />
   return children
 }

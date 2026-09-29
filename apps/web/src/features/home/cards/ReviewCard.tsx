@@ -10,11 +10,13 @@ import { dayOf } from '@/lib/dates'
 import { formatClock, formatDay, formatTimeOfDay } from '@/lib/format'
 import { WEEKLY_REVIEW } from '../demoData'
 import { HomeCard } from '../HomeCard'
+import { useSpacePath } from '@/features/spaces/useSpacePath'
 
 /** The weekly review: the notes of the last 7 days, to look back on (the schedule is v0.2). */
 export const ReviewCard = () => {
   // HOOKS
   const { t, i18n } = useTranslation()
+  const spacePath = useSpacePath()
   const timeZone = useTimeZone()
   const notes = useRecentNotes(timeZone)
   const labelId = useId()
@@ -34,13 +36,13 @@ export const ReviewCard = () => {
   return (
     <HomeCard
       title={t('review.title')}
-      href="/review"
+      href={spacePath('/review')}
       aside={when}
       icon={<RotateCcw />}
       tone="rose"
       bodyClassName="flex flex-col"
       footer={
-        <Link href="/review" className="text-[15px] leading-5 font-semibold">
+        <Link href={spacePath('/review')} className="text-[15px] leading-5 font-semibold">
           {t('home.review.open')}
           <span aria-hidden> →</span>
         </Link>

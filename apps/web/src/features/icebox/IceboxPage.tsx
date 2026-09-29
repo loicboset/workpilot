@@ -1,11 +1,12 @@
 import { Snowflake } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { PageTitle } from '@/components/PageTitle'
+import { SpacePageTitle } from '@/features/spaces/SpacePageTitle'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Spinner } from '@/components/ui/Spinner'
 import { TextField } from '@/components/ui/TextField'
+import { useSpace } from '@/data/currentSpace'
 import { useMilestones } from '@/data/direction'
 import { useTimeZone } from '@/data/profile'
 import { addTodo, useIcebox } from '@/data/todos'
@@ -25,7 +26,7 @@ export const IceboxPage = () => {
   return (
     <div className="space-y-6 pt-2">
       <header>
-        <PageTitle subtitle={t('icebox.subtitle')}>{t('icebox.title')}</PageTitle>
+        <SpacePageTitle subtitle={t('icebox.subtitle')}>{t('icebox.title')}</SpacePageTitle>
       </header>
 
       <Card className="max-w-3xl">
@@ -79,6 +80,7 @@ const AddIceboxField = () => {
 
   // HOOKS
   const { t } = useTranslation()
+  const space = useSpace()
 
   return (
     <div className="flex items-center gap-3">
@@ -92,7 +94,7 @@ const AddIceboxField = () => {
         onKeyDown={(event) => {
           if (event.key !== 'Enter') return event.continuePropagation()
           if (title.trim()) {
-            void addTodo({ title, due_date: null })
+            void addTodo(space.id, { title, due_date: null })
             setTitle('')
           }
         }}

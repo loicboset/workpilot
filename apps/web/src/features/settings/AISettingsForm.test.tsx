@@ -1,9 +1,12 @@
 import '@/i18n'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { renderInSpace, spaceRow } from '@/test/renderApp'
 import { AISettingsForm } from './AISettingsForm'
+
+const SPACE = spaceRow()
+const AI = `/api/spaces/${SPACE.id}/ai`
 
 type Call = { method: string; path: string; body: unknown }
 
@@ -14,7 +17,7 @@ const startFakeServer = () => {
     const method = init?.method ?? 'GET'
     const path = String(input)
     calls.push({ method, path, body: init?.body ? JSON.parse(String(init.body)) : undefined })
-    if (method === 'GET' && path === '/api/ai/settings') {
+    if (method === 'GET' && path === `${AI}/settings`) {
       return json(200, {
         provider: 'openai_compatible',
         base_url: 'http://localhost:1234/v1',
@@ -22,7 +25,7 @@ const startFakeServer = () => {
         has_api_key: false,
       })
     }
-    if (method === 'POST' && path === '/api/ai/models/try') return json(200, ['qwen3-8b'])
+    if (method === 'POST' && path === `${AI}/models/try`) return json(200, ['qwen3-8b'])
     return json(404, { detail: 'not found' })
   })
   vi.stubGlobal('fetch', fetch)
@@ -35,14 +38,7 @@ const json = (status: number, body: unknown): Response =>
     headers: { 'Content-Type': 'application/json' },
   })
 
-const renderForm = () => {
-  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
-  render(
-    <QueryClientProvider client={queryClient}>
-      <AISettingsForm />
-    </QueryClientProvider>,
-  )
-}
+const renderForm = () => renderInSpace(<AISettingsForm />, SPACE)
 
 afterEach(() => {
   vi.unstubAllGlobals()
@@ -61,7 +57,7 @@ describe('AI settings', () => {
     )
     expect(calls).toContainEqual({
       method: 'POST',
-      path: '/api/ai/models/try',
+      path: `${AI}/models/try`,
       body: { provider: 'openai_compatible', base_url: 'http://host.docker.internal:1234/v1' },
     })
     expect(calls.some((call) => call.method === 'PATCH')).toBe(false)

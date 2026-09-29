@@ -3,16 +3,17 @@ import { ChevronLeft, ChevronRight, Clock3, ListTodo, Plus } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router'
-import { PageTitle } from '@/components/PageTitle'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { IconButton } from '@/components/ui/IconButton'
 import { Spinner } from '@/components/ui/Spinner'
 import { TextField } from '@/components/ui/TextField'
+import { useSpace } from '@/data/currentSpace'
 import { useMilestones } from '@/data/direction'
 import { useTimeZone } from '@/data/profile'
 import { addTodo } from '@/data/todos'
 import type { Milestone, Todo } from '@/db/types'
+import { SpacePageTitle } from '@/features/spaces/SpacePageTitle'
 import { dayLabel, formatDay } from '@/lib/format'
 import { TimeBlockForm } from './TimeBlockForm'
 import { TimeBlockRow } from './TimeBlockRow'
@@ -36,13 +37,13 @@ export function TodayPage() {
   return (
     <div className="space-y-6">
       <header className="flex flex-wrap items-center justify-between gap-4 pt-2">
-        <PageTitle
+        <SpacePageTitle
           subtitle={
             <p className="first-letter:uppercase">{formatDay(day, i18n.language, timeZone)}</p>
           }
         >
           {dayLabel(day, t, i18n.language, timeZone)}
-        </PageTitle>
+        </SpacePageTitle>
         <div className="flex items-center gap-2">
           <IconButton
             variant="secondary"
@@ -174,6 +175,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 /** A text field that adds a todo for the day on Enter. */
 function AddTodoField({ day }: { day: CalendarDate }) {
   const { t } = useTranslation()
+  const space = useSpace()
   const [title, setTitle] = useState('')
   return (
     <TextField
@@ -184,7 +186,7 @@ function AddTodoField({ day }: { day: CalendarDate }) {
       onKeyDown={(event) => {
         if (event.key !== 'Enter') return event.continuePropagation()
         if (title.trim()) {
-          void addTodo({ title, due_date: day.toString() })
+          void addTodo(space.id, { title, due_date: day.toString() })
           setTitle('')
         }
       }}

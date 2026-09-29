@@ -5,6 +5,7 @@ import { useTimeZone } from '@/data/profile'
 import { SEASON_FOCUS } from '../demoData'
 import { HomeCard } from '../HomeCard'
 import { seasonOf } from '../season'
+import { useSpacePath } from '@/features/spaces/useSpacePath'
 
 const ROMAN = ['i', 'ii', 'iii', 'iv', 'v']
 
@@ -12,12 +13,13 @@ const ROMAN = ['i', 'ii', 'iii', 'iv', 'v']
 export const DirectionCard = () => {
   // HOOKS
   const { t } = useTranslation()
+  const spacePath = useSpacePath()
   const timeZone = useTimeZone()
 
   return (
     <HomeCard
       title={t('nav.direction')}
-      href="/direction"
+      href={spacePath('/direction')}
       aside={t(`home.direction.seasons.${seasonOf(today(timeZone), timeZone)}`)}
       icon={<Compass />}
       tone="sky"

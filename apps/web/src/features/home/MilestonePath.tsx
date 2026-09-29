@@ -14,6 +14,7 @@ import {
   type MilestoneState,
   type MilestoneWhen,
 } from './milestoneNote'
+import { useSpacePath } from '@/features/spaces/useSpacePath'
 
 type MilestonePathProps = { milestones: Milestone[] }
 
@@ -27,13 +28,15 @@ const INSET = 40
 export const MilestonePath = ({ milestones }: MilestonePathProps) => {
   // HOOKS
   const { t } = useTranslation()
+  const spacePath = useSpacePath()
   const timeZone = useTimeZone()
   const [ref, width] = useElementWidth<HTMLDivElement>()
 
   if (milestones.length === 0) {
     return (
       <p className="mt-6 text-sm text-grove-muted">
-        {t('northStar.noMilestones')} <Link href="/direction">{t('northStar.addMilestones')}</Link>
+        {t('northStar.noMilestones')}{' '}
+        <Link href={spacePath('/direction')}>{t('northStar.addMilestones')}</Link>
       </p>
     )
   }

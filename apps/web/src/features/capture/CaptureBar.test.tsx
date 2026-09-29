@@ -4,13 +4,14 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { db } from '@/db/db'
 import { startFakeServer } from '@/test/fakeServer'
-import { renderApp, seedProfile } from '@/test/renderApp'
+import { renderApp, seedProfile, seedSpace } from '@/test/renderApp'
 import { useCaptureBar } from './captureStore'
 
 beforeEach(async () => {
   await db.delete()
   await db.open()
   await seedProfile('Ada')
+  await seedSpace()
   useCaptureBar.setState({ isOpen: false }) // it's app-wide state
 })
 
@@ -20,7 +21,7 @@ afterEach(() => {
 
 it('Ctrl+K opens the capture bar, which shows what it understood and saves it', async () => {
   startFakeServer({ signedIn: true })
-  renderApp('/')
+  renderApp('/personal')
   await screen.findByRole('heading', { name: /Ada/ })
 
   await userEvent.keyboard('{Control>}k{/Control}')
@@ -39,7 +40,7 @@ it('Ctrl+K opens the capture bar, which shows what it understood and saves it', 
 
 it('/ opens the command menu: arrows choose, Enter picks, and the menu closes', async () => {
   startFakeServer({ signedIn: true })
-  renderApp('/')
+  renderApp('/personal')
   await screen.findByRole('heading', { name: /Ada/ })
 
   await userEvent.keyboard('{Control>}k{/Control}')
@@ -68,7 +69,7 @@ it('/ opens the command menu: arrows choose, Enter picks, and the menu closes', 
 
 it('the menu narrows as you type; Tab or a click picks a command', async () => {
   startFakeServer({ signedIn: true })
-  renderApp('/')
+  renderApp('/personal')
   await screen.findByRole('heading', { name: /Ada/ })
 
   await userEvent.keyboard('{Control>}k{/Control}')
@@ -87,7 +88,7 @@ it('the menu narrows as you type; Tab or a click picks a command', async () => {
 
 it('Esc closes the command menu first, then the capture bar', async () => {
   startFakeServer({ signedIn: true })
-  renderApp('/')
+  renderApp('/personal')
   await screen.findByRole('heading', { name: /Ada/ })
 
   await userEvent.keyboard('{Control>}k{/Control}')
@@ -102,7 +103,7 @@ it('Esc closes the command menu first, then the capture bar', async () => {
 
 it('Esc closes the capture bar, even while typing', async () => {
   startFakeServer({ signedIn: true })
-  renderApp('/')
+  renderApp('/personal')
   await screen.findByRole('heading', { name: /Ada/ })
 
   await userEvent.keyboard('{Control>}k{/Control}')
@@ -114,7 +115,7 @@ it('Esc closes the capture bar, even while typing', async () => {
 
 it('in a todo, ! opens the priorities, and the preview’s priority can be pressed', async () => {
   startFakeServer({ signedIn: true })
-  renderApp('/')
+  renderApp('/personal')
   await screen.findByRole('heading', { name: /Ada/ })
 
   await userEvent.keyboard('{Control>}k{/Control}')
@@ -143,7 +144,7 @@ it('in a todo, ! opens the priorities, and the preview’s priority can be press
 
 it('a typed priority saves on Enter, without a menu in the way', async () => {
   startFakeServer({ signedIn: true })
-  renderApp('/')
+  renderApp('/personal')
   await screen.findByRole('heading', { name: /Ada/ })
 
   await userEvent.keyboard('{Control>}k{/Control}')

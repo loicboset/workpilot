@@ -3,35 +3,44 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '@/db/db'
 import type { TimeBlock } from '@/db/types'
 import { dayBounds, isBetween } from '@/lib/dates'
-import { deleteLocally, newRowFields, nowIso, saveLocally, updateLocally } from './localWrites'
+import { useSpace } from './currentSpace'
+import { deleteLocally, newSpaceRowFields, nowIso, saveLocally, updateLocally } from './localWrites'
+import { activeRowsIn } from './spaceRows'
 
 /** Time blocks repository (ADR 0017): reserved slots in the day, e.g. "Deep work 9:00–11:00". */
 
 export type TimeBlockFields = Pick<TimeBlock, 'title' | 'start_at' | 'end_at' | 'milestone_id'>
 
-/** Active blocks starting on the day (in the timezone), in time order. */
-export async function listTimeBlocksOn(day: CalendarDate, timeZone: string): Promise<TimeBlock[]> {
+/** The space's active blocks starting on the day (in the timezone), in time order. */
+export async function listTimeBlocksOn(
+  spaceId: string,
+  day: CalendarDate,
+  timeZone: string,
+): Promise<TimeBlock[]> {
   const bounds = dayBounds(day, timeZone)
-  const blocks = await db.time_blocks
-    .filter((block) => block.deleted_at === null && isBetween(block.start_at, bounds))
-    .toArray()
+  const blocks = (await activeRowsIn(db.time_blocks, spaceId)).filter((block) =>
+    isBetween(block.start_at, bounds),
+  )
   return blocks.sort((a, b) => Date.parse(a.start_at) - Date.parse(b.start_at))
 }
 
 export function useTimeBlocksOn(day: CalendarDate, timeZone: string): TimeBlock[] | undefined {
-  return useLiveQuery(() => listTimeBlocksOn(day, timeZone), [day.toString(), timeZone])
+  const { id } = useSpace()
+  return useLiveQuery(() => listTimeBlocksOn(id, day, timeZone), [id, day.toString(), timeZone])
 }
 
-/** Every active block, for "time aligned" over a week. */
+/** Every active block of the page's space, for "time aligned" over a week. */
 export function useAllTimeBlocks(): TimeBlock[] | undefined {
-  return useLiveQuery(() => db.time_blocks.filter((block) => block.deleted_at === null).toArray())
+  const { id } = useSpace()
+  return useLiveQuery(() => activeRowsIn(db.time_blocks, id), [id])
 }
 
 export function addTimeBlock(
+  spaceId: string,
   fields: Pick<TimeBlockFields, 'title' | 'start_at' | 'end_at'> & Partial<TimeBlockFields>,
 ): Promise<TimeBlock> {
   return saveLocally<TimeBlock>('time_blocks', {
-    ...newRowFields(),
+    ...newSpaceRowFields(spaceId),
     milestone_id: null,
     completed_at: null,
     ...fields,

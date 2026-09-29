@@ -2,44 +2,59 @@ import { LogOut, Sparkles, SunMoon, UserRound } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
-import { PageTitle } from '@/components/PageTitle'
 import { Alert } from '@/components/ui/Alert'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Form } from '@/components/ui/Form'
 import { Spinner } from '@/components/ui/Spinner'
 import { TextField } from '@/components/ui/TextField'
+import { useSpace } from '@/data/currentSpace'
 import { saveProfile, useProfile } from '@/data/profile'
+import { setSpacePalette } from '@/data/spaces'
 import type { Profile } from '@/db/types'
 import { useSignOut } from '@/features/auth/session'
 import { LanguageSelect, TimezoneComboBox } from '@/features/profile/ProfileFields'
+import { SpacePageTitle } from '@/features/spaces/SpacePageTitle'
 import { changeLocale } from '@/i18n'
 import { AISettingsForm } from './AISettingsForm'
 import { PalettePicker } from './PalettePicker'
 import { ThemeSelect } from './ThemeSelect'
 
+/**
+ * A space's Settings (ADR 0031): you and light or dark, the same in every space; the space's own
+ * palette and AI. Spaces themselves are managed on the start page.
+ */
 export function SettingsPage() {
   const { t } = useTranslation()
+  const space = useSpace()
   const profile = useProfile()
   const navigate = useNavigate()
   const signOut = useSignOut()
 
   return (
     <div className="mx-auto max-w-2xl space-y-6 pt-2">
-      <PageTitle>{t('nav.settings')}</PageTitle>
+      <SpacePageTitle>{t('nav.settings')}</SpacePageTitle>
 
-      <Card title={t('settings.you')} icon={<UserRound />}>
+      <Card title={t('settings.you')} subtitle={t('settings.youShared')} icon={<UserRound />}>
         {profile ? <ProfileForm profile={profile} /> : <Spinner label={t('common.loading')} />}
       </Card>
 
       <Card title={t('settings.appearance.title')} icon={<SunMoon />}>
         <div className="flex flex-col gap-5">
           <ThemeSelect />
-          <PalettePicker />
+          <PalettePicker
+            value={space.palette}
+            onChange={(palette) => void setSpacePalette(space.id, palette)}
+            description={t('settings.appearance.paletteHelpSpace', { name: space.name })}
+          />
         </div>
       </Card>
 
-      <Card title={t('settings.ai.title')} subtitle={t('settings.ai.subtitle')} icon={<Sparkles />}>
+      <Card
+        title={t('settings.ai.title')}
+        subtitle={t('settings.ai.subtitleSpace', { name: space.name })}
+        icon={<Sparkles />}
+      >
         <AISettingsForm />
       </Card>
 

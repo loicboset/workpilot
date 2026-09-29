@@ -66,6 +66,12 @@
       "label": "Milestone {{number}}",
       "placeholder": "e.g. First draft done",
       "addAnother": "Add another"
+    },
+    "space": {
+      "title": "Your first space",
+      "subtitle": "A part of your life, with its own direction.",
+      "explain": "Like a browser profile, a space keeps its own North Star, days, notes and colours, apart from the others. Name this one after the part of your life it's for.",
+      "later": "You can add other spaces later, from “All spaces” in the space menu."
     }
   },
   "home": {
@@ -356,7 +362,7 @@
     "appearance": {
       "title": "Appearance",
       "theme": "Theme",
-      "themeHelp": "Changes at once, on all your devices.",
+      "themeHelp": "The same in every space. Changes at once, on all your devices.",
       "system": "Same as the device",
       "light": "Light",
       "dark": "Dark",
@@ -368,7 +374,8 @@
         "heather": "Heather",
         "olive": "Olive",
         "birch": "Birch"
-      }
+      },
+      "paletteHelpSpace": "The colours of {{name}}. Each works in light and dark."
     },
     "ai": {
       "title": "AI",
@@ -397,8 +404,10 @@
         "ai_provider_error": "The AI answered with an error. The server log has the details.",
         "ai_invalid_answer": "The model's answer wasn't in the expected shape. Try a larger model (7B or more).",
         "unexpected": "Something went wrong. Please try again."
-      }
-    }
+      },
+      "subtitleSpace": "For {{name}}: a local model (LM Studio, Ollama) or a cloud API. Optional."
+    },
+    "youShared": "The same in every space."
   },
   "methods": {
     "label": "Method",
@@ -411,6 +420,36 @@
       "origin": "Toyota and lean management, 1960s",
       "applied": "Your North Star is the “True North”. Milestones are the steps on the path. Todos and time blocks can link to a milestone, so you can see how much of your week served your North Star.",
       "adapted": "Simplified for one person: one North Star and its milestones, no strategy matrix, no team cascade. Links are optional."
+    }
+  },
+  "spaces": {
+    "choose": "Choose a space",
+    "chooseSubtitle": "Each space keeps its own North Star, days, notes and colours.",
+    "new": "New space",
+    "newTitle": "A new space",
+    "newExplain": "Next comes its North Star. It starts with the AI settings of the space you came from.",
+    "create": "Create",
+    "name": "Name",
+    "namePlaceholder": "e.g. Work, Personal",
+    "noNorthStar": "No North Star yet",
+    "archived": "Archived",
+    "more": "More for “{{name}}”",
+    "rename": "Rename",
+    "renameTitle": "Rename “{{name}}”",
+    "renameExplain": "Its address changes with its name.",
+    "archive": "Archive",
+    "archiveTitle": "Archive “{{name}}”?",
+    "archiveExplain": "It stays here, greyed out, and its reminders stop. Nothing is deleted: you can restore it at any time.",
+    "onlyActive": "Your only active space",
+    "restore": "Restore",
+    "all": "All spaces",
+    "current": "Space: {{name}}",
+    "here": "(this one)",
+    "setupStep": "{{name}} · Step {{number}} of {{total}}",
+    "problems": {
+      "noLetters": "Use at least one letter or number.",
+      "reserved": "The app already uses this name. Pick another one.",
+      "taken": "You already have a space with this name."
     }
   }
 }

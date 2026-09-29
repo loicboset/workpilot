@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { addTodo, updateTodo } from '@/data/todos'
-import { db } from '@/db/db'
+import { CURSOR_KEY, db } from '@/db/db'
 import type { Todo } from '@/db/types'
 import { fakeSyncApi } from '@/test/fakeSyncApi'
-import { CURSOR_KEY, syncOnce } from './engine'
+import { syncOnce } from './engine'
 
 beforeEach(async () => {
   await db.delete()
@@ -14,6 +14,7 @@ function serverTodo(title: string): Todo {
   const now = new Date().toISOString()
   return {
     id: crypto.randomUUID(),
+    space_id: 'space-personal',
     title,
     notes: null,
     due_date: null,
@@ -27,7 +28,7 @@ function serverTodo(title: string): Todo {
 
 describe('push', () => {
   it('sends queued rows and clears the outbox', async () => {
-    const todo = await addTodo({ title: 'Written offline' })
+    const todo = await addTodo('space-personal', { title: 'Written offline' })
     const { api, pushed } = fakeSyncApi()
 
     await syncOnce(api)
@@ -37,7 +38,7 @@ describe('push', () => {
   })
 
   it('keeps a copy of a version the server did not keep', async () => {
-    const todo = await addTodo({ title: 'Mine' })
+    const todo = await addTodo('space-personal', { title: 'Mine' })
     const { api } = fakeSyncApi({
       pushResult: () => ({ applied: [], skipped: [todo.id], rejected: [] }),
     })
@@ -51,7 +52,7 @@ describe('push', () => {
   })
 
   it('keeps a row queued when it was edited again during the push', async () => {
-    const todo = await addTodo({ title: 'First' })
+    const todo = await addTodo('space-personal', { title: 'First' })
     const { api } = fakeSyncApi({
       pushResult: async (changes) => {
         await updateTodo(todo.id, { title: 'Second' }) // the user types while syncing
@@ -84,7 +85,7 @@ describe('pull', () => {
   })
 
   it('never overwrites a row with a local edit waiting to be pushed', async () => {
-    const local = await addTodo({ title: 'Local edit' })
+    const local = await addTodo('space-personal', { title: 'Local edit' })
     const olderServerCopy: Todo = { ...local, title: 'Older server copy' }
     const { api } = fakeSyncApi({
       pushResult: async () => {

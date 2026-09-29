@@ -4,6 +4,7 @@ import { TextField, type KeyboardEvent } from 'react-aria-components'
 import { useTranslation } from 'react-i18next'
 import { Alert } from '@/components/ui/Alert'
 import { Input, TextArea } from '@/components/ui/Field'
+import { useSpace } from '@/data/currentSpace'
 import { useTimeZone } from '@/data/profile'
 import { CaptureHint, CapturePreview } from './CapturePreview'
 import { parseCapture, withPriority, type Command } from './parseCapture'
@@ -43,6 +44,7 @@ export const CaptureComposer = ({
 
   // HOOKS
   const { t } = useTranslation()
+  const space = useSpace()
   const timeZone = useTimeZone()
   const menuId = useId()
 
@@ -60,7 +62,7 @@ export const CaptureComposer = ({
 
   const save = async () => {
     if (!('capture' in result)) return
-    await saveCapture(result.capture, timeZone)
+    await saveCapture(result.capture, space.id, timeZone)
     setText('')
     setSavedKind(result.capture.kind)
   }

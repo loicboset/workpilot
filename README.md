@@ -49,8 +49,13 @@ The ports avoid the usual 8000, 5173 and 5433, so WorkPilot runs next to other p
 Change them in `.env` if one is still taken.
 
 Then open http://localhost:5180, sign in with the name and password from `WORKPILOT_USER`,
-and answer the three onboarding questions. From there:
+and answer the onboarding questions: you, your first space, its North Star and milestones.
+From there:
 
+- **Spaces** are separate worlds, like browser profiles: one for work, one for your personal
+  life… Each has its own North Star, days, notes, colours and AI, at its own address
+  (`/work/today`). `/` lists them, to open, create, rename, archive or restore one; the menu
+  right of Capture switches space on the same page.
 - **⌘K** (Ctrl K) captures from anywhere: `/todo Call the editor tomorrow` (today when no day
   is given), `/block Deep work 9-11 friday`, `/idea …` (plain text is an idea), `/note …`,
   `/icebox Redo the login` (a todo without a date).

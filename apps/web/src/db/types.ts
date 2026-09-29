@@ -15,25 +15,44 @@ export interface SyncedRow {
   deleted_at: string | null // soft delete, so the deletion reaches every device
 }
 
+/** A separate world: its own North Star, days, notes, palette and AI (ADR 0031). */
+export interface Space extends SyncedRow {
+  name: string
+  /** The name in URLs: "Côté pro" → `/cote-pro`. */
+  slug: string
+  palette: Palette
+  /** Archived spaces are greyed out on the start page, never deleted. */
+  archived_at: string | null
+  /**
+   * Sent with a new space only: the space whose AI settings and prompts it starts with. The
+   * server copies them when the space reaches it; its rows never have it.
+   */
+  copy_ai_from?: string | null
+}
+
+/** A row of a space. It never moves to another space. */
+export interface SpaceRow extends SyncedRow {
+  space_id: string
+}
+
+/** Shared by every space. */
 export interface Profile extends SyncedRow {
   first_name: string
   last_name: string | null
   locale: Locale
   timezone: string
   city: string | null
-  /** Absent on rows saved before the setting existed: `system`, as on the server. */
+  /** Light or dark in every space. Absent on rows saved before it existed: `system`. */
   theme?: Theme
-  /** Absent on rows saved before the setting existed: `grove`, as on the server. */
-  palette?: Palette
 }
 
-export interface NorthStar extends SyncedRow {
+export interface NorthStar extends SpaceRow {
   title: string
   description: string | null
   target_date: string | null
 }
 
-export interface Milestone extends SyncedRow {
+export interface Milestone extends SpaceRow {
   north_star_id: string
   title: string
   description: string | null
@@ -42,7 +61,7 @@ export interface Milestone extends SyncedRow {
   completed_at: string | null
 }
 
-export interface Todo extends SyncedRow {
+export interface Todo extends SpaceRow {
   title: string
   notes: string | null
   due_date: string | null
@@ -52,7 +71,7 @@ export interface Todo extends SyncedRow {
   milestone_id: string | null
 }
 
-export interface TimeBlock extends SyncedRow {
+export interface TimeBlock extends SpaceRow {
   title: string
   start_at: string
   end_at: string
@@ -60,7 +79,7 @@ export interface TimeBlock extends SyncedRow {
   milestone_id: string | null
 }
 
-export interface Reminder extends SyncedRow {
+export interface Reminder extends SpaceRow {
   text: string
   remind_at: string
   recurrence: string | null
@@ -69,11 +88,11 @@ export interface Reminder extends SyncedRow {
   time_block_id: string | null
 }
 
-export interface Idea extends SyncedRow {
+export interface Idea extends SpaceRow {
   text: string
 }
 
-export interface Note extends SyncedRow {
+export interface Note extends SpaceRow {
   title: string | null
   content: string
   milestone_id: string | null
@@ -81,20 +100,20 @@ export interface Note extends SyncedRow {
 
 export type ReviewKind = 'daily' | 'weekly' | 'monthly'
 
-export interface ReviewTemplate extends SyncedRow {
+export interface ReviewTemplate extends SpaceRow {
   name: string
   kind: ReviewKind
   questions: string[]
 }
 
-export interface JournalEntry extends SyncedRow {
+export interface JournalEntry extends SpaceRow {
   entry_date: string
   kind: 'free' | ReviewKind
   content: string
   review_template_id: string | null
 }
 
-export interface TickerMessage extends SyncedRow {
+export interface TickerMessage extends SpaceRow {
   kind: 'insight' | 'tip' | 'guidance' | 'nudge' | 'quote'
   text: string
 }

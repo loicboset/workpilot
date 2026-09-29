@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { newRowFields } from '@/data/localWrites'
+import { newSpaceRowFields } from '@/data/localWrites'
 import type { TimeBlock, Todo } from '@/db/types'
 import { dayItems, dayLoad, focusItem } from './dayTimeline'
 
 const block = (title: string, from: string, until: string, done = false): TimeBlock => ({
-  ...newRowFields(),
+  ...newSpaceRowFields('space-personal'),
   title,
   start_at: `2026-09-29T${from}:00Z`,
   end_at: `2026-09-29T${until}:00Z`,
@@ -13,7 +13,7 @@ const block = (title: string, from: string, until: string, done = false): TimeBl
 })
 
 const todo = (title: string, done = false): Todo => ({
-  ...newRowFields(),
+  ...newSpaceRowFields('space-personal'),
   title,
   notes: null,
   due_date: '2026-09-29',

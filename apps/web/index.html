@@ -11,19 +11,23 @@
     <title>WorkPilot</title>
     <script>
       // Start in the theme and palette picked on this device, before the app loads: no flash
-      // of light colours on a dark screen, nor of Grove's greens. The app then applies the
-      // profile's (src/lib/theme.ts).
+      // of light colours on a dark screen, nor of another space's colours. The palette is the
+      // one of the space in the URL (/work/today), else the last one shown. The app then
+      // applies the profile's theme and the space's palette (src/lib/theme.ts).
       ;(function () {
-        var theme, palette
+        var theme, palette, palettes
         try {
           theme = localStorage.getItem('workpilot:theme')
           palette = localStorage.getItem('workpilot:palette')
+          palettes = JSON.parse(localStorage.getItem('workpilot:palettes') || '{}')
         } catch (error) {}
+        var space = location.pathname.split('/')[1]
         var isDark =
           theme === 'dark' ||
           (theme !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches)
         document.documentElement.dataset.theme = isDark ? 'dark' : 'light'
-        document.documentElement.dataset.palette = palette || 'grove'
+        document.documentElement.dataset.palette =
+          (palettes && palettes[space]) || palette || 'grove'
       })()
     </script>
   </head>

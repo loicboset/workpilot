@@ -1,4 +1,4 @@
-import { db, syncedTable, type OutboxEntry } from '@/db/db'
+import { CURSOR_KEY, db, syncedTable, type OutboxEntry } from '@/db/db'
 import { isSyncedTable, SYNCED_TABLES } from '@/db/tables'
 import {
   PUSH_BATCH_SIZE,
@@ -15,8 +15,6 @@ import {
  * Screens only read Dexie. The outbox remembers which rows still have to reach the server,
  * so nothing is lost while offline.
  */
-
-export const CURSOR_KEY = 'sync.cursor'
 
 export async function syncOnce(api: SyncApi = syncApi): Promise<void> {
   await pushOutbox(api)

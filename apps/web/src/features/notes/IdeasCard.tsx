@@ -7,6 +7,7 @@ import { IconButton } from '@/components/ui/IconButton'
 import { Menu, MenuItem } from '@/components/ui/Menu'
 import { Spinner } from '@/components/ui/Spinner'
 import { TextField } from '@/components/ui/TextField'
+import { useSpace } from '@/data/currentSpace'
 import { addIdea, deleteIdea, useIdeas } from '@/data/ideas'
 import { addTodo } from '@/data/todos'
 import type { Idea } from '@/db/types'
@@ -18,6 +19,7 @@ export const IdeasCard = () => {
 
   // HOOKS
   const { t } = useTranslation()
+  const space = useSpace()
   const ideas = useIdeas()
 
   return (
@@ -30,7 +32,7 @@ export const IdeasCard = () => {
         onKeyDown={(event) => {
           if (event.key !== 'Enter') return event.continuePropagation()
           if (text.trim()) {
-            void addIdea(text)
+            void addIdea(space.id, text)
             setText('')
           }
         }}
@@ -57,7 +59,7 @@ const IdeaRow = ({ idea }: { idea: Idea }) => {
   // METHODS
   const onAction = async (action: string) => {
     if (action === 'icebox') {
-      await addTodo({ title: idea.text, due_date: null })
+      await addTodo(idea.space_id, { title: idea.text, due_date: null })
       await deleteIdea(idea.id)
     }
     if (action === 'delete') await deleteIdea(idea.id)

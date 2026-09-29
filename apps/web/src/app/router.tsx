@@ -7,8 +7,10 @@ import { NotesPage } from '@/features/notes/NotesPage'
 import { OnboardingPage } from '@/features/onboarding/OnboardingPage'
 import { ReviewPage } from '@/features/review/ReviewPage'
 import { SettingsPage } from '@/features/settings/SettingsPage'
+import { SpaceLayout } from '@/features/spaces/SpaceLayout'
+import { StartPage } from '@/features/spaces/StartPage'
 import { TodayPage } from '@/features/today/TodayPage'
-import { AppLayout } from './layouts/AppLayout'
+import { SignedInLayout } from './layouts/SignedInLayout'
 import { RequireSession } from './RequireSession'
 import { Root } from './Root'
 
@@ -45,17 +47,27 @@ export const routes: RouteObject[] = [
       {
         element: (
           <RequireSession>
-            <AppLayout />
+            <SignedInLayout />
           </RequireSession>
         ),
         children: [
-          { index: true, element: <HomePage /> },
-          { path: '/today', element: <TodayPage /> },
-          { path: '/icebox', element: <IceboxPage /> },
-          { path: '/notes', element: <NotesPage /> },
-          { path: '/review', element: <ReviewPage /> },
-          { path: '/direction', element: <DirectionPage /> },
-          { path: '/settings', element: <SettingsPage /> },
+          // The start page: the spaces (ADR 0031).
+          { index: true, element: <StartPage /> },
+          // A space's pages, under its name: /work, /work/today… Paths the app uses at the top
+          // level (onboarding, sign-in, dev) rank first; a space can't take their names.
+          {
+            path: '/:space',
+            element: <SpaceLayout />,
+            children: [
+              { index: true, element: <HomePage /> },
+              { path: 'today', element: <TodayPage /> },
+              { path: 'icebox', element: <IceboxPage /> },
+              { path: 'notes', element: <NotesPage /> },
+              { path: 'review', element: <ReviewPage /> },
+              { path: 'direction', element: <DirectionPage /> },
+              { path: 'settings', element: <SettingsPage /> },
+            ],
+          },
         ],
       },
       ...devRoutes,

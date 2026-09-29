@@ -1,6 +1,10 @@
-/** AI settings (ADR 0026): server-only data, so TanStack Query rather than Dexie. */
+/**
+ * AI settings (ADR 0026), one set per space (ADR 0031): server-only data, so TanStack Query
+ * rather than Dexie.
+ */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ApiError, request } from '@/api/client'
+import { useSpace } from '@/data/currentSpace'
 
 export type AIProviderKind = 'openai_compatible' | 'anthropic'
 
@@ -19,21 +23,24 @@ export interface AISettingsChanges {
   api_key?: string | null
 }
 
-const AI_SETTINGS_KEY = ['ai-settings'] as const
+const aiSettingsKey = (spaceId: string) => ['ai-settings', spaceId] as const
 
+/** The page's space's AI settings. */
 export function useAISettings() {
+  const { id } = useSpace()
   return useQuery({
-    queryKey: AI_SETTINGS_KEY,
-    queryFn: () => request<AISettings>('GET', '/ai/settings'),
+    queryKey: aiSettingsKey(id),
+    queryFn: () => request<AISettings>('GET', `/spaces/${id}/ai/settings`),
   })
 }
 
 export function useSaveAISettings() {
+  const { id } = useSpace()
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (changes: AISettingsChanges) =>
-      request<AISettings>('PATCH', '/ai/settings', changes),
-    onSuccess: (saved) => queryClient.setQueryData(AI_SETTINGS_KEY, saved),
+      request<AISettings>('PATCH', `/spaces/${id}/ai/settings`, changes),
+    onSuccess: (saved) => queryClient.setQueryData(aiSettingsKey(id), saved),
   })
 }
 
@@ -44,9 +51,12 @@ export type AISettingsTry = {
   api_key?: string
 }
 
-/** The models these settings offer, without saving them: tests the URL and the key. */
-export const tryAISettings = (settings: AISettingsTry): Promise<string[]> =>
-  request<string[]>('POST', '/ai/models/try', settings)
+/**
+ * The models these settings offer, without saving them: tests the URL and the key (the space's
+ * stored key when none is typed).
+ */
+export const tryAISettings = (spaceId: string, settings: AISettingsTry): Promise<string[]> =>
+  request<string[]>('POST', `/spaces/${spaceId}/ai/models/try`, settings)
 
 /** The translation key for a failed AI call (codes from the server, ADR 0026). */
 export function aiErrorKey(error: unknown): string {

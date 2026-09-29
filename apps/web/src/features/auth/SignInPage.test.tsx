@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { db } from '@/db/db'
 import { startFakeServer } from '@/test/fakeServer'
-import { renderApp, seedProfile } from '@/test/renderApp'
+import { renderApp, seedProfile, seedSpace } from '@/test/renderApp'
 
 beforeEach(async () => {
   await db.delete()
@@ -28,10 +28,13 @@ describe('signed-in pages', () => {
   it('stay open offline, because the data lives on this device', async () => {
     startFakeServer({ offline: true })
     await seedProfile('Loïc')
+    await seedSpace()
 
-    renderApp('/')
+    const { router } = renderApp('/')
+    await userEvent.click(await screen.findByRole('link', { name: 'Personal' }))
 
     expect(await screen.findByRole('heading', { name: /Loïc/ })).toBeTruthy()
+    expect(router.state.location.pathname).toBe('/personal')
   })
 })
 

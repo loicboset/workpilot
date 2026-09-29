@@ -1,7 +1,7 @@
 import type { CalendarDate } from '@internationalized/date'
 import { useId } from 'react'
 import { useTranslation } from 'react-i18next'
-import { PageTitle } from '@/components/PageTitle'
+import { SpacePageTitle } from '@/features/spaces/SpacePageTitle'
 import { Card } from '@/components/ui/Card'
 import { Link } from '@/components/ui/Link'
 import { Spinner } from '@/components/ui/Spinner'
@@ -10,6 +10,7 @@ import { useTimeZone } from '@/data/profile'
 import type { Note } from '@/db/types'
 import { dayOf } from '@/lib/dates'
 import { formatClock, formatDay } from '@/lib/format'
+import { useSpacePath } from '@/features/spaces/useSpacePath'
 
 type NotesOfDay = { day: CalendarDate; notes: Note[] }
 
@@ -27,15 +28,16 @@ const byDay = (notes: Note[], timeZone: string): NotesOfDay[] =>
 export const ReviewPage = () => {
   // HOOKS
   const { t } = useTranslation()
+  const spacePath = useSpacePath()
   const timeZone = useTimeZone()
   const notes = useRecentNotes(timeZone)
 
   return (
     <div className="space-y-6 pt-2">
       <header>
-        <PageTitle subtitle={t('review.notes', { days: RECENT_DAYS })}>
+        <SpacePageTitle subtitle={t('review.notes', { days: RECENT_DAYS })}>
           {t('review.title')}
-        </PageTitle>
+        </SpacePageTitle>
       </header>
 
       <Card className="max-w-3xl">
@@ -51,7 +53,7 @@ export const ReviewPage = () => {
           </div>
         )}
         <p className="mt-6">
-          <Link href="/notes" className="text-sm">
+          <Link href={spacePath('/notes')} className="text-sm">
             {t('review.allNotes')}
             <span aria-hidden> →</span>
           </Link>

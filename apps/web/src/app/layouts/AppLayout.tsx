@@ -1,6 +1,4 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { Feather, Settings, type LucideIcon } from 'lucide-react'
-import { useEffect } from 'react'
 import { Link as AriaLink } from 'react-aria-components'
 import { useTranslation } from 'react-i18next'
 import { Outlet, useLocation } from 'react-router'
@@ -8,36 +6,30 @@ import { twMerge } from 'tailwind-merge'
 import { tv } from 'tailwind-variants'
 import { Logo } from '@/components/brand/Logo'
 import { Button } from '@/components/ui/Button'
-import { useProfile } from '@/data/profile'
-import { SESSION_QUERY_KEY } from '@/features/auth/session'
 import { CaptureBar } from '@/features/capture/CaptureBar'
 import { openCaptureBar } from '@/features/capture/captureStore'
-import { changeLocale, currentLocale } from '@/i18n'
+import { SpaceMenu } from '@/features/spaces/SpaceMenu'
+import { useSpacePath } from '@/features/spaces/useSpacePath'
 import { focusRing } from '@/lib/styles'
-import { startSync } from '@/sync/scheduler'
-import { useSyncStatus } from '@/sync/status'
-import { RequireOnboarding } from '../RequireOnboarding'
 
 const IS_MAC = /mac|iphone|ipad/i.test(navigator.userAgent)
 
 const logoLinkStyles = tv({ extend: focusRing, base: 'inline-flex rounded-full' })
 
-/** The frame of every signed-in page: navigation, the capture bar, and sync while it's shown. */
+/** The frame of a space's pages: navigation, the capture bar, and the space menu (ADR 0031). */
 export function AppLayout() {
   const { t } = useTranslation()
-  useEffect(() => startSync(), []) // returns the function that stops it
-  useSignedOutBySync()
-  useProfileLanguage()
+  const spacePath = useSpacePath()
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-360 flex-col px-4 sm:px-8 lg:px-12">
       <header className="flex items-center justify-between gap-4 py-5">
-        <AriaLink href="/" className={logoLinkStyles}>
+        <AriaLink href={spacePath()} className={logoLinkStyles}>
           <Logo showName="from-sm" />
         </AriaLink>
         <div className="flex items-center gap-2">
           <nav aria-label={t('nav.label')} className="flex items-center gap-1">
-            <NavLink href="/settings" label={t('nav.settings')} icon={Settings} />
+            <NavLink href={spacePath('/settings')} label={t('nav.settings')} icon={Settings} />
           </nav>
           <Button size="sm" onPress={openCaptureBar} aria-keyshortcuts="Meta+K Control+K">
             <Feather className="size-4" aria-hidden />
@@ -46,12 +38,11 @@ export function AppLayout() {
               {IS_MAC ? '⌘K' : 'Ctrl K'}
             </kbd>
           </Button>
+          <SpaceMenu />
         </div>
       </header>
       <main className="flex-1 pb-12">
-        <RequireOnboarding>
-          <Outlet />
-        </RequireOnboarding>
+        <Outlet />
       </main>
       <CaptureBar />
     </div>
@@ -75,23 +66,4 @@ function NavLink({ href, label, icon: Icon }: { href: string; label: string; ico
       <span className="hidden lg:inline">{label}</span>
     </AriaLink>
   )
-}
-
-/** When sync learns the session has expired, check again: the guard then shows sign-in. */
-function useSignedOutBySync() {
-  const queryClient = useQueryClient()
-  const syncState = useSyncStatus((status) => status.state)
-  useEffect(() => {
-    if (syncState === 'signed-out') {
-      void queryClient.invalidateQueries({ queryKey: SESSION_QUERY_KEY })
-    }
-  }, [syncState, queryClient])
-}
-
-/** Speak the profile's language, e.g. on a new device once the profile has synced. */
-function useProfileLanguage() {
-  const locale = useProfile()?.locale
-  useEffect(() => {
-    if (locale && locale !== currentLocale()) void changeLocale(locale)
-  }, [locale])
 }

@@ -8,6 +8,7 @@ import { useDayPlan } from '@/features/today/useDayPlan'
 import { HomeCard } from '../HomeCard'
 import { DayRow } from './DayRow'
 import { dayItems, dayLoad, focusItem } from './dayTimeline'
+import { useSpacePath } from '@/features/spaces/useSpacePath'
 
 /** Enough lines for a calm day; the Today page has the rest. */
 const SHOWN = 6
@@ -16,6 +17,7 @@ const SHOWN = 6
 export const TodayCard = () => {
   // HOOKS
   const { t } = useTranslation()
+  const spacePath = useSpacePath()
   const timeZone = useTimeZone()
   const plan = useDayPlan(today(timeZone), timeZone)
   const milestones = useMilestones() ?? []
@@ -39,13 +41,13 @@ export const TodayCard = () => {
   return (
     <HomeCard
       title={t('nav.today')}
-      href="/today"
+      href={spacePath('/today')}
       aside={plan ? aside : undefined}
       icon={<Clock />}
       tone="moss"
       footer={
         items.length > SHOWN && (
-          <Link href="/today" className="text-sm">
+          <Link href={spacePath('/today')} className="text-sm">
             {t('home.today.more', { count: items.length - SHOWN })}
           </Link>
         )

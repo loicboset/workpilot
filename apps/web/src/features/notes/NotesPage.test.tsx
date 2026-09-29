@@ -4,13 +4,17 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { addIdea } from '@/data/ideas'
 import { addNote } from '@/data/notes'
 import { db } from '@/db/db'
+import type { Space } from '@/db/types'
 import { startFakeServer } from '@/test/fakeServer'
-import { renderApp, seedProfile } from '@/test/renderApp'
+import { renderApp, seedProfile, seedSpace } from '@/test/renderApp'
+
+let space: Space
 
 beforeEach(async () => {
   await db.delete()
   await db.open()
   await seedProfile('Ada')
+  space = await seedSpace()
 })
 
 afterEach(() => {
@@ -18,10 +22,10 @@ afterEach(() => {
 })
 
 it('shows the ideas and the notes, and adds an idea', async () => {
-  await addIdea('Automate the weekly report')
-  await addNote('Released: email-less users', 'Product meeting')
+  await addIdea(space.id, 'Automate the weekly report')
+  await addNote(space.id, 'Released: email-less users', 'Product meeting')
   startFakeServer({ signedIn: true })
-  renderApp('/notes')
+  renderApp('/personal/notes')
 
   const ideas = await screen.findByRole('region', { name: 'Ideas' })
   expect(await within(ideas).findByText('Automate the weekly report')).toBeTruthy()
@@ -37,9 +41,9 @@ it('shows the ideas and the notes, and adds an idea', async () => {
 })
 
 it('moves an idea to the icebox as a todo', async () => {
-  const idea = await addIdea('Pause a tool')
+  const idea = await addIdea(space.id, 'Pause a tool')
   startFakeServer({ signedIn: true })
-  renderApp('/notes')
+  renderApp('/personal/notes')
 
   await userEvent.click(await screen.findByRole('button', { name: 'More for “Pause a tool”' }))
   await userEvent.click(screen.getByRole('menuitem', { name: 'Move to the icebox' }))
@@ -52,7 +56,7 @@ it('moves an idea to the icebox as a todo', async () => {
 
 it('writes a new note and changes it', async () => {
   startFakeServer({ signedIn: true })
-  renderApp('/notes')
+  renderApp('/personal/notes')
 
   await userEvent.click(await screen.findByRole('button', { name: 'New note' }))
   const dialog = screen.getByRole('dialog', { name: 'New note' })

@@ -1,26 +1,32 @@
-import { Compass, Flag, Plus, Sprout } from 'lucide-react'
-import { useState, type FormEvent } from 'react'
+import { LayoutGrid, Sprout } from 'lucide-react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Navigate, useNavigate } from 'react-router'
 import { FocusLayout } from '@/app/layouts/FocusLayout'
-import { MethodInfo } from '@/components/MethodInfo'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Form } from '@/components/ui/Form'
 import { TextField } from '@/components/ui/TextField'
-import { addMilestone, saveNorthStar } from '@/data/direction'
+import { plantDirection } from '@/data/direction'
 import { deviceTimeZone, saveProfile, useProfile } from '@/data/profile'
-import { changeLocale, currentLocale } from '@/i18n'
+import { createSpace, spaceNameProblem, type SpaceFields } from '@/data/spaces'
 import { LanguageSelect, TimezoneComboBox } from '@/features/profile/ProfileFields'
+import { PalettePicker } from '@/features/settings/PalettePicker'
+import { SpaceNameField } from '@/features/spaces/SpaceNameField'
+import { changeLocale, currentLocale } from '@/i18n'
+import { onSubmit } from '@/lib/forms'
+import { applyPalette, type Palette } from '@/lib/theme'
+import { MilestonesStep, NorthStarStep, StepButtons, type NorthStarDraft } from './DirectionSteps'
 
-type Step = 'you' | 'northStar' | 'milestones'
-const STEPS: Step[] = ['you', 'northStar', 'milestones']
+type Step = 'you' | 'space' | 'northStar' | 'milestones'
+const STEPS: Step[] = ['you', 'space', 'northStar', 'milestones']
 
-/** Three short steps: you, your North Star, the milestones on the way. Nothing else is asked. */
+/**
+ * Four short steps: you, your first space (ADR 0031), its North Star, the milestones on the way.
+ * Nothing else is asked.
+ */
 export function OnboardingPage() {
-  const { t } = useTranslation()
-  const navigate = useNavigate()
-  const profile = useProfile()
+  // STATES
   const [step, setStep] = useState<Step>('you')
   const [you, setYou] = useState({
     firstName: '',
@@ -28,13 +34,18 @@ export function OnboardingPage() {
     timeZone: deviceTimeZone(),
     city: '',
   })
-  const [northStar, setNorthStar] = useState({ title: '', description: '' })
+  const [space, setSpace] = useState<SpaceFields>({ name: '', palette: 'grove' })
+  const [northStar, setNorthStar] = useState<NorthStarDraft>({ title: '', description: '' })
   const [milestones, setMilestones] = useState(['', '', ''])
   const [isSaving, setSaving] = useState(false)
 
-  if (profile) return <Navigate to="/" replace /> // already done, e.g. on another device
+  // HOOKS
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const profile = useProfile()
 
-  async function finish() {
+  // METHODS
+  const finish = async () => {
     setSaving(true)
     await saveProfile({
       first_name: you.firstName.trim(),
@@ -43,18 +54,30 @@ export function OnboardingPage() {
       timezone: you.timeZone,
       city: you.city.trim() || null,
     })
-    const star = await saveNorthStar({
-      title: northStar.title.trim(),
-      description: northStar.description.trim() || null,
-      target_date: null,
-    })
-    for (const title of milestones.filter((milestone) => milestone.trim())) {
-      await addMilestone(star.id, { title })
-    }
-    navigate('/', { replace: true })
+    const created = await createSpace(space)
+    await plantDirection(
+      created.id,
+      {
+        title: northStar.title.trim(),
+        description: northStar.description.trim() || null,
+        target_date: null,
+      },
+      milestones,
+    )
+    navigate(`/${created.slug}`, { replace: true })
   }
 
+  /** The space's colours show at once, as a preview. */
+  const pickPalette = (palette: Palette) => {
+    setSpace({ ...space, palette })
+    applyPalette(palette)
+  }
+
+  // VARS
   const stepNumber = STEPS.indexOf(step) + 1
+
+  if (profile) return <Navigate to="/" replace /> // already done, e.g. on another device
+
   return (
     <FocusLayout>
       <p className="mb-3 text-center text-sm text-grove-muted">
@@ -67,7 +90,7 @@ export function OnboardingPage() {
           subtitle={t('onboarding.you.subtitle')}
           icon={<Sprout />}
         >
-          <Form onSubmit={onSubmit(() => setStep('northStar'))}>
+          <Form onSubmit={onSubmit(() => setStep('space'))}>
             <TextField
               label={t('profile.firstName')}
               value={you.firstName}
@@ -101,111 +124,49 @@ export function OnboardingPage() {
         </Card>
       )}
 
-      {step === 'northStar' && (
+      {step === 'space' && (
         <Card
-          title={t('onboarding.northStar.title')}
-          subtitle={t('onboarding.northStar.subtitle')}
-          icon={<Compass />}
-          actions={<MethodInfo method="hoshinKanri" />}
+          title={t('onboarding.space.title')}
+          subtitle={t('onboarding.space.subtitle')}
+          icon={<LayoutGrid />}
         >
-          <Form onSubmit={onSubmit(() => setStep('milestones'))}>
-            <p className="text-sm leading-6 text-grove-muted">
-              {t('onboarding.northStar.explain')}
-            </p>
-            <TextField
-              label={t('direction.northStarTitle')}
-              placeholder={t('onboarding.northStar.placeholder')}
-              value={northStar.title}
-              onChange={(title) => setNorthStar({ ...northStar, title })}
-              isRequired
+          <Form onSubmit={onSubmit(() => setStep('northStar'))}>
+            <p className="text-sm leading-6 text-grove-muted">{t('onboarding.space.explain')}</p>
+            <SpaceNameField
+              value={space.name}
+              onChange={(name) => setSpace({ ...space, name })}
+              spaces={[]}
               autoFocus
             />
-            <TextField
-              label={t('direction.northStarWhy')}
-              description={t('common.optional')}
-              value={northStar.description}
-              onChange={(description) => setNorthStar({ ...northStar, description })}
-              multiline
-            />
+            <PalettePicker value={space.palette} onChange={pickPalette} />
+            <p className="text-sm leading-6 text-grove-muted">{t('onboarding.space.later')}</p>
             <StepButtons
               onBack={() => setStep('you')}
               next={t('onboarding.continue')}
-              isNextDisabled={!northStar.title.trim()}
+              isNextDisabled={!space.name.trim() || spaceNameProblem(space.name, []) !== null}
             />
           </Form>
         </Card>
+      )}
+
+      {step === 'northStar' && (
+        <NorthStarStep
+          value={northStar}
+          onChange={setNorthStar}
+          onBack={() => setStep('space')}
+          onNext={() => setStep('milestones')}
+        />
       )}
 
       {step === 'milestones' && (
-        <Card
-          title={t('onboarding.milestones.title')}
-          subtitle={t('onboarding.milestones.subtitle')}
-          icon={<Flag />}
-        >
-          <Form onSubmit={onSubmit(() => void finish())}>
-            <p className="text-sm leading-6 text-grove-muted">
-              {t('onboarding.milestones.explain')}
-            </p>
-            {milestones.map((title, index) => (
-              <TextField
-                key={index}
-                aria-label={t('onboarding.milestones.label', { number: index + 1 })}
-                placeholder={index === 0 ? t('onboarding.milestones.placeholder') : undefined}
-                value={title}
-                autoFocus={index === 0}
-                onChange={(value) =>
-                  setMilestones(milestones.map((old, i) => (i === index ? value : old)))
-                }
-              />
-            ))}
-            <Button
-              variant="quiet"
-              size="sm"
-              className="self-start"
-              onPress={() => setMilestones([...milestones, ''])}
-            >
-              <Plus className="size-4" aria-hidden /> {t('onboarding.milestones.addAnother')}
-            </Button>
-            <StepButtons
-              onBack={() => setStep('northStar')}
-              next={t('onboarding.finish')}
-              isPending={isSaving}
-            />
-          </Form>
-        </Card>
+        <MilestonesStep
+          milestones={milestones}
+          onChange={setMilestones}
+          onBack={() => setStep('northStar')}
+          onFinish={() => void finish()}
+          isSaving={isSaving}
+        />
       )}
     </FocusLayout>
-  )
-}
-
-/** Handle a form's submit in the app, instead of the browser sending it. */
-function onSubmit(action: () => void) {
-  return (event: FormEvent) => {
-    event.preventDefault()
-    action()
-  }
-}
-
-function StepButtons(props: {
-  onBack: () => void
-  next: string
-  isNextDisabled?: boolean
-  isPending?: boolean
-}) {
-  const { t } = useTranslation()
-  return (
-    <div className="flex gap-3">
-      <Button variant="secondary" onPress={props.onBack}>
-        {t('onboarding.back')}
-      </Button>
-      <Button
-        type="submit"
-        className="flex-1"
-        isDisabled={props.isNextDisabled}
-        isPending={props.isPending}
-      >
-        {props.next}
-      </Button>
-    </div>
   )
 }

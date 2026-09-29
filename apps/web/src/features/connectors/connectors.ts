@@ -1,6 +1,7 @@
-/** Connectors (ADR 0032): server-only data, so TanStack Query rather than Dexie. */
+/** Connectors (ADR 0032), per space (ADR 0031): server-only data, so TanStack Query, not Dexie. */
 import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
 import { ApiError, request } from '@/api/client'
+import { useSpace } from '@/data/currentSpace'
 
 export type ConnectorKind = 'rss'
 
@@ -32,39 +33,45 @@ export type ConnectorChanges = {
   paused_at?: string | null
 }
 
-// Moves under the space, `/spaces/{space_id}/connectors`, once spaces are built (ADR 0031).
-const CONNECTORS_PATH = '/connectors'
-const CONNECTORS_KEY = ['connectors']
+const connectorsPath = (spaceId: string) => `/spaces/${spaceId}/connectors`
+const connectorsKey = (spaceId: string) => ['connectors', spaceId]
 
 /** The errors the server explains with a code (ADR 0032). */
 const ERROR_CODES = ['feed_unreachable', 'feed_not_found', 'connector_exists']
 
-export const useConnectors = () =>
-  useQuery({
-    queryKey: CONNECTORS_KEY,
-    queryFn: () => request<Connector[]>('GET', CONNECTORS_PATH),
+/** The page's space's connectors. */
+export const useConnectors = () => {
+  // HOOKS
+  const space = useSpace()
+
+  return useQuery({
+    queryKey: connectorsKey(space.id),
+    queryFn: () => request<Connector[]>('GET', connectorsPath(space.id)),
   })
+}
 
 export const useAddConnector = () => {
   // HOOKS
+  const space = useSpace()
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: (connector: NewConnector) =>
-      request<Connector>('POST', CONNECTORS_PATH, { kind: 'rss', ...connector }),
-    onSuccess: (added) => setConnectors(queryClient, (list) => [...list, added]),
+      request<Connector>('POST', connectorsPath(space.id), { kind: 'rss', ...connector }),
+    onSuccess: (added) => setConnectors(queryClient, space.id, (list) => [...list, added]),
   })
 }
 
 export const useUpdateConnector = () => {
   // HOOKS
+  const space = useSpace()
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: ({ id, changes }: { id: string; changes: ConnectorChanges }) =>
-      request<Connector>('PATCH', `${CONNECTORS_PATH}/${id}`, changes),
+      request<Connector>('PATCH', `${connectorsPath(space.id)}/${id}`, changes),
     onSuccess: (saved) =>
-      setConnectors(queryClient, (list) =>
+      setConnectors(queryClient, space.id, (list) =>
         list.map((connector) => (connector.id === saved.id ? saved : connector)),
       ),
   })
@@ -72,18 +79,24 @@ export const useUpdateConnector = () => {
 
 export const useDeleteConnector = () => {
   // HOOKS
+  const space = useSpace()
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (id: string) => request<void>('DELETE', `${CONNECTORS_PATH}/${id}`),
+    mutationFn: (id: string) => request<void>('DELETE', `${connectorsPath(space.id)}/${id}`),
     onSuccess: (_, id) =>
-      setConnectors(queryClient, (list) => list.filter((connector) => connector.id !== id)),
+      setConnectors(queryClient, space.id, (list) =>
+        list.filter((connector) => connector.id !== id),
+      ),
   })
 }
 
 /** Change the cached list, if it was loaded, so the card shows the change straight away. */
-const setConnectors = (queryClient: QueryClient, change: (list: Connector[]) => Connector[]) =>
-  queryClient.setQueryData<Connector[]>(CONNECTORS_KEY, (list) => list && change(list))
+const setConnectors = (
+  queryClient: QueryClient,
+  spaceId: string,
+  change: (list: Connector[]) => Connector[],
+) => queryClient.setQueryData<Connector[]>(connectorsKey(spaceId), (list) => list && change(list))
 
 /** The translation key for a failed call: the server's code, being offline, or the unexpected. */
 export const connectorErrorKey = (error: unknown): string => {

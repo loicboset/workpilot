@@ -1,10 +1,13 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '@/db/db'
 import type { Profile } from '@/db/types'
-import type { Palette, Theme } from '@/lib/theme'
+import type { Theme } from '@/lib/theme'
 import { newRowFields, saveLocally, updateLocally } from './localWrites'
 
-/** Profile repository: one profile per install (the first one, if two devices made one). */
+/**
+ * Profile repository: one profile per install (the first one, if two devices made one), shared
+ * by every space (ADR 0031).
+ */
 
 export type ProfileFields = Pick<
   Profile,
@@ -29,7 +32,7 @@ export async function saveProfile(fields: ProfileFields): Promise<Profile> {
   return saveLocally<Profile>('profiles', { ...newRowFields(), ...fields })
 }
 
-/** Light, dark, or the device's setting: applied at once (see `Root`), and synced. */
+/** Light, dark, or the device's setting, in every space: applied at once (see `Root`), and synced. */
 export const saveTheme = async (theme: Theme): Promise<void> => {
   const current = await getProfile()
   if (current) await updateLocally<Profile>('profiles', current.id, { theme })
@@ -39,18 +42,6 @@ export const saveTheme = async (theme: Theme): Promise<void> => {
 export const useTheme = (): Theme | undefined => {
   const profile = useProfile()
   return profile === undefined ? undefined : (profile?.theme ?? 'system')
-}
-
-/** Grove, Lake…: applied at once (see `Root`), and synced. */
-export const savePalette = async (palette: Palette): Promise<void> => {
-  const current = await getProfile()
-  if (current) await updateLocally<Profile>('profiles', current.id, { palette })
-}
-
-/** The profile's palette: Grove before onboarding, `undefined` while loading. */
-export const usePalette = (): Palette | undefined => {
-  const profile = useProfile()
-  return profile === undefined ? undefined : (profile?.palette ?? 'grove')
 }
 
 export function deviceTimeZone(): string {

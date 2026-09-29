@@ -3,8 +3,6 @@ import { Radio, RadioGroup } from 'react-aria-components'
 import { useTranslation } from 'react-i18next'
 import { tv } from 'tailwind-variants'
 import { Description, Label } from '@/components/ui/Field'
-import { Spinner } from '@/components/ui/Spinner'
-import { savePalette, usePalette } from '@/data/profile'
 import { focusRing } from '@/lib/styles'
 import { isPalette, PALETTES, type Palette } from '@/lib/theme'
 
@@ -19,22 +17,26 @@ const optionStyles = tv({
   },
 })
 
-/** Grove, Lake, Heather…: each shown in its own colours, saved and shown as soon as it's picked. */
-export const PalettePicker = () => {
+type PalettePickerProps = {
+  value: Palette
+  onChange: (palette: Palette) => void
+  /** Under the choices; "Each works in light and dark." by default. */
+  description?: string
+}
+
+/** Grove, Lake, Heather…: each shown in its own colours. A space's colours (ADR 0031). */
+export const PalettePicker = ({ value, onChange, description }: PalettePickerProps) => {
   // HOOKS
   const { t } = useTranslation()
-  const palette = usePalette()
 
   // METHODS
-  const pick = (value: string) => {
-    if (isPalette(value)) void savePalette(value)
+  const pick = (picked: string) => {
+    if (isPalette(picked)) onChange(picked)
   }
-
-  if (!palette) return <Spinner label={t('common.loading')} />
 
   return (
     <RadioGroup
-      value={palette}
+      value={value}
       onChange={pick}
       orientation="horizontal"
       className="flex flex-col gap-1.5"
@@ -57,7 +59,7 @@ export const PalettePicker = () => {
           </Radio>
         ))}
       </div>
-      <Description>{t('settings.appearance.paletteHelp')}</Description>
+      <Description>{description ?? t('settings.appearance.paletteHelp')}</Description>
     </RadioGroup>
   )
 }

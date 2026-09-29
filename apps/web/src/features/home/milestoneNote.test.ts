@@ -1,13 +1,13 @@
 import { parseDate } from '@internationalized/date'
 import { describe, expect, it } from 'vitest'
-import { newRowFields } from '@/data/localWrites'
+import { newSpaceRowFields } from '@/data/localWrites'
 import type { Milestone } from '@/db/types'
 import { milestoneState, milestoneWhen } from './milestoneNote'
 
 const TODAY = parseDate('2026-09-29')
 
 const milestone = (fields: Partial<Milestone>): Milestone => ({
-  ...newRowFields(),
+  ...newSpaceRowFields('space-personal'),
   north_star_id: 'north-star',
   title: 'A step',
   description: null,

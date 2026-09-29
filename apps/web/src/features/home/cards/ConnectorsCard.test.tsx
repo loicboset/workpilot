@@ -1,10 +1,14 @@
 import '@/i18n'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { Connector } from '@/features/connectors/connectors'
+import { renderInSpace, spaceRow } from '@/test/renderApp'
 import { ConnectorsCard } from './ConnectorsCard'
+
+const SPACE = spaceRow()
+// A space's connectors live under it (ADR 0031).
+const CONNECTORS = `/api/spaces/${SPACE.id}/connectors`
 
 type Call = { method: string; path: string; body: unknown }
 
@@ -37,8 +41,8 @@ const startFakeServer = (saved: Connector[], { failWith }: { failWith?: string }
     const body = init?.body ? JSON.parse(String(init.body)) : undefined
     calls.push({ method, path, body })
     const id = path.split('/').at(-1)
-    if (method === 'GET' && path === '/api/connectors') return json(200, connectors)
-    if (method === 'POST' && path === '/api/connectors') {
+    if (method === 'GET' && path === CONNECTORS) return json(200, connectors)
+    if (method === 'POST' && path === CONNECTORS) {
       if (failWith) return json(422, { detail: failWith })
       const added = connector({ ...body, id: 'c-new', name: body.name ?? 'The Feed' })
       connectors = [...connectors, added]
@@ -65,14 +69,7 @@ const json = (status: number, body: unknown): Response =>
     headers: { 'Content-Type': 'application/json' },
   })
 
-const renderCard = () => {
-  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
-  render(
-    <QueryClientProvider client={queryClient}>
-      <ConnectorsCard />
-    </QueryClientProvider>,
-  )
-}
+const renderCard = () => renderInSpace(<ConnectorsCard />, SPACE)
 
 const list = () => screen.findByRole('list', { name: 'Your connections' })
 
@@ -127,7 +124,7 @@ describe('Connectors card', () => {
     expect(screen.queryByRole('dialog')).toBeNull()
     expect(calls).toContainEqual({
       method: 'POST',
-      path: '/api/connectors',
+      path: CONNECTORS,
       body: { kind: 'rss', url: 'https://example.com/feed', name: null, instruction: null },
     })
   })
@@ -178,7 +175,7 @@ describe('Connectors card', () => {
     expect(within(await list()).getByText('Ben Thompson')).toBeTruthy()
     expect(calls).toContainEqual({
       method: 'PATCH',
-      path: '/api/connectors/c1',
+      path: `${CONNECTORS}/c1`,
       body: { name: 'Ben Thompson', instruction: 'Only the AI parts' },
     })
   })
@@ -202,9 +199,9 @@ describe('Connectors card', () => {
 
     const changes = calls.filter((call) => call.method !== 'GET')
     expect(changes.map((call) => [call.method, call.path])).toEqual([
-      ['PATCH', '/api/connectors/c1'],
-      ['PATCH', '/api/connectors/c1'],
-      ['DELETE', '/api/connectors/c1'],
+      ['PATCH', `${CONNECTORS}/c1`],
+      ['PATCH', `${CONNECTORS}/c1`],
+      ['DELETE', `${CONNECTORS}/c1`],
     ])
     expect(changes[0].body).toEqual({ paused_at: expect.any(String) })
     expect(changes[1].body).toEqual({ paused_at: null })

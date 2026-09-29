@@ -4,12 +4,13 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { db } from '@/db/db'
 import { useCaptureBar } from '@/features/capture/captureStore'
 import { startFakeServer } from '@/test/fakeServer'
-import { renderApp, seedProfile } from '@/test/renderApp'
+import { renderApp, seedProfile, seedSpace } from '@/test/renderApp'
 
 beforeEach(async () => {
   await db.delete()
   await db.open()
   await seedProfile('Ada')
+  await seedSpace()
   useCaptureBar.setState({ isOpen: false }) // it's app-wide state
 })
 
@@ -19,7 +20,7 @@ afterEach(() => {
 
 const findCard = async () => {
   startFakeServer({ signedIn: true })
-  renderApp('/')
+  renderApp('/personal')
   await screen.findByRole('heading', { name: /Ada/ })
   return screen.getByRole('region', { name: 'Capture' })
 }

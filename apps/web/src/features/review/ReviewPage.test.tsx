@@ -2,18 +2,22 @@ import { Time, today } from '@internationalized/date'
 import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
-import { newRowFields } from '@/data/localWrites'
+import { newSpaceRowFields } from '@/data/localWrites'
 import { db } from '@/db/db'
+import type { Space } from '@/db/types'
 import { momentOf } from '@/lib/dates'
 import { startFakeServer } from '@/test/fakeServer'
-import { renderApp, seedProfile } from '@/test/renderApp'
+import { renderApp, seedProfile, seedSpace } from '@/test/renderApp'
 
 const ZONE = 'Europe/Zurich' // seedProfile's timezone
+
+let space: Space
 
 beforeEach(async () => {
   await db.delete()
   await db.open()
   await seedProfile('Ada')
+  space = await seedSpace()
 })
 
 afterEach(() => {
@@ -23,7 +27,13 @@ afterEach(() => {
 /** A note written `daysAgo` days ago at the given time, in the profile's timezone. */
 const noteAt = (daysAgo: number, hour: number, minute: number, content: string) => {
   const created_at = momentOf(today(ZONE).subtract({ days: daysAgo }), new Time(hour, minute), ZONE)
-  return db.notes.put({ ...newRowFields(), created_at, title: null, content, milestone_id: null })
+  return db.notes.put({
+    ...newSpaceRowFields(space.id),
+    created_at,
+    title: null,
+    content,
+    milestone_id: null,
+  })
 }
 
 const seedWeek = async () => {
@@ -36,7 +46,7 @@ const seedWeek = async () => {
 it('lists the notes of the last 7 days on the homepage, each after its day and time', async () => {
   await seedWeek()
   startFakeServer({ signedIn: true })
-  renderApp('/')
+  renderApp('/personal')
 
   const card = await screen.findByRole('region', { name: 'Review' })
   const list = await within(card).findByRole('list', { name: 'Your notes of the last 7 days' })
@@ -53,7 +63,7 @@ it('lists the notes of the last 7 days on the homepage, each after its day and t
 it('opens the review page from the card, with the notes day by day', async () => {
   await seedWeek()
   startFakeServer({ signedIn: true })
-  renderApp('/')
+  renderApp('/personal')
 
   const card = await screen.findByRole('region', { name: 'Review' })
   await userEvent.click(within(card).getByRole('link', { name: 'Review' }))
@@ -71,7 +81,7 @@ it('opens the review page from the card, with the notes day by day', async () =>
 it('says so when there is no note this week', async () => {
   await noteAt(9, 10, 0, 'Long ago')
   startFakeServer({ signedIn: true })
-  renderApp('/review')
+  renderApp('/personal/review')
 
   expect(
     await screen.findByText('No notes these last 7 days. /note in the capture bar writes one.'),

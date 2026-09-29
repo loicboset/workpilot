@@ -1,7 +1,8 @@
 /**
- * Light or dark colours, and the palette (styles/index.css). The choices are the profile's, so
- * they follow the user to every device; each device keeps a copy, read by index.html so that
- * the next load starts in the right colours before the profile is read.
+ * Light or dark colours (the profile's, shared by every space), and the palette (each space's
+ * own, ADR 0031): styles/index.css. Both follow the user to every device; each device keeps a
+ * copy, read by index.html so that the next load starts in the right colours before the data is
+ * read: light or dark, and the palette of the space in the URL.
  */
 
 export const THEMES = ['system', 'light', 'dark'] as const
@@ -13,7 +14,8 @@ export type Palette = (typeof PALETTES)[number]
 
 // Also in index.html: change both together.
 const STORAGE_KEY = 'workpilot:theme'
-const PALETTE_STORAGE_KEY = 'workpilot:palette'
+const PALETTE_STORAGE_KEY = 'workpilot:palette' // the last one shown
+const SPACE_PALETTES_KEY = 'workpilot:palettes' // each space's, by its URL name
 const DARK_QUERY = '(prefers-color-scheme: dark)'
 
 export const isTheme = (value: unknown): value is Theme => THEMES.some((theme) => theme === value)
@@ -53,6 +55,24 @@ export const applyPalette = (palette: Palette): void => {
   document.documentElement.dataset.palette = palette
   colourBrowserBar()
   remember(PALETTE_STORAGE_KEY, palette)
+}
+
+/** Each space's palette kept on this device, by URL name. Empty if none or unreadable. */
+const storedSpacePalettes = (): Record<string, Palette> => {
+  try {
+    const stored: unknown = JSON.parse(localStorage.getItem(SPACE_PALETTES_KEY) ?? '{}')
+    if (typeof stored !== 'object' || stored === null) return {}
+    return Object.fromEntries(
+      Object.entries(stored).filter((entry): entry is [string, Palette] => isPalette(entry[1])),
+    )
+  } catch {
+    return {}
+  }
+}
+
+/** Keep a space's palette on this device, so a page of the space starts in its colours. */
+export const rememberSpacePalette = (slug: string, palette: Palette): void => {
+  remember(SPACE_PALETTES_KEY, JSON.stringify({ ...storedSpacePalettes(), [slug]: palette }))
 }
 
 /** Apply the theme, following the device's setting while it's `system`. Returns the cleanup. */

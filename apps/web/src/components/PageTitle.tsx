@@ -5,22 +5,24 @@ import { useTranslation } from 'react-i18next'
 import { twMerge } from 'tailwind-merge'
 import { buttonStyles } from './ui/Button.styles'
 
-type PageTitleProps = {
+export type PageTitleProps = {
   children: ReactNode
+  /** Where the arrow goes back to, e.g. the space's homepage. */
+  backHref: string
   /** A line under the title, e.g. "Todos without a date, kept for later". */
   subtitle?: ReactNode
   className?: string
 }
 
 /** A page's title, after a small arrow back to the homepage. */
-export const PageTitle = ({ children, subtitle, className }: PageTitleProps) => {
+export const PageTitle = ({ children, backHref, subtitle, className }: PageTitleProps) => {
   // HOOKS
   const { t } = useTranslation()
 
   return (
     <div className={twMerge('flex items-start gap-1', className)}>
       <Link
-        href="/"
+        href={backHref}
         aria-label={t('nav.backHome')}
         className={(state) =>
           buttonStyles({

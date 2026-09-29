@@ -2,19 +2,23 @@ import { Time, today } from '@internationalized/date'
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
-import { newRowFields } from '@/data/localWrites'
+import { newSpaceRowFields } from '@/data/localWrites'
 import { db } from '@/db/db'
+import type { Space } from '@/db/types'
 import { useCaptureBar } from '@/features/capture/captureStore'
 import { momentOf } from '@/lib/dates'
 import { startFakeServer } from '@/test/fakeServer'
-import { renderApp, seedProfile } from '@/test/renderApp'
+import { renderApp, seedProfile, seedSpace } from '@/test/renderApp'
 
 const ZONE = 'Europe/Zurich' // seedProfile's timezone
+
+let space: Space
 
 beforeEach(async () => {
   await db.delete()
   await db.open()
   await seedProfile('Ada')
+  space = await seedSpace()
   useCaptureBar.setState({ isOpen: false }) // it's app-wide state
 })
 
@@ -26,7 +30,7 @@ const at = (hour: number, minute: number) => momentOf(today(ZONE), new Time(hour
 
 const openHome = async () => {
   startFakeServer({ signedIn: true })
-  renderApp('/')
+  renderApp('/personal')
   await screen.findByRole('heading', { name: 'Hi Ada,' })
 }
 
@@ -67,10 +71,15 @@ it("opens a card's page from its title; the arrow and the logo lead back home", 
 })
 
 it('shows the day with the next thing to do standing out, and ticks it', async () => {
-  const deepWork = { ...newRowFields(), title: 'Deep work', start_at: at(9, 0), end_at: at(11, 0) }
+  const deepWork = {
+    ...newSpaceRowFields(space.id),
+    title: 'Deep work',
+    start_at: at(9, 0),
+    end_at: at(11, 0),
+  }
   await db.time_blocks.bulkPut([
     {
-      ...newRowFields(),
+      ...newSpaceRowFields(space.id),
       title: 'Plan the day',
       start_at: at(8, 30),
       end_at: at(9, 0),
@@ -93,14 +102,14 @@ it('shows the day with the next thing to do standing out, and ticks it', async (
 
 it('walks the path to the North Star: reached, here, ahead', async () => {
   const northStar = {
-    ...newRowFields(),
+    ...newSpaceRowFields(space.id),
     title: 'Finish my first novel',
     description: null,
     target_date: null,
   }
   await db.north_stars.put(northStar)
   const milestone = (title: string, position: number, fields = {}) => ({
-    ...newRowFields(),
+    ...newSpaceRowFields(space.id),
     north_star_id: northStar.id,
     title,
     description: null,

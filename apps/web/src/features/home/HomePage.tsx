@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { useSpace } from '@/data/currentSpace'
 import { refreshTicker } from '@/data/ticker'
 import { useProfile, useTimeZone } from '@/data/profile'
 import { Ticker } from '@/features/ticker/Ticker'
@@ -13,15 +14,16 @@ import { Greeting } from './Greeting'
 import { NorthStarBar } from './NorthStarBar'
 import { WeatherClock } from './weather/WeatherClock'
 
-/** The Grove homepage: calm header, the North Star, then the cards of the day. */
+/** A space's Grove homepage: calm header, its North Star, then the cards of its day. */
 export const HomePage = () => {
   // HOOKS
+  const space = useSpace()
   const profile = useProfile()
   const timeZone = useTimeZone()
 
   // EFFECTS
-  // Fresh AI messages when the app opens (the server only asks the AI every few hours).
-  useEffect(() => void refreshTicker(), [])
+  // Fresh AI messages when the space opens (the server only asks the AI every few hours).
+  useEffect(() => void refreshTicker(space.id), [space.id])
 
   return (
     <div className="space-y-6">

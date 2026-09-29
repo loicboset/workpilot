@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/Button'
 import { Form } from '@/components/ui/Form'
 import { Dialog, DialogTitle, Modal } from '@/components/ui/Modal'
 import { TextField } from '@/components/ui/TextField'
+import { useSpace } from '@/data/currentSpace'
 import { addNote, updateNote, type NoteFields } from '@/data/notes'
 import type { Note } from '@/db/types'
 
@@ -35,6 +36,7 @@ type FormValues = { title: string; content: string }
 const NoteFields = ({ note, onDone }: { note?: Note; onDone: () => void }) => {
   // HOOKS
   const { t } = useTranslation()
+  const space = useSpace()
 
   // RHF
   const { control, handleSubmit } = useForm<FormValues>({
@@ -46,7 +48,7 @@ const NoteFields = ({ note, onDone }: { note?: Note; onDone: () => void }) => {
   const save = async ({ title, content }: FormValues) => {
     const fields: NoteFields = { title: title.trim() || null, content: content.trim() }
     if (note) await updateNote(note.id, fields)
-    else await addNote(fields.content, fields.title)
+    else await addNote(space.id, fields.content, fields.title)
     onDone()
   }
 
