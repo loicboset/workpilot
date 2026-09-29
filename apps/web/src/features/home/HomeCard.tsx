@@ -19,6 +19,8 @@ type HomeCardProps = {
   footer?: ReactNode
   children: ReactNode
   className?: string
+  /** Classes for the part between the header and the footer, e.g. to lay it out as a column. */
+  bodyClassName?: string
 }
 
 const tileStyles = tv({
@@ -48,6 +50,7 @@ export const HomeCard = ({
   footer,
   children,
   className,
+  bodyClassName,
 }: HomeCardProps) => {
   // HOOKS
   const titleId = useId()
@@ -77,7 +80,7 @@ export const HomeCard = ({
           <p className="ml-auto pl-3 text-right text-[13px] leading-4 text-grove-muted">{aside}</p>
         )}
       </header>
-      <div className="flex-1">{children}</div>
+      <div className={twMerge('flex-1', bodyClassName)}>{children}</div>
       {footer && <div className="flex pt-4">{footer}</div>}
     </section>
   )

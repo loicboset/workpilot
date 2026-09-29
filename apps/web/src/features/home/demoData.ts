@@ -1,6 +1,6 @@
 /**
  * Placeholder content for the homepage cards whose features aren't built yet, as in the Grove
- * concept: this season's focus, the weekly review (v0.2), opportunities (v0.3) and learning
+ * concept: this season's focus, the weekly review's time (v0.2), opportunities (v0.3) and learning
  * (v0.4). Replace each part with its repository when the feature ships, don't extend it.
  */
 
@@ -12,18 +12,12 @@ export const SEASON_FOCUS: SeasonFocus[] = [
   { title: 'Protect thinking time', detail: 'Two quiet mornings a week' },
 ]
 
-export type Mood = 'drained' | 'okay' | 'steady' | 'energised'
-
-export const MOODS: Mood[] = ['drained', 'okay', 'steady', 'energised']
-
 export type WeeklyReview = {
   /** ISO weekday: 1 is Monday, 5 is Friday. */
   weekday: number
   hour: number
   minute: number
   minutes: number
-  mood: Mood
-  questions: string[]
 }
 
 export const WEEKLY_REVIEW: WeeklyReview = {
@@ -31,12 +25,6 @@ export const WEEKLY_REVIEW: WeeklyReview = {
   hour: 16,
   minute: 30,
   minutes: 15,
-  mood: 'steady',
-  questions: [
-    'What am I grateful for this week?',
-    'What moved me along the path?',
-    'What can I let go of?',
-  ],
 }
 
 export type OpportunityTone = 'moss' | 'sky'

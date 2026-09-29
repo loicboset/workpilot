@@ -101,15 +101,7 @@
       }
     },
     "review": {
-      "title": "Bilan",
       "when": "{{day}} · {{time}} · {{minutes}} min",
-      "question": "Dans quel état arrivez-vous en fin de semaine ?",
-      "moods": {
-        "drained": "Épuisé·e",
-        "okay": "Ça va",
-        "steady": "Stable",
-        "energised": "Plein d’énergie"
-      },
       "open": "Ouvrir le bilan de la semaine"
     },
     "opportunities": {
@@ -266,6 +258,12 @@
     "showDone_other": "Voir les {{count}} faites",
     "showDone_many": "Voir les {{count}} faites",
     "hideDone": "Cacher les tâches faites"
+  },
+  "review": {
+    "title": "Bilan",
+    "notes": "Vos notes des {{days}} derniers jours",
+    "empty": "Aucune note ces {{days}} derniers jours. /note dans la barre Noter en écrit une.",
+    "allNotes": "Toutes vos idées et notes"
   },
   "notes": {
     "title": "Idées et notes",

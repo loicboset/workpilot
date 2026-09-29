@@ -53,7 +53,8 @@ and answer the three onboarding questions. From there:
   `/icebox Redo the login` (a todo without a date).
 - **Today** shows the day's time blocks and todos: tick, move, link to a milestone, delete.
 - **Icebox** holds the todos without a date. ❄️ on any todo puts it there; a day takes it out.
-- **Ideas & notes** lists what you captured, to read, change or delete.
+- **Review** looks back on the notes of the last 7 days, day by day.
+- **Ideas & notes** lists what you captured, to read, change or delete (from the Review page).
 - **Direction** holds your North Star and milestones.
 - **Settings → AI → LM Studio**: start LM Studio's server, pick a model, then "Save and test".
   The homepage ticker then gets its messages from your model.
@@ -62,7 +63,7 @@ and answer the three onboarding questions. From there:
 milestones, today's time blocks, and done work that makes "time aligned" read 62%. If you already
 have a North Star, `make seed REPLACE=1` puts it aside (soft-deleted, untouched) and
 `make seed UNDO=1` removes the demo data and brings yours back. The homepage cards for features
-not built yet (Review, Opportunities, Learning, the season's focus) show placeholder content from
+not built yet (Opportunities, Learning, the season's focus, the review's time) show placeholder content from
 `apps/web/src/features/home/demoData.ts`.
 
 Data model: [docs/data-model.md](docs/data-model.md). API: [docs/api.md](docs/api.md), interactive docs at http://localhost:8100/api/docs when running. AI with LM Studio or a cloud API: [docs/ai-providers.md](docs/ai-providers.md).

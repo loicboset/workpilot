@@ -101,15 +101,7 @@
       }
     },
     "review": {
-      "title": "Revisión",
       "when": "{{day}} · {{time}} · {{minutes}} min",
-      "question": "¿Cómo llegas al final de la semana?",
-      "moods": {
-        "drained": "Agotado/a",
-        "okay": "Bien",
-        "steady": "Estable",
-        "energised": "Con energía"
-      },
       "open": "Abrir la revisión semanal"
     },
     "opportunities": {
@@ -266,6 +258,12 @@
     "showDone_other": "Ver las {{count}} hechas",
     "showDone_many": "Ver las {{count}} hechas",
     "hideDone": "Ocultar las hechas"
+  },
+  "review": {
+    "title": "Revisión",
+    "notes": "Tus notas de los últimos {{days}} días",
+    "empty": "Ninguna nota en los últimos {{days}} días. /note en la barra Anotar escribe una.",
+    "allNotes": "Todas tus ideas y notas"
   },
   "notes": {
     "title": "Ideas y notas",

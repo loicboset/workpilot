@@ -24,8 +24,9 @@ const findCard = async () => {
   return screen.getByRole('region', { name: 'Capture' })
 }
 
-it('has no dropdown nor button: a command files the thought', async () => {
+it('has no link, dropdown nor button: a command files the thought', async () => {
   const card = await findCard()
+  expect(within(card).queryByRole('link')).toBeNull()
   expect(within(card).queryByRole('button')).toBeNull()
 
   const field = within(card).getByRole('textbox', { name: 'Capture a thought' })

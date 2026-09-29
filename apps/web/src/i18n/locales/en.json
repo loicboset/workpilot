@@ -99,15 +99,7 @@
       }
     },
     "review": {
-      "title": "Review",
       "when": "{{day}} · {{time}} · {{minutes}} min",
-      "question": "How are you arriving at the end of the week?",
-      "moods": {
-        "drained": "Drained",
-        "okay": "Okay",
-        "steady": "Steady",
-        "energised": "Energised"
-      },
       "open": "Open weekly review"
     },
     "opportunities": {
@@ -262,6 +254,12 @@
     "showDone_one": "Show the done one",
     "showDone_other": "Show the {{count}} done ones",
     "hideDone": "Hide the done ones"
+  },
+  "review": {
+    "title": "Review",
+    "notes": "Your notes of the last {{days}} days",
+    "empty": "No notes these last {{days}} days. /note in the capture bar writes one.",
+    "allNotes": "All your ideas and notes"
   },
   "notes": {
     "title": "Ideas & notes",
