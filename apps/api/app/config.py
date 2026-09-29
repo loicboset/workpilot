@@ -1,7 +1,15 @@
-"""Settings, read from WORKPILOT_* environment variables (see .env.example)."""
+"""Settings, read from WORKPILOT_* environment variables (see .env.example).
+
+WorkPilot refuses to start without its own login and secret: the placeholders from
+.env.example are rejected, so an install can't go online with a password anyone can read.
+"""
 
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# The values .env.example ships with; they must be replaced.
+PLACEHOLDER = "change-me"
+MIN_SECRET_LENGTH = 32
 
 
 class Settings(BaseSettings):
@@ -10,13 +18,13 @@ class Settings(BaseSettings):
         # ".env" next to the API, or the repo-root .env when running from apps/api in development.
         env_file=(".env", "../../.env"),
         extra="ignore",
+        hide_input_in_errors=True,  # never print a password or secret in a startup error
     )
 
     # Single-user login, "name:password" (ADR 0003).
-    # TODO(auth): refuse to start with these defaults outside development.
-    user: str = "me:change-me"
-    # Signs the session cookie and encrypts stored secrets such as the AI key.
-    secret_key: str = "change-me"
+    user: str = ""
+    # Signs the session cookie, encrypts stored secrets (the AI key) and derives the push key.
+    secret_key: str = ""
     # Send the session cookie over HTTPS only. Set to false for local development over http.
     cookie_secure: bool = True
 
@@ -34,7 +42,20 @@ class Settings(BaseSettings):
     def user_has_name_and_password(cls, value: str) -> str:
         name, _, password = value.partition(":")
         if not name or not password:
-            raise ValueError('WORKPILOT_USER must look like "name:password"')
+            raise ValueError('Set WORKPILOT_USER in .env, as "name:password"')
+        if password == PLACEHOLDER:
+            raise ValueError("Choose your own password in WORKPILOT_USER (.env)")
+        return value
+
+    @field_validator("secret_key")
+    @classmethod
+    def secret_key_is_long_and_random(cls, value: str) -> str:
+        if value == PLACEHOLDER or len(value) < MIN_SECRET_LENGTH:
+            raise ValueError(
+                f"WORKPILOT_SECRET_KEY must be at least {MIN_SECRET_LENGTH} random characters. "
+                "Run `make env`, or generate one with: "
+                'python3 -c "import secrets; print(secrets.token_urlsafe(48))"'
+            )
         return value
 
     @field_validator("push_contact")

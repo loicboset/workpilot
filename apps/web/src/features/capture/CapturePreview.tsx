@@ -22,7 +22,9 @@ export function CapturePreview({ result, timeZone }: { result: ParseResult; time
   let details = ''
   if (capture.kind === 'todo') {
     details = capture.dueDate
-      ? t('capture.preview.due', { day: dayLabel(capture.dueDate, t, locale, timeZone) })
+      ? t('capture.preview.due', {
+          day: dayLabel(capture.dueDate, t, locale, timeZone, { inSentence: true }),
+        })
       : t('capture.preview.noDate')
   } else if (capture.kind === 'block') {
     details = `${dayLabel(capture.day, t, locale, timeZone)} · ${formatTimeOfDay(capture.start, locale)}–${formatTimeOfDay(capture.end, locale)}`

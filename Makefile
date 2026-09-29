@@ -1,4 +1,11 @@
-.PHONY: install dev-web dev-api db migrate test lint typecheck build docker
+.PHONY: env install dev-web dev-api db migrate test lint typecheck build docker
+
+# Create .env from .env.example with a fresh random secret (never overwrites an existing .env).
+env:
+	@test ! -f .env || (echo ".env already exists: edit it instead" && exit 1)
+	@secret=$$(python3 -c "import secrets; print(secrets.token_urlsafe(48))"); \
+	sed "s|^WORKPILOT_SECRET_KEY=.*|WORKPILOT_SECRET_KEY=$$secret|" .env.example > .env
+	@echo "Created .env with a random secret. Now set your name and password in WORKPILOT_USER."
 
 install:
 	cd apps/web && pnpm install

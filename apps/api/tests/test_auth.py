@@ -1,5 +1,8 @@
+import pytest
 from fastapi.testclient import TestClient
+from pydantic import ValidationError
 
+from app.config import Settings
 from tests.credentials import TEST_PASSWORD, TEST_USERNAME
 
 
@@ -45,3 +48,23 @@ def test_too_many_failures_are_throttled(anonymous_client: TestClient) -> None:
 
     # Even the right password is refused while blocked.
     assert login(anonymous_client) == 429
+
+
+# --- Configuration --------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("user", "secret_key", "message"),
+    [
+        ("me:change-me", "a" * 40, "Choose your own password"),
+        ("", "a" * 40, "Set WORKPILOT_USER"),
+        ("me:my-own-password", "change-me", "at least 32 random characters"),
+        ("me:my-own-password", "too-short", "at least 32 random characters"),
+    ],
+    ids=["placeholder-password", "no-user", "placeholder-secret", "short-secret"],
+)
+def test_refuses_to_start_with_placeholder_login_or_secret(
+    user: str, secret_key: str, message: str
+) -> None:
+    with pytest.raises(ValidationError, match=message):
+        Settings(user=user, secret_key=secret_key)

@@ -15,18 +15,27 @@ export function formatDay(day: CalendarDate, locale: string, timeZone: string, s
   return new DateFormatter(locale, { ...style, timeZone }).format(day.toDate(timeZone))
 }
 
-/** "Today", "Tomorrow", "Yesterday", or the short date. */
+/**
+ * "Today", "Tomorrow", "Yesterday", or the short date. `inSentence` writes the relative words
+ * in lower case, for "due tomorrow" / "pour demain".
+ */
 export function dayLabel(
   day: CalendarDate,
   t: TFunction,
   locale: string,
   timeZone: string,
+  { inSentence = false } = {},
 ): string {
-  const offset = day.compare(todayIn(timeZone))
-  if (offset === 0) return t('common.today')
-  if (offset === 1) return t('common.tomorrow')
-  if (offset === -1) return t('common.yesterday')
-  return formatDay(day, locale, timeZone, true)
+  const key = RELATIVE_DAYS[day.compare(todayIn(timeZone))] // days from today
+  if (!key) return formatDay(day, locale, timeZone, true)
+  const word = t(key)
+  return inSentence ? word.toLocaleLowerCase(locale) : word
+}
+
+const RELATIVE_DAYS: Record<number, string> = {
+  [-1]: 'common.yesterday',
+  0: 'common.today',
+  1: 'common.tomorrow',
 }
 
 /** "09:30" or "9:30 AM", as the locale writes it. */

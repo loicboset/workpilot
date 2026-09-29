@@ -27,7 +27,7 @@ it('Ctrl+K opens the capture bar, which shows what it understood and saves it', 
   const input = await screen.findByRole('textbox', { name: 'Capture' })
   await userEvent.type(input, '/todo Call the editor tomorrow')
 
-  expect(screen.getByText('due Tomorrow', { exact: false })).toBeTruthy()
+  expect(screen.getByText('due tomorrow', { exact: false })).toBeTruthy()
   await userEvent.keyboard('{Enter}')
 
   await waitFor(async () => expect(await db.todos.count()).toBe(1))

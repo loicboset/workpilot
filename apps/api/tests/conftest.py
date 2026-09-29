@@ -20,7 +20,7 @@ TEST_DATABASE_URL = os.environ.get(
 )
 os.environ["WORKPILOT_DATABASE_URL"] = TEST_DATABASE_URL
 os.environ["WORKPILOT_USER"] = f"{TEST_USERNAME}:{TEST_PASSWORD}"
-os.environ["WORKPILOT_SECRET_KEY"] = "test-secret-key"
+os.environ["WORKPILOT_SECRET_KEY"] = "test-secret-key-that-is-long-enough-for-tests"
 os.environ["WORKPILOT_COOKIE_SECURE"] = "false"  # the test client talks plain http
 os.environ["WORKPILOT_PUSH_CONTACT"] = "mailto:tests@workpilot.test"
 

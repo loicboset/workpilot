@@ -32,8 +32,8 @@ docs/        roadmap, decisions (ADRs), methodologies
 Prerequisites: Node 22+, pnpm (`corepack enable`), Python 3.13 + [uv](https://docs.astral.sh/uv/), Docker (for Postgres).
 
 ```bash
-cp .env.example .env      # edit WORKPILOT_USER, WORKPILOT_SECRET_KEY;
-                          # set WORKPILOT_COOKIE_SECURE=false for local http
+make env                  # creates .env with a random secret; then set your name and
+                          # password in WORKPILOT_USER, and WORKPILOT_COOKIE_SECURE=false for http
 make install              # web + api dependencies
 make db                   # start Postgres in Docker
 make migrate              # create / update the database tables
@@ -58,9 +58,12 @@ Other commands: `make test` (needs `make db` running; the test database is creat
 ## Run with Docker
 
 ```bash
-cp .env.example .env
+make env                    # then set WORKPILOT_USER (and WORKPILOT_COOKIE_SECURE=false for http)
 docker compose up --build   # http://localhost:8000
 ```
+
+WorkPilot refuses to start with the placeholder password or secret from `.env.example`.
+With LM Studio on the same Mac, use `http://host.docker.internal:1234/v1` in Settings → AI.
 
 ## Methodologies
 
