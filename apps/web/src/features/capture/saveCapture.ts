@@ -1,4 +1,5 @@
 import { addIdea } from '@/data/ideas'
+import { addNote } from '@/data/notes'
 import { addTimeBlock } from '@/data/timeBlocks'
 import { addTodo } from '@/data/todos'
 import { momentOf } from '@/lib/dates'
@@ -19,6 +20,9 @@ export async function saveCapture(capture: Capture, timeZone: string): Promise<v
       return
     case 'idea':
       await addIdea(capture.text)
+      return
+    case 'note':
+      await addNote(capture.text)
       return
   }
 }

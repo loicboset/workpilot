@@ -78,9 +78,7 @@
     "capture": {
       "title": "Anotar",
       "subtitle": "Vacía tu mente",
-      "fileUnder": "Guardar como",
-      "save": "Guardar la idea",
-      "saved": "Anotado. Una cosa menos que cargar.",
+      "saved": "Anotado: {{kind}}. Una cosa menos que cargar.",
       "fieldLabel": "Anotar una idea"
     },
     "today": {
@@ -166,17 +164,19 @@
   "capture": {
     "title": "Anotar",
     "placeholder": "Lo que sea que ocupe tu mente…",
-    "hint": "Empieza con /todo, /block o /idea. El texto simple se guarda como idea. Tab completa el comando.",
+    "hint": "Pulsa / para ver los comandos, o escribe sin más: el texto se guarda como idea. Intro guarda.",
     "commandsLabel": "Comandos",
     "commands": {
-      "todo": "una tarea",
-      "block": "un bloque de tiempo",
-      "idea": "una idea"
+      "todo": "Algo que hacer. Añade un día: mañana, viernes…",
+      "block": "Tiempo reservado, p. ej. «Trabajo profundo 9-11 viernes»",
+      "idea": "Un pensamiento para ver más tarde",
+      "note": "Algo que guardar, tal cual"
     },
     "kinds": {
       "todo": "Tarea",
       "block": "Bloque de tiempo",
-      "idea": "Idea"
+      "idea": "Idea",
+      "note": "Nota"
     },
     "preview": {
       "due": "para {{day}}",
@@ -184,7 +184,7 @@
     },
     "saved": "Anotado: {{kind}}. Sigue, o pulsa Esc cuando tu mente esté despejada.",
     "problems": {
-      "unknownCommand": "Comando desconocido. Prueba /todo, /block o /idea.",
+      "unknownCommand": "Comando desconocido. Escribe / para verlos todos.",
       "noTitle": "Añade unas palabras sobre qué es.",
       "noTime": "Añade una hora, p. ej. 9-11 o 14:00-15:30.",
       "endBeforeStart": "El final va antes del inicio."

@@ -78,9 +78,7 @@
     "capture": {
       "title": "Noter",
       "subtitle": "Videz votre esprit",
-      "fileUnder": "Ranger dans",
-      "save": "Garder cette pensée",
-      "saved": "C'est noté. Une chose de moins à porter.",
+      "saved": "C'est noté : {{kind}}. Une chose de moins à porter.",
       "fieldLabel": "Noter une pensée"
     },
     "today": {
@@ -166,17 +164,19 @@
   "capture": {
     "title": "Noter",
     "placeholder": "Tout ce qui occupe votre esprit…",
-    "hint": "Commencez par /todo, /block ou /idea. Le texte simple devient une idée. Tab complète la commande.",
+    "hint": "Tapez / pour une commande, ou écrivez simplement : le texte devient une idée. Entrée enregistre.",
     "commandsLabel": "Commandes",
     "commands": {
-      "todo": "une tâche",
-      "block": "une plage horaire",
-      "idea": "une idée"
+      "todo": "Une chose à faire. Ajoutez un jour : demain, vendredi…",
+      "block": "Du temps réservé, p. ex. « Travail profond 9h-11h vendredi »",
+      "idea": "Une pensée à regarder plus tard",
+      "note": "Quelque chose à garder, tel quel"
     },
     "kinds": {
       "todo": "Tâche",
       "block": "Plage horaire",
-      "idea": "Idée"
+      "idea": "Idée",
+      "note": "Note"
     },
     "preview": {
       "due": "pour {{day}}",
@@ -184,7 +184,7 @@
     },
     "saved": "C'est noté : {{kind}}. Continuez, ou Échap quand votre esprit est léger.",
     "problems": {
-      "unknownCommand": "Commande inconnue. Essayez /todo, /block ou /idea.",
+      "unknownCommand": "Commande inconnue. Tapez / pour les voir toutes.",
       "noTitle": "Ajoutez quelques mots pour dire de quoi il s'agit.",
       "noTime": "Ajoutez un horaire, p. ex. 9-11 ou 14h-15h30.",
       "endBeforeStart": "La fin arrive avant le début."

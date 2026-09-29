@@ -1,5 +1,5 @@
 import { today } from '@internationalized/date'
-import { screen, waitFor } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { db } from '@/db/db'
@@ -37,7 +37,35 @@ it('Ctrl+K opens the capture bar, which shows what it understood and saves it', 
   expect(await screen.findByText(/Saved: Todo/)).toBeTruthy()
 })
 
-it('Tab completes a command', async () => {
+it('/ opens the command menu: arrows choose, Enter picks, and the menu closes', async () => {
+  startFakeServer({ signedIn: true })
+  renderApp('/')
+  await screen.findByRole('heading', { name: /Ada/ })
+
+  await userEvent.keyboard('{Control>}k{/Control}')
+  const input = await screen.findByRole('textbox', { name: 'Capture' })
+  await userEvent.type(input, '/')
+
+  const menu = screen.getByRole('listbox', { name: 'Commands' })
+  const options = within(menu).getAllByRole('option')
+  expect(options.map((option) => option.textContent)).toEqual([
+    expect.stringMatching(/^\/todo/),
+    expect.stringMatching(/^\/block/),
+    expect.stringMatching(/^\/idea/),
+    expect.stringMatching(/^\/note/),
+  ])
+  expect(input.getAttribute('aria-activedescendant')).toBe(options[0].id)
+
+  await userEvent.keyboard('{ArrowDown}{ArrowDown}')
+  expect(input.getAttribute('aria-activedescendant')).toBe(options[2].id)
+  await userEvent.keyboard('{Enter}')
+
+  expect(input).toHaveProperty('value', '/idea ')
+  expect(screen.queryByRole('listbox')).toBeNull()
+  expect(await db.ideas.count()).toBe(0) // Enter picked the command, it saved nothing
+})
+
+it('the menu narrows as you type; Tab or a click picks a command', async () => {
   startFakeServer({ signedIn: true })
   renderApp('/')
   await screen.findByRole('heading', { name: /Ada/ })
@@ -45,9 +73,30 @@ it('Tab completes a command', async () => {
   await userEvent.keyboard('{Control>}k{/Control}')
   const input = await screen.findByRole('textbox', { name: 'Capture' })
   await userEvent.type(input, '/bl')
+  expect(screen.getAllByRole('option')).toHaveLength(1)
   await userEvent.keyboard('{Tab}')
+  expect(input).toHaveProperty('value', '/block ')
 
-  expect((input as HTMLInputElement).value).toBe('/block ')
+  await userEvent.clear(input)
+  await userEvent.type(input, '/')
+  await userEvent.click(screen.getAllByRole('option')[3])
+  expect(input).toHaveProperty('value', '/note ')
+  expect(document.activeElement).toBe(input)
+})
+
+it('Esc closes the command menu first, then the capture bar', async () => {
+  startFakeServer({ signedIn: true })
+  renderApp('/')
+  await screen.findByRole('heading', { name: /Ada/ })
+
+  await userEvent.keyboard('{Control>}k{/Control}')
+  await userEvent.type(await screen.findByRole('textbox', { name: 'Capture' }), '/to')
+  await userEvent.keyboard('{Escape}')
+
+  expect(screen.queryByRole('listbox')).toBeNull()
+  expect(screen.getByRole('dialog')).toBeTruthy()
+  await userEvent.keyboard('{Escape}')
+  await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
 })
 
 it('Esc closes the capture bar, even while typing', async () => {

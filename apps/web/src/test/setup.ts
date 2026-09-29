@@ -5,3 +5,6 @@ import { afterEach } from 'vitest'
 
 // Unmount what each test rendered (Vitest runs without globals, so Testing Library can't do it).
 afterEach(() => cleanup())
+
+// jsdom lays nothing out, so it has no scrollIntoView (the capture command menu uses it).
+Element.prototype.scrollIntoView = () => {}

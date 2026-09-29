@@ -22,8 +22,14 @@ describe('commands', () => {
 
   it('completes a command from its first letters', () => {
     expect(commandsStartingWith('/b')).toEqual(['block'])
-    expect(commandsStartingWith('/')).toEqual(['todo', 'block', 'idea'])
+    expect(commandsStartingWith('/')).toEqual(['todo', 'block', 'idea', 'note'])
+    expect(commandsStartingWith('/todo')).toEqual(['todo'])
+  })
+
+  it('stops completing once a space follows the command', () => {
+    expect(commandsStartingWith('/todo ')).toEqual([])
     expect(commandsStartingWith('/todo Buy')).toEqual([])
+    expect(commandsStartingWith('Buy milk')).toEqual([])
   })
 
   it('needs something to capture', () => {
@@ -93,5 +99,17 @@ describe('/block', () => {
     expect(parseCapture('/block Deep work', TODAY)).toEqual({ problem: 'noTime' })
     expect(parseCapture('/block Deep work 11-9', TODAY)).toEqual({ problem: 'endBeforeStart' })
     expect(parseCapture('/block 9-11', TODAY)).toEqual({ problem: 'noTitle' })
+  })
+})
+
+describe('/note', () => {
+  it('keeps the note as written, dates and line breaks included', () => {
+    expect(parseCapture('/note The editor prefers mornings,\nsee you tomorrow', TODAY)).toEqual({
+      capture: { kind: 'note', text: 'The editor prefers mornings,\nsee you tomorrow' },
+    })
+  })
+
+  it('needs something to keep', () => {
+    expect(parseCapture('/note   ', TODAY)).toEqual({ problem: 'noTitle' })
   })
 })

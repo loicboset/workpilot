@@ -4,6 +4,7 @@
  *   /todo Call the editor tomorrow      → a todo due tomorrow
  *   /block Deep work 9-11 friday        → a time block on Friday, 09:00–11:00
  *   /idea Automate the weekly report    → an idea
+ *   /note The editor prefers mornings   → a note, kept as written (line breaks too)
  *   Automate the weekly report          → no command: an idea (the inbox)
  *
  * Dates are read the same way offline and online, without AI. Date words work in English,
@@ -11,13 +12,14 @@
  */
 import { Time, type CalendarDate } from '@internationalized/date'
 
-export const COMMANDS = ['todo', 'block', 'idea'] as const
+export const COMMANDS = ['todo', 'block', 'idea', 'note'] as const
 export type Command = (typeof COMMANDS)[number]
 
 export type Capture =
   | { kind: 'todo'; title: string; dueDate: CalendarDate | null }
   | { kind: 'block'; title: string; day: CalendarDate; start: Time; end: Time }
   | { kind: 'idea'; text: string }
+  | { kind: 'note'; text: string }
 
 export type CaptureProblem = 'empty' | 'unknownCommand' | 'noTitle' | 'noTime' | 'endBeforeStart'
 
@@ -35,8 +37,8 @@ export function parseCapture(input: string, today: CalendarDate): ParseResult {
   const rest = commandMatch ? text.slice(commandMatch[0].length) : text
   if (!isCommand(command)) return { problem: 'unknownCommand' }
 
-  if (command === 'idea') {
-    return rest ? { capture: { kind: 'idea', text: rest } } : { problem: 'noTitle' }
+  if (command === 'idea' || command === 'note') {
+    return rest ? { capture: { kind: command, text: rest } } : { problem: 'noTitle' }
   }
 
   const { day, remaining: withoutDate } = takeDay(rest, today)
@@ -53,9 +55,12 @@ export function parseCapture(input: string, today: CalendarDate): ParseResult {
   return { capture: { kind: 'block', title, day: day ?? today, ...range } }
 }
 
-/** Commands that start with what was typed, for completion: "/b" → ["block"]. */
+/**
+ * Commands that start with what was typed, for the command menu: "/b" → ["block"].
+ * None once a space follows the command: "/block " is past choosing.
+ */
 export function commandsStartingWith(input: string): Command[] {
-  const match = /^\/(\S*)$/.exec(input.trim())
+  const match = /^\/(\S*)$/.exec(input.trimStart())
   if (!match) return []
   return COMMANDS.filter((command) => command.startsWith(match[1].toLowerCase()))
 }

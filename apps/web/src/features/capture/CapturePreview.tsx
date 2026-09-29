@@ -1,24 +1,31 @@
 import { today } from '@internationalized/date'
-import { Clock3, Lightbulb, ListTodo } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { dayLabel, formatTimeOfDay } from '@/lib/format'
+import { COMMAND_ICONS } from './commandIcons'
 import type { ParseResult } from './parseCapture'
 
-const ICONS = { todo: ListTodo, block: Clock3, idea: Lightbulb }
+/** How to use the capture field: "/" for a command, plain text for an idea. */
+export const CaptureHint = () => {
+  // HOOKS
+  const { t } = useTranslation()
 
-/** What the capture bar understood, before Enter (ADR 0010). */
-export function CapturePreview({ result, timeZone }: { result: ParseResult; timeZone: string }) {
+  return <p className="text-sm text-grove-muted">{t('capture.hint')}</p>
+}
+
+/** What the capture field understood, before Enter (ADR 0010). */
+export const CapturePreview = ({ result, timeZone }: { result: ParseResult; timeZone: string }) => {
+  // HOOKS
   const { t, i18n } = useTranslation()
-  const locale = i18n.language
 
   if ('problem' in result) {
-    if (result.problem === 'empty')
-      return <p className="text-sm text-grove-muted">{t('capture.hint')}</p>
+    if (result.problem === 'empty') return <CaptureHint />
     return <p className="text-sm text-grove-berry">{t(`capture.problems.${result.problem}`)}</p>
   }
 
+  // VARS
+  const locale = i18n.language
   const { capture } = result
-  const Icon = ICONS[capture.kind]
+  const Icon = COMMAND_ICONS[capture.kind]
   let details = ''
   if (capture.kind === 'todo') {
     details = capture.dueDate
@@ -29,7 +36,7 @@ export function CapturePreview({ result, timeZone }: { result: ParseResult; time
   } else if (capture.kind === 'block') {
     details = `${dayLabel(capture.day, t, locale, timeZone)} · ${formatTimeOfDay(capture.start, locale)}–${formatTimeOfDay(capture.end, locale)}`
   }
-  const title = capture.kind === 'idea' ? capture.text : capture.title
+  const title = 'text' in capture ? capture.text : capture.title
   const isToday = capture.kind === 'block' && capture.day.compare(today(timeZone)) === 0
 
   return (
@@ -38,7 +45,7 @@ export function CapturePreview({ result, timeZone }: { result: ParseResult; time
         <Icon className="size-3.5" aria-hidden />
         {t(`capture.kinds.${capture.kind}`)}
       </span>
-      <span className="font-medium text-grove-ink">{title}</span>
+      <span className="line-clamp-2 font-medium text-grove-ink">{title}</span>
       {details && (
         <span className={isToday ? 'text-grove-moss' : 'text-grove-muted'}>· {details}</span>
       )}
